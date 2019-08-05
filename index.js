@@ -7066,6 +7066,7 @@ async function displayFile(filename, degree=50) {
         })
         worker.postMessage({
             cmd: "resolve",
+            type : module.type,            
             p: module.p,
             module: JSON.stringify(module),
             maxDegree: degree
