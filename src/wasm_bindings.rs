@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-use std::rc::Rc;
+use std::sync::Arc;
 use std::mem::transmute;
 use serde_json::value::Value;
 
@@ -22,59 +22,59 @@ pub struct WasmAlgebra {
 
 #[wasm_bindgen]
 impl WasmAlgebra {
-    pub fn new_adem_algebra(p : u32, generic : bool, max_degree : i32) -> Self {
+    pub fn new_adem_algebra(p : u32, generic : bool, max_degree : i32) -> WasmAlgebra {
         let algebra = AdemAlgebra::new(p, generic, false);
-        let boxed_algebra = Rc::new(algebra);
+        let boxed_algebra = Arc::new(algebra);
         Self {
-            pimpl : Rc::into_raw(boxed_algebra)
+            pimpl : Arc::into_raw(boxed_algebra)
         }
     }
 
     pub fn compute_basis(&self, degree : i32) {
-        self.to_adem_algebra().compute_basis(degree);
+        self.to_algebra().compute_basis(degree);
     }
 
-    fn to_adem_algebra(&self) -> Rc<AdemAlgebra> {
-        let raw = unsafe { Rc::from_raw(self.pimpl) };
-        let clone = Rc::clone(&raw);
+    fn to_algebra(&self) -> Arc<AdemAlgebra> {
+        let raw = unsafe { Arc::from_raw(self.pimpl) };
+        let clone = Arc::clone(&raw);
         std::mem::forget(raw);
         clone
     }
 
     pub fn free(self) {
-        let _drop_me = unsafe { Rc::from_raw(self.pimpl) };
+        let _drop_me = unsafe { Arc::from_raw(self.pimpl) };
     }
 }
 
 #[wasm_bindgen]
 pub struct WasmFDModule {
-    pimpl : *const FDModule
+    pimpl : *const FDModule<AdemAlgebra>
 }
 
 #[wasm_bindgen]
 impl WasmFDModule {
     pub fn new_adem_module(algebra : &WasmAlgebra, json_string : String) -> WasmFDModule {
         let mut json : Value = serde_json::from_str(&json_string).unwrap();
-        let module = FDModule::from_json(algebra.to_adem_algebra(), "adem", &mut json);
-        let boxed_module = Rc::new(module);
+        let module = FDModule::from_json(algebra.to_algebra(), "adem", &mut json);
+        let boxed_module = Arc::new(module);
         Self {
-            pimpl : Rc::into_raw(boxed_module)
+            pimpl : Arc::into_raw(boxed_module)
         }
     }
 
-    fn to_module(&self) -> Rc<FDModule> {
-        unsafe { Rc::clone(&Rc::from_raw(self.pimpl)) }
+    fn to_module(&self) -> Arc<FDModule<AdemAlgebra>> {
+        unsafe { Arc::clone(&Arc::from_raw(self.pimpl)) }
     }
 
     pub fn free(self) {
-        let _drop_me = unsafe { Rc::from_raw(self.pimpl) };
+        let _drop_me = unsafe { Arc::from_raw(self.pimpl) };
     }
 }
 
 
 #[wasm_bindgen]
 pub struct WasmCCDZ {
-    pimpl : *const CCDZ<FDModule>
+    pimpl : *const CCDZ<AdemAlgebra, FDModule<AdemAlgebra>>
 }
 
 
@@ -82,25 +82,25 @@ pub struct WasmCCDZ {
 impl WasmCCDZ {
     pub fn new_ccdz(module : &WasmFDModule) -> Self {
         let cc = CCDZ::new(module.to_module());
-        let boxed_cc : Rc<CCDZ<FDModule>> = Rc::new(cc);
+        let boxed_cc : Arc<CCDZ<AdemAlgebra, FDModule<AdemAlgebra>>> = Arc::new(cc);
         Self {
-            pimpl : Rc::into_raw(boxed_cc)
+            pimpl : Arc::into_raw(boxed_cc)
         }
     }
 
-    fn to_chain_complex(&self) -> Rc<CCDZ<FDModule>> {
-        unsafe { Rc::clone(&Rc::from_raw(self.pimpl)) }
+    fn to_chain_complex(&self) -> Arc<CCDZ<AdemAlgebra, FDModule<AdemAlgebra>>> {
+        unsafe { Arc::clone(&Arc::from_raw(self.pimpl)) }
     }
 
     pub fn free(self) {
-        let _drop_me = unsafe { Rc::from_raw(self.pimpl) };
+        let _drop_me = unsafe { Arc::from_raw(self.pimpl) };
     }
 }
 
 
 #[wasm_bindgen]
 pub struct WasmResolution {
-   pimpl : *const FDModuleResolution
+   pimpl : *const FDModuleResolution<AdemAlgebra>
 }
 
 #[wasm_bindgen]
@@ -109,7 +109,7 @@ impl WasmResolution {
         let chain_complex = chain_complex.to_chain_complex();
         let algebra = chain_complex.get_algebra();
         algebra.compute_basis(max_degree);
-        
+
         let add_class_wrapper = move |hom_deg : u32, int_deg : i32, name : &str| {
             let this = JsValue::NULL;
             let js_hom_deg = JsValue::from(hom_deg);
@@ -137,7 +137,7 @@ impl WasmResolution {
         let add_stuctline_wrapper_box = Box::new(add_stuctline_wrapper);
         let res = Resolution::new(chain_complex, max_degree, Some(add_class_wrapper_box), Some(add_stuctline_wrapper_box)); 
         let boxed_res = Box::new(res);
-        let pimpl : *const FDModuleResolution = Box::into_raw(boxed_res);
+        let pimpl : *const FDModuleResolution<AdemAlgebra> = Box::into_raw(boxed_res);
         Self {
             pimpl
         }
@@ -158,7 +158,7 @@ impl WasmResolution {
     }
 
     pub fn free(self) {
-         let _drop_me :  Box<FDModuleResolution> = unsafe {
+         let _drop_me :  Box<FDModuleResolution<AdemAlgebra>> = unsafe {
               transmute(self.pimpl)
          };
     }

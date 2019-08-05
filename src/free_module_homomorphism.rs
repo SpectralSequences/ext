@@ -1,16 +1,17 @@
 use std::sync::{Mutex, MutexGuard};
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::once::OnceVec;
 use crate::fp_vector::{FpVector, FpVectorT};
 use crate::matrix::{Matrix, Subspace, QuasiInverse};
 use crate::module::Module;
+use crate::algebra::Algebra;
 use crate::module_homomorphism::ModuleHomomorphism;
 use crate::free_module::{FreeModule, FreeModuleTableEntry};
 
-pub struct FreeModuleHomomorphism<M : Module> {
-    pub source : Rc<FreeModule>,
-    pub target : Rc<M>,
+pub struct FreeModuleHomomorphism<A : Algebra, M : Module<A>> {
+    pub source : Arc<FreeModule<A>>,
+    pub target : Arc<M>,
     outputs : OnceVec<Vec<FpVector>>, // degree --> input_idx --> output
     kernel : OnceVec<Subspace>,
     quasi_inverse : OnceVec<QuasiInverse>,
@@ -19,13 +20,13 @@ pub struct FreeModuleHomomorphism<M : Module> {
     degree_shift : i32
 }
 
-impl<M : Module> ModuleHomomorphism<FreeModule, M> for FreeModuleHomomorphism<M> {
-    fn get_source(&self) -> Rc<FreeModule> {
-        Rc::clone(&self.source)
+impl<A : Algebra, M : Module<A>> ModuleHomomorphism<A, FreeModule<A>, M> for FreeModuleHomomorphism<A, M> {
+    fn get_source(&self) -> Arc<FreeModule<A>> {
+        Arc::clone(&self.source)
     }
 
-    fn get_target(&self) -> Rc<M> {
-        Rc::clone(&self.target)
+    fn get_target(&self) -> Arc<M> {
+        Arc::clone(&self.target)
     }
 
     fn apply_to_basis_element(&self, result : &mut FpVector, coeff : u32, input_degree : i32, input_index : usize){
@@ -73,8 +74,8 @@ impl<M : Module> ModuleHomomorphism<FreeModule, M> for FreeModuleHomomorphism<M>
 // }
 
 
-impl<M : Module> FreeModuleHomomorphism<M> {
-    pub fn new(source : Rc<FreeModule>, target : Rc<M>, min_degree : i32, degree_shift : i32, max_degree : i32) -> Self {
+impl<A : Algebra, M : Module<A>> FreeModuleHomomorphism<A, M> {
+    pub fn new(source : Arc<FreeModule<A>>, target : Arc<M>, min_degree : i32, degree_shift : i32, max_degree : i32) -> Self {
         let num_degrees = max_degree as usize - min_degree as usize;
         let outputs = OnceVec::with_capacity(num_degrees);
         let kernel = OnceVec::with_capacity(num_degrees);

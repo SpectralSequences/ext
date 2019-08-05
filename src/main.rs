@@ -2,6 +2,7 @@ extern crate rust_ext;
 
 use rust_ext::Config;
 use rust_ext::run;
+use rust_ext::run_threaded;
 
 const BOLD_ANSI_CODE : &str = "\x1b[1m";
 
@@ -13,7 +14,7 @@ fn main() {
         std::process::exit(1);
     });
 
-    match run(&config) {
+    match run_threaded(&config) {
         Ok(string) => println!("{}{}", BOLD_ANSI_CODE, string),
         Err(e) => { eprintln!("Application error: {}", e); std::process::exit(1); }
     }

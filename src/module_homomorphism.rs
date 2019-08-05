@@ -1,13 +1,15 @@
 use std::sync::{Mutex, MutexGuard};
-use std::rc::Rc;
+use std::sync::Arc;
+use std::marker::PhantomData;
 
 use crate::fp_vector::{FpVector, FpVectorT};
 use crate::matrix::{Matrix, Subspace, QuasiInverse};
 use crate::module::Module;
+use crate::algebra::Algebra;
 
-pub trait ModuleHomomorphism<S : Module, T : Module> {
-    fn get_source(&self) -> Rc<S>;
-    fn get_target(&self) -> Rc<T>;
+pub trait ModuleHomomorphism<A : Algebra, S : Module<A>, T : Module<A>> {
+    fn get_source(&self) -> Arc<S>;
+    fn get_target(&self) -> Arc<T>;
 
     fn get_min_degree(&self) -> i32 {
         self.get_source().get_min_degree()
@@ -55,30 +57,32 @@ pub trait ModuleHomomorphism<S : Module, T : Module> {
 }
 
 // Maybe we should use static dispatch here? This would also get rid of a bunch of casting.
-pub struct ZeroHomomorphism<S : Module, T : Module> {
-    source : Rc<S>,
-    target : Rc<T>,
+pub struct ZeroHomomorphism<A : Algebra, S : Module<A>, T : Module<A>> {
+    source : Arc<S>,
+    target : Arc<T>,
+    phantom : PhantomData<A>,
     max_degree : Mutex<i32>
 }
 
-impl<S : Module, T : Module> ZeroHomomorphism<S, T> {
-    pub fn new(source : Rc<S>, target : Rc<T>) -> Self {
+impl<A : Algebra, S : Module<A>, T : Module<A>> ZeroHomomorphism<A, S, T> {
+    pub fn new(source : Arc<S>, target : Arc<T>) -> Self {
         let max_degree =  Mutex::new(source.get_min_degree() - 1);
         ZeroHomomorphism {
             source,
             target,
+            phantom : PhantomData,
             max_degree
         }
     }
 }
 
-impl<S : Module, T : Module> ModuleHomomorphism<S, T> for ZeroHomomorphism<S, T> {
-    fn get_source(&self) -> Rc<S> {
-        Rc::clone(&self.source)
+impl<A : Algebra, S : Module<A>, T : Module<A>> ModuleHomomorphism<A, S, T> for ZeroHomomorphism<A, S, T> {
+    fn get_source(&self) -> Arc<S> {
+        Arc::clone(&self.source)
     }
 
-    fn get_target(&self) -> Rc<T> {
-        Rc::clone(&self.target)
+    fn get_target(&self) -> Arc<T> {
+        Arc::clone(&self.target)
     }
 
     fn apply_to_basis_element(&self, _result : &mut FpVector, _coeff : u32, _input_degree : i32, _input_idx : usize){}

@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 // use enum_dispatch::enum_dispatch;
 
 use crate::fp_vector::{FpVector, FpVectorT};
@@ -8,11 +8,11 @@ use crate::algebra::Algebra;
 
 // }
 
-pub trait Module {
+pub trait Module<A : Algebra> {
     fn get_prime(&self) -> u32 {
         self.get_algebra().get_prime()
     }
-    fn get_algebra(&self) -> Rc<dyn Algebra>;
+    fn get_algebra(&self) -> Arc<A>;
     fn get_name(&self) -> &str;
     // fn get_type() -> Module_Type;
     // int min_degree;
@@ -63,13 +63,13 @@ pub trait Module {
     } 
 }
 
-pub struct ZeroModule {
-    algebra : Rc<dyn Algebra>,
+pub struct ZeroModule<A : Algebra> {
+    algebra : Arc<A>,
     name : String
 }
 
-impl ZeroModule {
-    pub fn new(algebra : Rc<dyn Algebra>) -> Self {
+impl<A : Algebra> ZeroModule<A> {
+    pub fn new(algebra : Arc<A>) -> Self {
         let name = format!("Zero Module over {}", algebra.get_name());
         ZeroModule {
             algebra,
@@ -78,9 +78,9 @@ impl ZeroModule {
     }
 }
 
-impl Module for ZeroModule {
-    fn get_algebra(&self) -> Rc<dyn Algebra> {
-        Rc::clone(&self.algebra)
+impl<A : Algebra> Module<A> for ZeroModule<A> {
+    fn get_algebra(&self) -> Arc<A> {
+        Arc::clone(&self.algebra)
     }
     
     fn get_name(&self) -> &str{
@@ -113,7 +113,7 @@ impl Module for ZeroModule {
 // }
 
 // impl<L : Module, R : Module> Module for ModuleChoice<L, R> {
-//     fn get_algebra(&self) -> Rc<dyn Algebra> {
+//     fn get_algebra(&self) -> Arc<dyn Algebra> {
 //         match self {
 //             ModuleChoice::IntroL(l) => l.get_algebra(),
 //             ModuleChoice::IntroR(r) => r.get_algebra()
@@ -164,13 +164,13 @@ impl Module for ZeroModule {
 // }
 
 
-pub enum OptionModule<M : Module> {
-    Some(Rc<M>),
-    Zero(Rc<ZeroModule>)
+pub enum OptionModule<A : Algebra, M : Module<A>> {
+    Some(Arc<M>),
+    Zero(Arc<ZeroModule<A>>)
 }
 
-impl<M : Module> Module for OptionModule<M> {
-    fn get_algebra(&self) -> Rc<dyn Algebra> {
+impl<A : Algebra, M : Module<A>> Module<A> for OptionModule<A, M> {
+    fn get_algebra(&self) -> Arc<A> {
         match self {
             OptionModule::Some(l) => l.get_algebra(),
             OptionModule::Zero(r) => r.get_algebra()

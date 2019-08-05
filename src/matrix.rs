@@ -490,7 +490,7 @@ impl Matrix {
         let mut block_rows : Vec<usize> = Vec::with_capacity(target_blocks.len());
         let mut last_block = 0;
         loop {
-            // Start searching for the end of the last block.
+            // Start seasynching for the end of the last block.
             // The end of the last block happens in the first row that has a pivot in a column to the right of it.
             // So look through columns to the right of the last block until we locate a pivot.
             for i in target_blocks[last_block] .. columns + 1 {

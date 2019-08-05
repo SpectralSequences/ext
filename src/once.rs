@@ -61,3 +61,6 @@ impl<T> Index<usize> for OnceVec<T> {
         self.get(key)
     }
 }
+
+unsafe impl<T> Send for OnceVec<T> { }
+unsafe impl<T> Sync for OnceVec<T> { }

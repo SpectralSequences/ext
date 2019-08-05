@@ -3,7 +3,7 @@ use crate::once::OnceVec;
 use crate::fp_vector::{FpVector, FpVectorT};
 use crate::algebra::Algebra;
 use crate::module::Module;
-use std::rc::Rc;
+use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct OperationGeneratorPair {
@@ -19,21 +19,21 @@ pub struct FreeModuleTableEntry {
     pub generator_to_index : Vec<Vec<usize>>,
 }
 
-pub struct FreeModule {
-    pub algebra : Rc<dyn Algebra>,
+pub struct FreeModule<A : Algebra> {
+    pub algebra : Arc<A>,
     pub name : String,
     pub min_degree : i32,
     pub max_degree : Mutex<i32>,
     pub table : OnceVec<FreeModuleTableEntry>
 }
 
-impl Module for FreeModule {
+impl<A : Algebra> Module<A> for FreeModule<A> {
     fn get_name(&self) -> &str {
         &self.name
     }
 
-    fn get_algebra(&self) -> Rc<dyn Algebra> {
-        Rc::clone(&self.algebra)
+    fn get_algebra(&self) -> Arc<A> {
+        Arc::clone(&self.algebra)
     }
 
     fn get_min_degree(&self) -> i32 {
@@ -82,8 +82,8 @@ impl Module for FreeModule {
     }
 }
 
-impl FreeModule {
-    pub fn new(algebra : Rc<dyn Algebra>, name : String, min_degree : i32) -> Self {
+impl<A : Algebra> FreeModule<A> {
+    pub fn new(algebra : Arc<A>, name : String, min_degree : i32) -> Self {
         Self {
             algebra,
             name,
@@ -206,9 +206,9 @@ mod tests {
     #[test]
     fn test_free_mod(){
         let p = 2;
-        let A = Rc::new(AdemAlgebra::new(p, p != 2, false));
+        let A = Arc::new(AdemAlgebra::new(p, p != 2, false));
         A.compute_basis(10);
-        let M = FreeModule::new(Rc::clone(&A) as Rc<dyn Algebra>, "".to_string(), 0);
+        let M = FreeModule::new(Arc::clone(&A), "".to_string(), 0);
         let (lock, table) = M.construct_table(0);
         M.add_generators(0, lock, table, 1);
         let (lock, table) = M.construct_table(1);
