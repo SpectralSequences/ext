@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["adem_basis_element_excess_sort_order",""],["adem_basis_element_length_sort_order",""],["shift_vec",""]],"static":[["BOCKSTEIN_TABLE",""]],"struct":[["AdemAlgebra",""],["AdemBasisElement",""],["BOCKSTEIN_TABLE",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["ZERO_QPART",""]],"fn":[["from_p",""]],"struct":[["MilnorAlgebra",""],["MilnorBasisElement",""],["MilnorProfile",""],["PPartMultiplier",""],["QPart",""]],"type":[["PPart",""]]});
