@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["OnceVec",""]]});
+initSidebarItems({"struct":[["OnceVec",""],["TempStorage",""]]});

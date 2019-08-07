@@ -841,6 +841,10 @@
 <span id="841">841</span>
 <span id="842">842</span>
 <span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1300,6 +1304,7 @@
 <span class="doccomment">///  everything (with the standard basis).</span>
 <span class="doccomment">///  * `preimage` - The actual quasi-inverse, where the basis of the image is that given by</span>
 <span class="doccomment">///  `image`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">QuasiInverse</span> {
     <span class="kw">pub</span> <span class="ident">image</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">preimage</span> : <span class="ident">Matrix</span>
@@ -1499,6 +1504,7 @@
             <span class="kw">let</span> <span class="ident">old_slice</span> <span class="op">=</span> <span class="self">self</span>[<span class="ident">i</span>].<span class="ident">get_slice</span>();
             <span class="self">self</span>[<span class="ident">i</span>].<span class="ident">set_slice</span>(<span class="ident">first_res_col</span>, <span class="ident">last_res_col</span>);
             <span class="ident">res_image</span>.<span class="ident">matrix</span>[<span class="ident">i</span>].<span class="ident">assign</span>(<span class="kw-2">&amp;</span><span class="self">self</span>[<span class="ident">i</span>]);
+            <span class="ident">res_image</span>.<span class="ident">column_to_pivot_row</span>.<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">new_pivots</span>[<span class="ident">first_res_col</span>..<span class="ident">last_res_col</span>]);
             <span class="self">self</span>[<span class="ident">i</span>].<span class="ident">restore_slice</span>(<span class="ident">old_slice</span>);
             <span class="self">self</span>[<span class="ident">i</span>].<span class="ident">set_slice</span>(<span class="ident">first_source_col</span>, <span class="ident">columns</span>);
             <span class="ident">res_preimage</span>[<span class="ident">i</span>].<span class="ident">assign</span>(<span class="kw-2">&amp;</span><span class="self">self</span>[<span class="ident">i</span>]);
@@ -1512,6 +1518,8 @@
             <span class="ident">image</span> : <span class="prelude-val">Some</span>(<span class="ident">res_image</span>),
             <span class="ident">preimage</span> : <span class="ident">res_preimage</span>
         };
+        <span class="comment">// println!(&quot;{:?}&quot;, self);</span>
+        <span class="comment">// println!(&quot;{:?}&quot;, res_qi);</span>
         <span class="kw">return</span> (<span class="ident">cm_qi</span>, <span class="ident">res_qi</span>);
     }
     
