@@ -484,6 +484,9 @@
 <span id="466">466</span>
 <span id="467">467</span>
 <span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_PRIME_INDEX</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="number">54</span>;
 <span class="kw">const</span> <span class="ident">MAX_PRIME</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="number">251</span>;
@@ -631,9 +634,10 @@
 }
 
 
-<span class="comment">// integer power</span>
-<span class="comment">// Oftentimes we actually need all powers in a row, so this doesn&#39;t get much use.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">integer_power</span>(<span class="kw-2">mut</span> <span class="ident">b</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">e</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
+<span class="doccomment">/// Computes b^e.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">integer_power</span>(<span class="ident">b</span> : <span class="ident">u32</span>, <span class="ident">e</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">b</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">e</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="number">1u32</span>;
     <span class="kw">while</span> <span class="ident">e</span> <span class="op">&gt;</span> <span class="number">0</span> {
         <span class="kw">if</span> <span class="ident">e</span><span class="kw-2">&amp;</span><span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
@@ -645,9 +649,11 @@
     <span class="ident">result</span>
 }
 
-<span class="comment">// Compute p^b mod e. Same algorithm as above except we reduce mod p after every step.</span>
-<span class="comment">// We use this for computing modulo inverses.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">power_mod</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">b</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">e</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span>{
+<span class="doccomment">/// Compute b^e mod p.</span>
+<span class="doccomment">/// We use this for computing modulo inverses.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">power_mod</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">b</span> : <span class="ident">u32</span>, <span class="ident">e</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span>{
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">b</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">e</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="number">1u32</span>;
 <span class="comment">//      b is b^{2^i} mod p</span>
 <span class="comment">//      if the current bit of e is odd, mutliply b^{2^i} mod p into r.</span>
