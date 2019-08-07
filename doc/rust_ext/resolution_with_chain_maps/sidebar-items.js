@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Cocycle",""],["ResolutionWithChainMaps",""],["SelfMap",""]],"type":[["ModuleResolutionWithChainMaps",""]]});
