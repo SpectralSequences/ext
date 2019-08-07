@@ -282,92 +282,11 @@
 <span id="282">282</span>
 <span id="283">283</span>
 <span id="284">284</span>
-<span id="285">285</span>
-<span id="286">286</span>
-<span id="287">287</span>
-<span id="288">288</span>
-<span id="289">289</span>
-<span id="290">290</span>
-<span id="291">291</span>
-<span id="292">292</span>
-<span id="293">293</span>
-<span id="294">294</span>
-<span id="295">295</span>
-<span id="296">296</span>
-<span id="297">297</span>
-<span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
-<span id="301">301</span>
-<span id="302">302</span>
-<span id="303">303</span>
-<span id="304">304</span>
-<span id="305">305</span>
-<span id="306">306</span>
-<span id="307">307</span>
-<span id="308">308</span>
-<span id="309">309</span>
-<span id="310">310</span>
-<span id="311">311</span>
-<span id="312">312</span>
-<span id="313">313</span>
-<span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
-<span id="350">350</span>
-<span id="351">351</span>
-<span id="352">352</span>
-<span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
-<span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
-<span id="362">362</span>
-<span id="363">363</span>
-<span id="364">364</span>
-<span id="365">365</span>
-<span id="366">366</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">wasm_bindgen</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">transmute</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">Algebra</span>;
@@ -378,7 +297,6 @@
 <span class="comment">// use crate::module_homomorphism::ModuleHomomorphism;</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">ChainComplexConcentratedInDegreeZero</span> <span class="kw">as</span> <span class="ident">CCDZ</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution</span>::{<span class="ident">Resolution</span>, <span class="ident">ModuleResolution</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution_with_chain_maps</span>::{<span class="ident">ResolutionWithChainMaps</span>, <span class="ident">ModuleResolutionWithChainMaps</span>};
 
 
 <span class="comment">// use web_sys::console;</span>
@@ -431,12 +349,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">to_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> { 
-            <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>);
-            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
-            <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">raw</span>);
-            <span class="kw">return</span> <span class="ident">result</span>;
-        }
+        <span class="kw">unsafe</span> { <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>)) }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">free</span>(<span class="self">self</span>) {
@@ -462,12 +375,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">to_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FPModule</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> { 
-            <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>);
-            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
-            <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">raw</span>);
-            <span class="kw">return</span> <span class="ident">result</span>;
-        }
+        <span class="kw">unsafe</span> { <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>)) }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">free</span>(<span class="self">self</span>) {
@@ -492,12 +400,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">to_chain_complex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">CCDZ</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;&gt;</span> {
-        <span class="kw">unsafe</span> { 
-            <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>);
-            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
-            <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">raw</span>);
-            <span class="kw">return</span> <span class="ident">result</span>;
-        }
+        <span class="kw">unsafe</span> { <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>)) }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">free</span>(<span class="self">self</span>) {
@@ -522,12 +425,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">to_chain_complex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">CCDZ</span><span class="op">&lt;</span><span class="ident">FPModule</span><span class="op">&gt;&gt;</span> {
-        <span class="kw">unsafe</span> { 
-            <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>);
-            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
-            <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">raw</span>);
-            <span class="kw">return</span> <span class="ident">result</span>;
-        }
+        <span class="kw">unsafe</span> { <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>)) }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">free</span>(<span class="self">self</span>) {
@@ -574,37 +472,31 @@
         };
         <span class="kw">let</span> <span class="ident">add_stuctline_wrapper_box</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">add_stuctline_wrapper</span>);
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">chain_complex</span>, <span class="ident">max_degree</span>, <span class="prelude-val">Some</span>(<span class="ident">add_class_wrapper_box</span>), <span class="prelude-val">Some</span>(<span class="ident">add_stuctline_wrapper_box</span>)); 
-        <span class="kw">let</span> <span class="ident">boxed_res</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">res</span>);
-        <span class="kw">let</span> <span class="ident">pimpl</span> : <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">into_raw</span>(<span class="ident">boxed_res</span>);
+        <span class="kw">let</span> <span class="ident">boxed_res</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">res</span>);
+        <span class="kw">let</span> <span class="ident">pimpl</span> : <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">into_raw</span>(<span class="ident">boxed_res</span>);
         <span class="self">Self</span> {
             <span class="ident">pimpl</span>
         }
     }
  
-    <span class="kw">fn</span> <span class="ident">to_resolution</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;&gt;</span> {
-        <span class="kw">unsafe</span> { 
-            <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>);
-            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
-            <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">raw</span>);
-            <span class="kw">return</span> <span class="ident">result</span>;
-        }
-    }
-
     <span class="comment">// pub fn step(&amp;self, hom_deg : u32, int_deg : i32) {</span>
 
     <span class="comment">// }</span>
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) {
-        <span class="self">self</span>.<span class="ident">to_resolution</span>().<span class="ident">resolve_through_degree</span>(<span class="ident">degree</span>);
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">pimpl</span> };
+        <span class="ident">res</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">degree</span>);
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_cocycle_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hom_deg</span> : <span class="ident">u32</span>, <span class="ident">int_deg</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">to_resolution</span>().<span class="ident">get_cocycle_string</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">idx</span>)
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">pimpl</span> };
+        <span class="kw">return</span> <span class="ident">res</span>.<span class="ident">get_cocycle_string</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">idx</span>);
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">free</span>(<span class="self">self</span>) {
-         <span class="kw">let</span> <span class="ident">_drop_me</span> :  <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;&gt;</span> 
-            <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>) };
+         <span class="kw">let</span> <span class="ident">_drop_me</span> :  <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="kw">unsafe</span> {
+              <span class="ident">transmute</span>(<span class="self">self</span>.<span class="ident">pimpl</span>)
+         };
     }
 }
 
@@ -647,19 +539,10 @@
         };
         <span class="kw">let</span> <span class="ident">add_stuctline_wrapper_box</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">add_stuctline_wrapper</span>);
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">chain_complex</span>, <span class="ident">max_degree</span>, <span class="prelude-val">Some</span>(<span class="ident">add_class_wrapper_box</span>), <span class="prelude-val">Some</span>(<span class="ident">add_stuctline_wrapper_box</span>)); 
-        <span class="kw">let</span> <span class="ident">boxed_res</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">res</span>);
-        <span class="kw">let</span> <span class="ident">pimpl</span> : <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FPModule</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">into_raw</span>(<span class="ident">boxed_res</span>);
+        <span class="kw">let</span> <span class="ident">boxed_res</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">res</span>);
+        <span class="kw">let</span> <span class="ident">pimpl</span> : <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FPModule</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">into_raw</span>(<span class="ident">boxed_res</span>);
         <span class="self">Self</span> {
             <span class="ident">pimpl</span>
-        }
-    }
- 
-    <span class="kw">fn</span> <span class="ident">to_resolution</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FPModule</span><span class="op">&gt;&gt;</span> {
-        <span class="kw">unsafe</span> { 
-            <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>);
-            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
-            <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">raw</span>);
-            <span class="kw">return</span> <span class="ident">result</span>;
         }
     }
  
@@ -668,67 +551,21 @@
     <span class="comment">// }</span>
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) {
-        <span class="self">self</span>.<span class="ident">to_resolution</span>().<span class="ident">resolve_through_degree</span>(<span class="ident">degree</span>);
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">pimpl</span> };
+        <span class="ident">res</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">degree</span>);
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_cocycle_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hom_deg</span> : <span class="ident">u32</span>, <span class="ident">int_deg</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">to_resolution</span>().<span class="ident">get_cocycle_string</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">idx</span>)
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">pimpl</span> };
+        <span class="kw">return</span> <span class="ident">res</span>.<span class="ident">get_cocycle_string</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">idx</span>);
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">free</span>(<span class="self">self</span>) {
-         <span class="kw">let</span> <span class="ident">_drop_me</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FPModule</span><span class="op">&gt;&gt;</span> 
-            <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>) };
+         <span class="kw">let</span> <span class="ident">_drop_me</span> :  <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FPModule</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="kw">unsafe</span> {
+              <span class="ident">transmute</span>(<span class="self">self</span>.<span class="ident">pimpl</span>)
+         };
     }
 }
 
-<span class="attribute">#[<span class="ident">wasm_bindgen</span>]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WasmResolutionWithChainMapsCCDZFDModule</span> {
-   <span class="ident">pimpl</span> : <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ModuleResolutionWithChainMaps</span><span class="op">&lt;</span><span class="ident">FDModule</span>, <span class="ident">FDModule</span><span class="op">&gt;</span>
-}
-
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::<span class="ident">FpVectorT</span>;
-<span class="attribute">#[<span class="ident">wasm_bindgen</span>]</span>
-<span class="kw">impl</span> <span class="ident">WasmResolutionWithChainMapsCCDZFDModule</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">WasmResolutionCCDZFDModule</span>, <span class="ident">target</span> : <span class="kw-2">&amp;</span><span class="ident">WasmResolutionCCDZFDModule</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">source_res</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">to_resolution</span>();
-        <span class="kw">let</span> <span class="ident">target_res</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">to_resolution</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res_with_maps</span> <span class="op">=</span> <span class="ident">ResolutionWithChainMaps</span>::<span class="ident">new</span>(<span class="ident">source_res</span>, <span class="ident">target_res</span>);
-        <span class="comment">// res_with_maps.add_product(2, 9, 0, &quot;\\alpha_{2}&quot;.to_string());</span>
-        <span class="comment">// res_with_maps.add_product(2, 12, 0, &quot;\\beta&quot;.to_string());</span>
-        <span class="comment">// let mut map_data = crate::matrix::Matrix::new(2, 1, 1);</span>
-        <span class="comment">// map_data[0].set_entry(0, 1);</span>
-        <span class="comment">// res_with_maps.add_self_map(4, 12, &quot;v_1&quot;.to_string(), map_data);</span>
-        <span class="kw">let</span> <span class="ident">boxed_res_with_maps</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">res_with_maps</span>);
-        <span class="kw">let</span> <span class="ident">pimpl</span> : <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ModuleResolutionWithChainMaps</span><span class="op">&lt;</span><span class="ident">FDModule</span>, <span class="ident">FDModule</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">into_raw</span>(<span class="ident">boxed_res_with_maps</span>);
-        <span class="self">Self</span> {
-            <span class="ident">pimpl</span>
-        }
-    }
-
-    <span class="kw">fn</span> <span class="ident">to_res_with_maps</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ModuleResolutionWithChainMaps</span><span class="op">&lt;</span><span class="ident">FDModule</span>, <span class="ident">FDModule</span><span class="op">&gt;&gt;</span> {
-        <span class="kw">unsafe</span> { 
-            <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>);
-            <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">raw</span>);
-            <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">raw</span>);
-            <span class="kw">return</span> <span class="ident">result</span>;
-        }
-    }
-
-    <span class="comment">// pub fn add_product(&amp;mut self, homological_degree : u32, internal_degree : i32, index : usize, name : String) {</span>
-    <span class="comment">//     self.to_res_with_maps().add_product(homological_degree, internal_degree, index, name)</span>
-    <span class="comment">// }</span>
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) {
-        <span class="self">self</span>.<span class="ident">to_res_with_maps</span>().<span class="ident">resolve_through_degree</span>(<span class="ident">degree</span>);
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_cocycle_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hom_deg</span> : <span class="ident">u32</span>, <span class="ident">int_deg</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">to_res_with_maps</span>().<span class="ident">resolution</span>.<span class="ident">get_cocycle_string</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">idx</span>)
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">free</span>(<span class="self">self</span>) {
-         <span class="kw">let</span> <span class="ident">_drop_me</span> :  <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ModuleResolutionWithChainMaps</span><span class="op">&lt;</span><span class="ident">FDModule</span>,<span class="ident">FDModule</span><span class="op">&gt;&gt;</span> 
-            <span class="op">=</span> <span class="kw">unsafe</span>{ <span class="ident">Rc</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">pimpl</span>) };
-    }
-}</pre></div>
+</pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rust_ext";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
