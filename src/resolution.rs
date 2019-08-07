@@ -182,6 +182,18 @@ impl<M : Module, F : ModuleHomomorphism<M, M>, CC : ChainComplex<M, F>> Resoluti
         }
     }
 
+    pub fn set_add_class(&mut self, add_class : Option<Box<dyn Fn(u32, i32, &str)>>) {
+        self.add_class = add_class;
+    }
+
+    pub fn set_add_structline(&mut self, add_structline : Option<Box<dyn Fn(
+            &str,
+            u32, i32, usize,
+            u32, i32, usize
+            )>>) {
+        self.add_structline = add_structline;
+    }
+
     pub fn add_structline(
             &self, 
             name : &str,
