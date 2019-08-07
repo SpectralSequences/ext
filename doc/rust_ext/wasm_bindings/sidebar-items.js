@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["WasmAlgebra",""],["WasmCCDZFDModule",""],["WasmCCDZFPModule",""],["WasmFDModule",""],["WasmFPModule",""],["WasmResolutionCCDZFDModule",""],["WasmResolutionCCDZFPModule",""]]});
+initSidebarItems({"struct":[["WasmAlgebra",""],["WasmCCDZFDModule",""],["WasmCCDZFPModule",""],["WasmFDModule",""],["WasmFPModule",""],["WasmResolutionCCDZFDModule",""],["WasmResolutionCCDZFPModule",""],["WasmResolutionWithChainMapsCCDZFDModule",""]]});
