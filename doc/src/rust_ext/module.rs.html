@@ -246,7 +246,7 @@
 <span class="comment">// use enum_dispatch::enum_dispatch;</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">Algebra</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
 
 <span class="comment">// enum Module_Type {</span>
 
@@ -256,9 +256,9 @@
     <span class="kw">fn</span> <span class="ident">get_prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">get_algebra</span>().<span class="ident">get_prime</span>()
     }
-    <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Algebra</span><span class="op">&gt;</span>, <span class="ident">algebra_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span>;
+    <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">algebra_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span>;
 
-    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Algebra</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>;
     <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span>;
     <span class="kw">fn</span> <span class="ident">get_min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span>;
     <span class="kw">fn</span> <span class="ident">compute_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) {}
@@ -304,12 +304,12 @@
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ZeroModule</span> {
-    <span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Algebra</span><span class="op">&gt;</span>,
+    <span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>,
     <span class="ident">name</span> : <span class="ident">String</span>
 }
 
 <span class="kw">impl</span> <span class="ident">ZeroModule</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Algebra</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Zero Module over {}&quot;</span>, <span class="ident">algebra</span>.<span class="ident">get_name</span>());
         <span class="ident">ZeroModule</span> {
             <span class="ident">algebra</span>,
@@ -319,11 +319,11 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Module</span> <span class="kw">for</span> <span class="ident">ZeroModule</span> {
-    <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Algebra</span><span class="op">&gt;</span>, <span class="ident">algebra_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span>  <span class="ident">serde_json</span>::<span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">algebra_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span>  <span class="ident">serde_json</span>::<span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">algebra</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Algebra</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
         <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">algebra</span>)
     }
     
@@ -357,7 +357,7 @@
 <span class="comment">// }</span>
 
 <span class="comment">// impl&lt;L : Module, R : Module&gt; Module for ModuleChoice&lt;L, R&gt; {</span>
-<span class="comment">//     fn get_algebra(&amp;self) -&gt; Rc&lt;dyn Algebra&gt; {</span>
+<span class="comment">//     fn get_algebra(&amp;self) -&gt; Rc&lt;AlgebraAny&gt; {</span>
 <span class="comment">//         match self {</span>
 <span class="comment">//             ModuleChoice::IntroL(l) =&gt; l.get_algebra(),</span>
 <span class="comment">//             ModuleChoice::IntroR(r) =&gt; r.get_algebra()</span>
@@ -414,11 +414,11 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">Module</span><span class="op">&gt;</span> <span class="ident">Module</span> <span class="kw">for</span> <span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Algebra</span><span class="op">&gt;</span>, <span class="ident">algebra_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">algebra_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">M</span>::<span class="ident">from_json</span>(<span class="ident">algebra</span>, <span class="ident">algebra_name</span>, <span class="ident">json</span>)))
     }
 
-    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Algebra</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> <span class="ident">l</span>.<span class="ident">get_algebra</span>(),
             <span class="ident">OptionModule</span>::<span class="ident">Zero</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>.<span class="ident">get_algebra</span>()

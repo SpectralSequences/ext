@@ -492,7 +492,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">Algebra</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">ZeroModule</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module</span>::<span class="ident">FreeModule</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module_homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">ZeroHomomorphism</span>};
@@ -914,7 +914,7 @@
     <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span> 
     <span class="kw">for</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span>, <span class="ident">CC</span><span class="op">&gt;</span>
 {
-    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Algebra</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">get_complex</span>().<span class="ident">get_algebra</span>()
     }
 

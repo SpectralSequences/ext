@@ -668,26 +668,12 @@
 <span id="650">650</span>
 <span id="651">651</span>
 <span id="652">652</span>
-<span id="653">653</span>
-<span id="654">654</span>
-<span id="655">655</span>
-<span id="656">656</span>
-<span id="657">657</span>
-<span id="658">658</span>
-<span id="659">659</span>
-<span id="660">660</span>
-<span id="661">661</span>
-<span id="662">662</span>
-<span id="663">663</span>
-<span id="664">664</span>
-<span id="665">665</span>
-<span id="666">666</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Mutex</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">once</span>::<span class="ident">OnceVec</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraWithGenerators</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">Algebra</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 
@@ -905,10 +891,8 @@
     <span class="kw">fn</span> <span class="ident">basis_element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">basis_table</span>[<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">idx</span>])
     }
-}
 
-<span class="doccomment">/// We pick our generators to be the Q_i and all the P(...). This has room for improvement...</span>
-<span class="kw">impl</span> <span class="ident">AlgebraWithGenerators</span> <span class="kw">for</span> <span class="ident">MilnorAlgebra</span> {
+    <span class="doccomment">/// We pick our generators to be Q_0 and all the P(...). This has room for improvement...</span>
     <span class="kw">fn</span> <span class="ident">get_algebra_generators</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">basis_element_to_index_map</span>[<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>];
 
@@ -926,19 +910,6 @@
         }
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">profile</span>.<span class="ident">generic</span> <span class="op">&amp;&amp;</span> <span class="ident">degree</span> <span class="op">==</span> <span class="number">1</span> {
             <span class="ident">generators</span>.<span class="ident">push</span>(<span class="number">0</span>); <span class="comment">// Q_0</span>
-<span class="comment">//            let tau_degrees = crate::combinatorics::get_tau_degrees(self.p);</span>
-<span class="comment">//            for i in 0..tau_degrees.len() {</span>
-<span class="comment">//                if tau_degrees[i] == degree {</span>
-<span class="comment">//                    generators.push(map.get(&amp;MilnorBasisElement {</span>
-<span class="comment">//                        q_part : 1&lt;&lt;i,</span>
-<span class="comment">//                        p_part : Vec::new(),</span>
-<span class="comment">//                        degree : degree</span>
-<span class="comment">//                    }).unwrap().to_owned())</span>
-<span class="comment">//                }</span>
-<span class="comment">//                if tau_degrees[i] &gt; degree {</span>
-<span class="comment">//                    break;</span>
-<span class="comment">//                }</span>
-<span class="comment">//            }</span>
         }
         <span class="ident">generators</span>
     }
@@ -957,7 +928,7 @@
             <span class="ident">i</span> <span class="op">-=</span> <span class="number">1</span>
         }
 
-        <span class="comment">// If it is Q_{k+1}, we decompose Q_{k+1} = P(p^k) Q_k - Q_k P(p^k)</span>
+        <span class="comment">// If the basis element is just Q_{k+1}, we decompose Q_{k+1} = P(p^k) Q_k - Q_k P(p^k).</span>
         <span class="kw">if</span> <span class="ident">basis</span>.<span class="ident">q_part</span> <span class="op">==</span> <span class="number">1</span> <span class="op">&lt;&lt;</span> <span class="ident">i</span> <span class="op">&amp;&amp;</span> <span class="ident">basis</span>.<span class="ident">p_part</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">let</span> <span class="ident">ppow</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">integer_power</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>);
 
@@ -976,6 +947,7 @@
             <span class="kw">return</span> <span class="macro">vec</span><span class="macro">!</span>[(<span class="number">1</span>, (<span class="ident">p_degree</span>, <span class="ident">p_idx</span>), (<span class="ident">q_degree</span>, <span class="ident">q_idx</span>)), (<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>, (<span class="ident">q_degree</span>, <span class="ident">q_idx</span>), (<span class="ident">p_degree</span>, <span class="ident">p_idx</span>))];
         }
 
+        <span class="comment">// Otherwise, separate out the first Q_k.</span>
         <span class="kw">let</span> <span class="ident">first_degree</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">get_tau_degrees</span>(<span class="self">self</span>.<span class="ident">p</span>)[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>];
         <span class="kw">let</span> <span class="ident">second_degree</span> <span class="op">=</span> <span class="ident">degree</span> <span class="op">-</span> <span class="ident">first_degree</span>;
 
