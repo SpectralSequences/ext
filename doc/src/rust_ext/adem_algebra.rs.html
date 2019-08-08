@@ -1653,8 +1653,7 @@
             <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">sq</span>) <span class="kw">in</span> <span class="ident">op</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                 <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">0</span> {
                     <span class="ident">degree</span> <span class="op">+=</span> <span class="ident">sq</span>;
-                    <span class="ident">bocksteins</span> <span class="op">&lt;&lt;=</span> <span class="number">1</span>;
-                    <span class="ident">bocksteins</span> <span class="op">|=</span> <span class="ident">sq</span>;
+                    <span class="ident">bocksteins</span> <span class="op">|=</span> <span class="ident">sq</span> <span class="op">&lt;&lt;</span> <span class="ident">i</span><span class="op">/</span><span class="number">2</span>;
                 } <span class="kw">else</span> {
                     <span class="ident">degree</span> <span class="op">+=</span> <span class="ident">q</span> <span class="op">*</span> <span class="ident">sq</span>;
                     <span class="ident">sqs</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">sq</span>);
@@ -1687,14 +1686,15 @@
             <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">sq</span>) <span class="kw">in</span> <span class="ident">b</span>.<span class="ident">ps</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                 <span class="ident">out_sqs</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">sq</span>);
                 <span class="ident">out_sqs</span>.<span class="ident">push</span>(<span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">1</span>);
-                <span class="ident">bocksteins</span> <span class="op">&gt;&gt;=</span> <span class="number">1</span>;
+                <span class="ident">bocksteins</span> <span class="op">&gt;&gt;=</span> <span class="number">1</span>;                
             }
         } <span class="kw">else</span> {
             <span class="kw">for</span> <span class="ident">sq</span> <span class="kw">in</span> <span class="ident">b</span>.<span class="ident">ps</span>.<span class="ident">iter</span>() {
                 <span class="ident">out_sqs</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">sq</span>);
             }
         }
-        <span class="ident">serde_json</span>::<span class="ident">to_value</span>(<span class="ident">out_sqs</span>).<span class="ident">unwrap</span>()
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">to_value</span>(<span class="ident">out_sqs</span>).<span class="ident">unwrap</span>();
+        <span class="ident">result</span>
     }
 
 
