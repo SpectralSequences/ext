@@ -35,16 +35,6 @@ if (!params.module) {
 
     let eventSource = new EventSource("/request/resolve/" + params.module + "/adem/" + degree);
 
-    let opened = false;
-    eventSource.addEventListener("open", function(e) {
-        // If the connection dropped, let it be.
-        if (!opened) {
-            opened = true;
-        } else {
-            eventSource.close();
-        }
-    });
-
     eventSource.addEventListener("addClass", function(e) {
         let d = JSON.parse(e.data);
         sseq.addClass(d.t - d.s, d.s);
