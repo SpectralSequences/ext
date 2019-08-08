@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["OptionModule",""]],"struct":[["ZeroModule",""]],"trait":[["Module",""]]});
+initSidebarItems({"enum":[["FiniteModule",""],["OptionModule",""]],"struct":[["UnknownModuleTypeError",""],["ZeroModule",""]],"trait":[["Module",""]]});

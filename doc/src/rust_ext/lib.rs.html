@@ -435,25 +435,6 @@
 <span id="417">417</span>
 <span id="418">418</span>
 <span id="419">419</span>
-<span id="420">420</span>
-<span id="421">421</span>
-<span id="422">422</span>
-<span id="423">423</span>
-<span id="424">424</span>
-<span id="425">425</span>
-<span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
-<span id="433">433</span>
-<span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -497,13 +478,13 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">adem_algebra</span>::<span class="ident">AdemAlgebra</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">milnor_algebra</span>::<span class="ident">MilnorAlgebra</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">Module</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModule</span> <span class="kw">as</span> <span class="ident">FDModule</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">finitely_presented_module</span>::<span class="ident">FinitelyPresentedModule</span> <span class="kw">as</span> <span class="ident">FPModule</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">FiniteModule</span>, <span class="ident">Module</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplexConcentratedInDegreeZero</span> <span class="kw">as</span> <span class="ident">CCDZ</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModule</span> <span class="kw">as</span> <span class="ident">FDModule</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution</span>::{<span class="ident">Resolution</span>, <span class="ident">ModuleResolution</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution_with_chain_maps</span>::<span class="ident">ResolutionWithChainMaps</span>;
 
+ <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="ident">stdin</span>, <span class="ident">stdout</span>, <span class="ident">Write</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
@@ -529,19 +510,19 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">struct</span> <span class="ident">UnknownModuleTypeError</span> {
-    <span class="ident">module_type</span> : <span class="ident">String</span>
+<span class="kw">struct</span> <span class="ident">ModuleFileNotFoundError</span> {
+    <span class="ident">name</span> : <span class="ident">String</span>
 }
 
-<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">UnknownModuleTypeError</span> {
+<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">ModuleFileNotFoundError</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Unknown module type: {}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">module_type</span>)
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Module file &#39;{}&#39; not found on path&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">UnknownModuleTypeError</span> {
+<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">ModuleFileNotFoundError</span> {
     <span class="kw">fn</span> <span class="ident">description</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="string">&quot;Unknown module type&quot;</span>
+        <span class="string">&quot;Module file not found&quot;</span>
     }
 }
 
@@ -570,28 +551,25 @@
     <span class="ident">resolution</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>
 }
 
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">AlgebraicObjectsBundleChoice</span> {
-    <span class="ident">FinitelyPresented</span>(<span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">FPModule</span><span class="op">&gt;</span>),
-    <span class="ident">FiniteDimensional</span>(<span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;</span>)
-}
-
-<span class="kw">impl</span> <span class="ident">AlgebraicObjectsBundleChoice</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">max_degree</span> : <span class="ident">i32</span>) {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">AlgebraicObjectsBundleChoice</span>::<span class="ident">FinitelyPresented</span>(<span class="ident">bundle</span>) <span class="op">=&gt;</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">max_degree</span>),
-            <span class="ident">AlgebraicObjectsBundleChoice</span>::<span class="ident">FiniteDimensional</span>(<span class="ident">bundle</span>) <span class="op">=&gt;</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">max_degree</span>),
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_module_from_file</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+    <span class="kw">for</span> <span class="ident">path</span> <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">module_paths</span>.<span class="ident">iter</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">clone</span>();
+        <span class="ident">path</span>.<span class="ident">push</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">module_file_name</span>);
+        <span class="ident">path</span>.<span class="ident">set_extension</span>(<span class="string">&quot;json&quot;</span>);
+        <span class="ident">result</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">read_to_string</span>(<span class="ident">path</span>).<span class="ident">ok</span>();
+        <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_some</span>() {
+            <span class="kw">break</span>;
         }
     }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">graded_dimension_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">AlgebraicObjectsBundleChoice</span>::<span class="ident">FinitelyPresented</span>(<span class="ident">bundle</span>) <span class="op">=&gt;</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">graded_dimension_string</span>(),
-            <span class="ident">AlgebraicObjectsBundleChoice</span>::<span class="ident">FiniteDimensional</span>(<span class="ident">bundle</span>) <span class="op">=&gt;</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">graded_dimension_string</span>(),
-        }        
-    }
+    <span class="kw">return</span> <span class="ident">result</span>.<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ModuleFileNotFoundError</span> {
+        <span class="ident">name</span> : <span class="ident">config</span>.<span class="ident">module_file_name</span>.<span class="ident">clone</span>()
+    }) <span class="kw">as</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span>);
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_helper</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">Module</span> <span class="op">+</span> <span class="ident">Sized</span><span class="op">&gt;</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>, <span class="kw-2">mut</span> <span class="ident">json</span> : <span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="ident">load_module_from_file</span>(<span class="ident">config</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">json</span> : <span class="ident">Value</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="kw-2">&amp;</span><span class="ident">contents</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;p&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 
     <span class="comment">// You need a box in order to allow for different possible types implementing the same trait</span>
@@ -601,7 +579,7 @@
         <span class="string">&quot;milnor&quot;</span> <span class="op">=&gt;</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">MilnorAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>))),
         <span class="kw">_</span> <span class="op">=&gt;</span> { <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">InvalidAlgebraError</span> { <span class="ident">name</span> : <span class="ident">config</span>.<span class="ident">algebra_name</span>.<span class="ident">clone</span>() })); }
     };    
-    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">M</span>::<span class="ident">from_json</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">algebra_name</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>));
+    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from_json</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">algebra_name</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>)<span class="question-mark">?</span>);
     <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
     <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="ident">config</span>.<span class="ident">max_degree</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
     <span class="prelude-val">Ok</span>(<span class="ident">AlgebraicObjectsBundle</span> {
@@ -610,23 +588,6 @@
         <span class="ident">chain_complex</span>,
         <span class="ident">resolution</span>
     })
-}
-
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraicObjectsBundleChoice</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">read_to_string</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">module_path</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">json</span> : <span class="ident">Value</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="kw-2">&amp;</span><span class="ident">contents</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">module_type</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">json</span>[<span class="string">&quot;type&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
-    <span class="kw">match</span> <span class="ident">module_type</span> {
-        <span class="kw-2">&amp;</span><span class="string">&quot;finite dimensional module&quot;</span> <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct_helper</span>(<span class="ident">config</span>, <span class="ident">json</span>)<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">AlgebraicObjectsBundleChoice</span>::<span class="ident">FiniteDimensional</span>(<span class="ident">bundle</span>))
-        },
-        <span class="kw-2">&amp;</span><span class="string">&quot;finitely presented module&quot;</span> <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct_helper</span>(<span class="ident">config</span>, <span class="ident">json</span>)<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="ident">AlgebraicObjectsBundleChoice</span>::<span class="ident">FinitelyPresented</span>(<span class="ident">bundle</span>))
-        }
-        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">UnknownModuleTypeError</span> { <span class="ident">module_type</span> : <span class="ident">module_type</span>.<span class="ident">to_string</span>() }))
-    }
 }
 
 <span class="kw">fn</span> <span class="ident">query</span><span class="op">&lt;</span><span class="ident">T</span> : <span class="ident">FromStr</span><span class="op">&gt;</span>(<span class="ident">prompt</span> : <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
@@ -883,13 +844,14 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>)<span class="question-mark">?</span>;
-    <span class="ident">bundle</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">config</span>.<span class="ident">max_degree</span>);
-    <span class="prelude-val">Ok</span>(<span class="ident">bundle</span>.<span class="ident">graded_dimension_string</span>())
+    <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct</span>(<span class="ident">config</span>)<span class="question-mark">?</span>;
+    <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">config</span>.<span class="ident">max_degree</span>);
+    <span class="prelude-val">Ok</span>(<span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">graded_dimension_string</span>())
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
-    <span class="kw">pub</span> <span class="ident">module_path</span> : <span class="ident">String</span>,
+    <span class="kw">pub</span> <span class="ident">module_paths</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">module_file_name</span> : <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">algebra_name</span> : <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">max_degree</span> : <span class="ident">i32</span>
 }

@@ -313,30 +313,6 @@
         <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_action</span>(<span class="ident">op_degree</span>, <span class="ident">op_index</span>, <span class="ident">mod_degree</span>, <span class="ident">mod_index</span>);
         <span class="ident">result</span>.<span class="ident">add</span>(<span class="ident">output</span>, <span class="ident">coeff</span>);
     }
-
-    <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">algebra_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">gens</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;gens&quot;</span>].<span class="ident">take</span>();
-        <span class="kw">let</span> (<span class="ident">min_degree</span>, <span class="ident">graded_dimension</span>, <span class="ident">gen_to_idx</span>) <span class="op">=</span> <span class="self">Self</span>::<span class="ident">module_gens_from_json</span>(<span class="kw-2">&amp;</span><span class="ident">gens</span>);
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;name&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>().<span class="ident">to_string</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">actions_value</span> <span class="op">=</span> <span class="ident">json</span>[<span class="ident">algebra_name</span>.<span class="ident">to_owned</span>() <span class="op">+</span> <span class="string">&quot;_actions&quot;</span>].<span class="ident">take</span>();
-        <span class="kw">let</span> <span class="ident">actions</span> <span class="op">=</span> <span class="ident">actions_value</span>.<span class="ident">as_array_mut</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="ident">name</span>, <span class="ident">min_degree</span>, <span class="ident">graded_dimension</span>);
-        <span class="kw">for</span> <span class="ident">action</span> <span class="kw">in</span> <span class="ident">actions</span>.<span class="ident">iter_mut</span>() {
-            <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">action</span>[<span class="string">&quot;op&quot;</span>].<span class="ident">take</span>();
-            <span class="kw">let</span> (<span class="ident">degree</span>, <span class="ident">idx</span>) <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">json_to_basis</span>(<span class="ident">op</span>);
-            <span class="kw">let</span> <span class="ident">input_name</span> <span class="op">=</span> <span class="ident">action</span>[<span class="string">&quot;input&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
-            <span class="kw">let</span> (<span class="ident">input_degree</span>, <span class="ident">input_idx</span>) <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="kw-2">&amp;</span><span class="ident">input_name</span>.<span class="ident">to_string</span>()];
-            <span class="kw">let</span> <span class="ident">output_vec</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">get_action_mut</span>(<span class="ident">degree</span>, <span class="ident">idx</span>, <span class="ident">input_degree</span>, <span class="ident">input_idx</span>);
-            <span class="kw">let</span> <span class="ident">outputs</span> <span class="op">=</span> <span class="ident">action</span>[<span class="string">&quot;output&quot;</span>].<span class="ident">as_array</span>().<span class="ident">unwrap</span>();
-            <span class="kw">for</span> <span class="ident">basis_elt</span> <span class="kw">in</span> <span class="ident">outputs</span> {
-                <span class="kw">let</span> <span class="ident">output_name</span> <span class="op">=</span> <span class="ident">basis_elt</span>[<span class="string">&quot;gen&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
-                <span class="kw">let</span> <span class="ident">output_idx</span> <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="kw-2">&amp;</span><span class="ident">output_name</span>.<span class="ident">to_string</span>()].<span class="number">1</span>;
-                <span class="kw">let</span> <span class="ident">output_coeff</span> <span class="op">=</span> <span class="ident">basis_elt</span>[<span class="string">&quot;coeff&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
-                <span class="ident">output_vec</span>.<span class="ident">set_entry</span>(<span class="ident">output_idx</span>, <span class="ident">output_coeff</span>);
-            }
-        }
-        <span class="kw">return</span> <span class="ident">result</span>;
-    }    
 }
 
 <span class="kw">impl</span> <span class="ident">FiniteDimensionalModule</span> {
@@ -481,7 +457,31 @@
         <span class="kw">let</span> <span class="ident">output_degree_idx</span> <span class="op">=</span> (<span class="ident">input_degree</span> <span class="op">+</span> <span class="ident">operation_degree</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">min_degree</span>) <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">let</span> <span class="ident">in_out_diff</span> <span class="op">=</span> <span class="ident">output_degree_idx</span> <span class="op">-</span> <span class="ident">input_degree_idx</span> <span class="op">-</span> <span class="number">1</span>;
         <span class="kw">return</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">actions</span>[<span class="ident">input_degree_idx</span>][<span class="ident">in_out_diff</span>][<span class="ident">operation_idx</span>][<span class="ident">input_idx</span>];
-    }  
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">algebra_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">gens</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;gens&quot;</span>].<span class="ident">take</span>();
+        <span class="kw">let</span> (<span class="ident">min_degree</span>, <span class="ident">graded_dimension</span>, <span class="ident">gen_to_idx</span>) <span class="op">=</span> <span class="self">Self</span>::<span class="ident">module_gens_from_json</span>(<span class="kw-2">&amp;</span><span class="ident">gens</span>);
+        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;name&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>().<span class="ident">to_string</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">actions_value</span> <span class="op">=</span> <span class="ident">json</span>[<span class="ident">algebra_name</span>.<span class="ident">to_owned</span>() <span class="op">+</span> <span class="string">&quot;_actions&quot;</span>].<span class="ident">take</span>();
+        <span class="kw">let</span> <span class="ident">actions</span> <span class="op">=</span> <span class="ident">actions_value</span>.<span class="ident">as_array_mut</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="ident">name</span>, <span class="ident">min_degree</span>, <span class="ident">graded_dimension</span>);
+        <span class="kw">for</span> <span class="ident">action</span> <span class="kw">in</span> <span class="ident">actions</span>.<span class="ident">iter_mut</span>() {
+            <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">action</span>[<span class="string">&quot;op&quot;</span>].<span class="ident">take</span>();
+            <span class="kw">let</span> (<span class="ident">degree</span>, <span class="ident">idx</span>) <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">json_to_basis</span>(<span class="ident">op</span>);
+            <span class="kw">let</span> <span class="ident">input_name</span> <span class="op">=</span> <span class="ident">action</span>[<span class="string">&quot;input&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> (<span class="ident">input_degree</span>, <span class="ident">input_idx</span>) <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="kw-2">&amp;</span><span class="ident">input_name</span>.<span class="ident">to_string</span>()];
+            <span class="kw">let</span> <span class="ident">output_vec</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">get_action_mut</span>(<span class="ident">degree</span>, <span class="ident">idx</span>, <span class="ident">input_degree</span>, <span class="ident">input_idx</span>);
+            <span class="kw">let</span> <span class="ident">outputs</span> <span class="op">=</span> <span class="ident">action</span>[<span class="string">&quot;output&quot;</span>].<span class="ident">as_array</span>().<span class="ident">unwrap</span>();
+            <span class="kw">for</span> <span class="ident">basis_elt</span> <span class="kw">in</span> <span class="ident">outputs</span> {
+                <span class="kw">let</span> <span class="ident">output_name</span> <span class="op">=</span> <span class="ident">basis_elt</span>[<span class="string">&quot;gen&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">output_idx</span> <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="kw-2">&amp;</span><span class="ident">output_name</span>.<span class="ident">to_string</span>()].<span class="number">1</span>;
+                <span class="kw">let</span> <span class="ident">output_coeff</span> <span class="op">=</span> <span class="ident">basis_elt</span>[<span class="string">&quot;coeff&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
+                <span class="ident">output_vec</span>.<span class="ident">set_entry</span>(<span class="ident">output_idx</span>, <span class="ident">output_coeff</span>);
+            }
+        }
+        <span class="kw">return</span> <span class="ident">result</span>;
+    }
 }
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">OptionFDModule</span> <span class="op">=</span> <span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">FiniteDimensionalModule</span><span class="op">&gt;</span>;
