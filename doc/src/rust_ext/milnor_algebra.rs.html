@@ -903,6 +903,59 @@
 <span id="885">885</span>
 <span id="886">886</span>
 <span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
+<span id="915">915</span>
+<span id="916">916</span>
+<span id="917">917</span>
+<span id="918">918</span>
+<span id="919">919</span>
+<span id="920">920</span>
+<span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
+<span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Mutex</span>;
 
@@ -1197,7 +1250,8 @@
 
     <span class="kw">fn</span> <span class="ident">get_relations_to_check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>), (<span class="ident">i32</span>, <span class="ident">usize</span>))<span class="op">&gt;&gt;</span>{
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_prime</span>();
-        <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">profile</span>.<span class="ident">generic</span> { <span class="number">2</span><span class="kw-2">*</span>(<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>) } <span class="kw">else</span> { <span class="number">1</span> };
+        <span class="kw">let</span> <span class="ident">pi32</span> <span class="op">=</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">profile</span>.<span class="ident">generic</span> { <span class="number">2</span><span class="kw-2">*</span>(<span class="ident">pi32</span> <span class="op">-</span> <span class="number">1</span>) } <span class="kw">else</span> { <span class="number">1</span> };
         <span class="kw">let</span> <span class="ident">degreeu32</span> <span class="op">=</span> <span class="ident">degree</span> <span class="kw">as</span> <span class="ident">u32</span>;
         <span class="comment">// We want Pi*b*Pj inadmissible so that means i &lt; p * j + epsilon.</span>
         <span class="comment">// degree = i + epsilon +  j so j = degree - i - epsilon</span>
@@ -1206,70 +1260,79 @@
         <span class="comment">// if (p * degree - (p-1) * epsilon) / (p + 1) is not an integer</span>
         <span class="comment">// to do this with integer division we do (p * degree - (p-1) * epsilon + p) / (p + 1)</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inadmissible_pairs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. (<span class="ident">p</span> <span class="op">*</span> <span class="ident">degreeu32</span> <span class="op">+</span> <span class="ident">p</span>) <span class="op">/</span> (<span class="ident">p</span><span class="op">+</span><span class="number">1</span>) {
-            <span class="ident">inadmissible_pairs</span>.<span class="ident">push</span>((<span class="ident">i</span>, <span class="number">0</span>, <span class="ident">degreeu32</span> <span class="op">-</span> <span class="ident">i</span>));
-        }
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">profile</span>.<span class="ident">generic</span> {
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. (<span class="ident">p</span> <span class="op">*</span> <span class="ident">degreeu32</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">/</span> (<span class="ident">p</span><span class="op">+</span><span class="number">1</span>) {
-                <span class="ident">inadmissible_pairs</span>.<span class="ident">push</span>((<span class="ident">i</span>, <span class="number">1</span>, <span class="ident">degreeu32</span> <span class="op">-</span> <span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>));
+        <span class="kw">if</span> <span class="ident">degree</span> <span class="op">%</span> <span class="ident">q</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">let</span> <span class="ident">degq</span> <span class="op">=</span> <span class="ident">degree</span><span class="op">/</span><span class="ident">q</span>;
+            <span class="comment">// We want P^i P^j to be inadmissible, so i &lt; p * j. This translates to</span>
+            <span class="comment">// i &lt; p * degq /(p + 1). Since Rust automatically rounds *down*, but we want to round</span>
+            <span class="comment">// up instead, we use i &lt; (p * degq + p)/(p + 1).</span>
+            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. (<span class="ident">pi32</span> <span class="op">*</span> <span class="ident">degq</span> <span class="op">+</span> <span class="ident">pi32</span>) <span class="op">/</span> (<span class="ident">pi32</span> <span class="op">+</span> <span class="number">1</span>) {
+                <span class="ident">inadmissible_pairs</span>.<span class="ident">push</span>((<span class="ident">i</span>, <span class="number">0</span>, <span class="ident">degq</span> <span class="op">-</span> <span class="ident">i</span>));
+            }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">degree</span> <span class="op">%</span> <span class="ident">q</span> <span class="op">==</span> <span class="number">1</span> {
+            <span class="kw">let</span> <span class="ident">degq</span> <span class="op">=</span> <span class="ident">degree</span><span class="op">/</span><span class="ident">q</span>; <span class="comment">// Since we round down, this is actually (degree - 1)/q</span>
+            <span class="comment">// We want P^i b P^j to be inadmissible, so i &lt; p * j + 1. This translates to</span>
+            <span class="comment">// i &lt; (p * degq + 1)/(p + 1). Since Rust automatically rounds *down*, but we want to round</span>
+            <span class="comment">// up instead, we use i &lt; (p * degq + p + 1)/(p + 1).</span>
+            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. (<span class="ident">pi32</span> <span class="op">*</span> <span class="ident">degq</span> <span class="op">+</span> <span class="ident">pi32</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">/</span> (<span class="ident">pi32</span> <span class="op">+</span> <span class="number">1</span>) {
+                <span class="ident">inadmissible_pairs</span>.<span class="ident">push</span>((<span class="ident">i</span>, <span class="number">1</span>, <span class="ident">degq</span> <span class="op">-</span> <span class="ident">i</span>));
             }
         }
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">for</span> (<span class="ident">x</span>, <span class="ident">b</span>, <span class="ident">y</span>) <span class="kw">in</span> <span class="ident">inadmissible_pairs</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">relation</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
             <span class="comment">// Adem relation</span>
-            <span class="kw">let</span> <span class="ident">first_degree</span> <span class="op">=</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="kw">let</span> <span class="ident">first_degree</span> <span class="op">=</span> <span class="ident">q</span> <span class="op">*</span> <span class="ident">x</span>;
             <span class="kw">let</span> <span class="ident">first_index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">MilnorBasisElement</span> {
                 <span class="ident">degree</span> : <span class="ident">first_degree</span>,
                 <span class="ident">q_part</span> : <span class="number">0</span>,
-                <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">x</span>]
+                <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>]
             });
-            <span class="kw">let</span> <span class="ident">second_degree</span> <span class="op">=</span> (<span class="ident">y</span> <span class="op">+</span> <span class="ident">b</span>) <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="kw">let</span> <span class="ident">second_degree</span> <span class="op">=</span> <span class="ident">q</span> <span class="op">*</span> <span class="ident">y</span> <span class="op">+</span> <span class="ident">b</span>;
             <span class="kw">let</span> <span class="ident">second_index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">MilnorBasisElement</span> {
                 <span class="ident">degree</span> : <span class="ident">second_degree</span>,
-                <span class="ident">q_part</span> : <span class="ident">b</span>,
-                <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>]
+                <span class="ident">q_part</span> : <span class="ident">b</span> <span class="kw">as</span> <span class="ident">u32</span>,
+                <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span> <span class="kw">as</span> <span class="ident">u32</span>]
             });
             <span class="ident">relation</span>.<span class="ident">push</span>((<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>, (<span class="ident">first_degree</span>, <span class="ident">first_index</span>), (<span class="ident">second_degree</span>, <span class="ident">second_index</span>)));
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out_vec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="self">self</span>.<span class="ident">get_dimension</span>(<span class="ident">degree</span>, <span class="op">-</span><span class="number">1</span>), <span class="number">0</span>);
             <span class="kw">for</span> <span class="ident">e1</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">b</span> <span class="op">+</span> <span class="number">1</span> {
                 <span class="kw">let</span> <span class="ident">e2</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">-</span> <span class="ident">e1</span>;
                 <span class="comment">// e1 and e2 determine where a bockstein shows up.</span>
-                <span class="comment">// e1 determines if a bockstein shows up in front </span>
-                <span class="comment">// e2 determines if a bockstein shows up in middle</span>
+                <span class="comment">// e1 determines whether a bockstein shows up in front </span>
+                <span class="comment">// e2 determines whether a bockstein shows up in middle</span>
                 <span class="comment">// So our output term looks like b^{e1} P^{x+y-j} b^{e2} P^{j}</span>
-                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">x</span><span class="op">/</span><span class="ident">p</span> <span class="op">+</span> <span class="number">1</span> {
-                    <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">binomial</span>(<span class="ident">p</span>, ((<span class="ident">y</span><span class="op">-</span><span class="ident">j</span>) <span class="op">*</span> (<span class="ident">p</span><span class="op">-</span><span class="number">1</span>) <span class="op">+</span> <span class="ident">e1</span>) <span class="kw">as</span> <span class="ident">i32</span> <span class="op">-</span> <span class="number">1</span>, (<span class="ident">x</span> <span class="op">-</span> <span class="ident">p</span><span class="kw-2">*</span><span class="ident">j</span> <span class="op">-</span> <span class="ident">e2</span>) <span class="kw">as</span> <span class="ident">i32</span>);
+                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">x</span><span class="op">/</span><span class="ident">pi32</span> <span class="op">+</span> <span class="number">1</span> {
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">binomial</span>(<span class="ident">p</span>, (<span class="ident">y</span> <span class="op">-</span> <span class="ident">j</span>) <span class="op">*</span> (<span class="ident">pi32</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">+</span> <span class="ident">e1</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">x</span> <span class="op">-</span> <span class="ident">pi32</span> <span class="op">*</span> <span class="ident">j</span> <span class="op">-</span> <span class="ident">e2</span>) <span class="kw">as</span> <span class="ident">u32</span>;
+                    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;x : {}, y : {}, j : {}, e1 : {}, e2 : {}, c : {}&quot;</span>,<span class="ident">x</span>,<span class="ident">y</span>,<span class="ident">j</span>,<span class="ident">e1</span>, <span class="ident">e2</span>, <span class="ident">c</span>);
                     <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="number">0</span> { <span class="kw">continue</span>; }
+                    <span class="ident">c</span> <span class="op">*=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">minus_one_to_the_n</span>(<span class="ident">p</span>, (<span class="ident">x</span> <span class="op">+</span> <span class="ident">j</span> <span class="op">+</span> <span class="ident">e2</span>) <span class="kw">as</span> <span class="ident">u32</span>);
+                    <span class="ident">c</span> <span class="op">=</span> <span class="ident">c</span> <span class="op">%</span> <span class="ident">p</span>;                    
                     <span class="kw">if</span> <span class="ident">j</span> <span class="op">==</span> <span class="number">0</span> {
                         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">MilnorBasisElement</span>{
-                            <span class="ident">degree</span>,
-                            <span class="ident">q_part</span> : <span class="ident">e1</span> <span class="op">|</span> (<span class="ident">e2</span> <span class="op">&lt;&lt;</span> <span class="number">1</span>),                            
-                            <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">x</span><span class="op">+</span><span class="ident">y</span>]
+                            <span class="ident">degree</span> : <span class="ident">degree</span> <span class="op">-</span> <span class="ident">e2</span>,
+                            <span class="ident">q_part</span> : <span class="ident">e1</span> <span class="kw">as</span> <span class="ident">u32</span>,
+                            <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[(<span class="ident">x</span><span class="op">+</span><span class="ident">y</span>) <span class="kw">as</span> <span class="ident">u32</span>]
                         });
-                        <span class="ident">relation</span>.<span class="ident">push</span>((<span class="ident">c</span>, (<span class="ident">degree</span>, <span class="ident">idx</span>), (<span class="number">0</span>, <span class="number">0</span>)));
+                        <span class="ident">relation</span>.<span class="ident">push</span>((<span class="ident">c</span>, (<span class="ident">degree</span> <span class="op">-</span> <span class="ident">e2</span>, <span class="ident">idx</span>), (<span class="ident">e2</span>, <span class="number">0</span>)));
                         <span class="kw">continue</span>;
                     }
                     <span class="kw">let</span> <span class="ident">first_sq</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">+</span> <span class="ident">y</span> <span class="op">-</span> <span class="ident">j</span>;
-                    <span class="kw">let</span> <span class="ident">first_degree</span> <span class="op">=</span> <span class="ident">first_sq</span> <span class="kw">as</span> <span class="ident">i32</span>;
+                    <span class="kw">let</span> <span class="ident">first_degree</span> <span class="op">=</span> <span class="ident">q</span><span class="kw-2">*</span><span class="ident">first_sq</span> <span class="op">+</span> <span class="ident">e1</span>;
                     <span class="kw">let</span> <span class="ident">first_index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">MilnorBasisElement</span> {
                         <span class="ident">degree</span> : <span class="ident">first_degree</span>,
-                        <span class="ident">q_part</span> : <span class="number">0</span>,
-                        <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">first_sq</span>]
+                        <span class="ident">q_part</span> : <span class="ident">e1</span> <span class="kw">as</span> <span class="ident">u32</span>,
+                        <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">first_sq</span> <span class="kw">as</span> <span class="ident">u32</span>]
                     });
-                    <span class="kw">let</span> <span class="ident">second_degree</span> <span class="op">=</span> (<span class="ident">y</span> <span class="op">+</span> <span class="ident">b</span>) <span class="kw">as</span> <span class="ident">i32</span>;
+                    <span class="kw">let</span> <span class="ident">second_degree</span> <span class="op">=</span> <span class="ident">q</span><span class="kw-2">*</span><span class="ident">j</span> <span class="op">+</span> <span class="ident">e2</span>;
                     <span class="kw">let</span> <span class="ident">second_index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">MilnorBasisElement</span> {
                         <span class="ident">degree</span> : <span class="ident">second_degree</span>,
-                        <span class="ident">q_part</span> : <span class="ident">b</span>,
-                        <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">y</span>]
+                        <span class="ident">q_part</span> : <span class="ident">e2</span> <span class="kw">as</span> <span class="ident">u32</span>,
+                        <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">j</span> <span class="kw">as</span> <span class="ident">u32</span>]
                     });
-                    <span class="self">self</span>.<span class="ident">multiply_basis_elements</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">out_vec</span>, <span class="ident">c</span>, <span class="ident">first_degree</span>, <span class="ident">first_index</span>, <span class="ident">second_degree</span>, <span class="ident">second_index</span>, <span class="op">-</span><span class="number">1</span>);
-                    <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">out_vec</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                        <span class="ident">relation</span>.<span class="ident">push</span>((<span class="ident">c</span>, (<span class="ident">degree</span>, <span class="ident">i</span>), (<span class="number">0</span>, <span class="number">0</span>)));
-                    }
-                    <span class="ident">out_vec</span>.<span class="ident">set_to_zero</span>();
+                    <span class="ident">relation</span>.<span class="ident">push</span>((<span class="ident">c</span>, (<span class="ident">first_degree</span>, <span class="ident">first_index</span>), (<span class="ident">second_degree</span>, <span class="ident">second_index</span>)));
+                    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, (<span class="ident">c</span>, (<span class="ident">first_degree</span>, <span class="ident">first_index</span>), (<span class="ident">second_degree</span>, <span class="ident">second_index</span>)));
                 }
             }
+            <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;relation : {:?}&quot;</span>, <span class="ident">relation</span>);
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">relation</span>);
         }
         <span class="kw">return</span> <span class="ident">result</span>;
@@ -1790,5 +1853,48 @@
             }
         }
     }
+
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">ModuleFailedRelationError</span>;
+    <span class="attribute">#[<span class="ident">rstest_parametrize</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>,
+        <span class="ident">case</span>(<span class="number">2</span>, <span class="number">32</span>),
+        <span class="ident">case</span>(<span class="number">3</span>, <span class="number">106</span>)    
+    )]</span>
+    <span class="kw">fn</span> <span class="ident">test_adem_relations</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">max_degree</span> : <span class="ident">i32</span>){
+        <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">initialize_prime</span>(<span class="ident">p</span>);
+        <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">MilnorAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>); <span class="comment">// , p != 2</span>
+        <span class="ident">algebra</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output_vec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">0</span>, <span class="number">0</span>);
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">max_degree</span> {
+            <span class="ident">output_vec</span>.<span class="ident">clear_slice</span>();
+            <span class="kw">let</span> <span class="ident">output_dim</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">get_dimension</span>(<span class="ident">i</span>, <span class="op">-</span><span class="number">1</span>);
+            <span class="kw">if</span> <span class="ident">output_dim</span> <span class="op">&gt;</span> <span class="ident">output_vec</span>.<span class="ident">get_dimension</span>() {
+                <span class="ident">output_vec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">output_dim</span>, <span class="number">0</span>);
+            }
+            <span class="ident">output_vec</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">output_dim</span>);
+            <span class="kw">let</span> <span class="ident">relations</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">get_relations_to_check</span>(<span class="ident">i</span>);
+            <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">relations</span>);
+            <span class="kw">for</span> <span class="ident">relation</span> <span class="kw">in</span> <span class="ident">relations</span> {
+                <span class="kw">for</span> (<span class="ident">coeff</span>, (<span class="ident">deg_1</span>, <span class="ident">idx_1</span>), (<span class="ident">deg_2</span>, <span class="ident">idx_2</span>)) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">relation</span> {
+                    <span class="ident">algebra</span>.<span class="ident">multiply_basis_elements</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output_vec</span>, <span class="kw-2">*</span><span class="ident">coeff</span>, <span class="kw-2">*</span><span class="ident">deg_1</span>, <span class="kw-2">*</span><span class="ident">idx_1</span>, <span class="kw-2">*</span><span class="ident">deg_2</span>, <span class="kw-2">*</span><span class="ident">idx_2</span>, <span class="op">-</span><span class="number">1</span>);
+                }
+                <span class="kw">if</span> <span class="op">!</span><span class="ident">output_vec</span>.<span class="ident">is_zero</span>() {
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">relation_string</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
+                    <span class="kw">for</span> (<span class="ident">coeff</span>, (<span class="ident">deg_1</span>, <span class="ident">idx_1</span>), (<span class="ident">deg_2</span>, <span class="ident">idx_2</span>)) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">relation</span> {
+                        <span class="ident">relation_string</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} * {} * {}  +  &quot;</span>, 
+                            <span class="kw-2">*</span><span class="ident">coeff</span>, 
+                            <span class="kw-2">&amp;</span><span class="ident">algebra</span>.<span class="ident">basis_element_to_string</span>(<span class="kw-2">*</span><span class="ident">deg_1</span>, <span class="kw-2">*</span><span class="ident">idx_1</span>), 
+                            <span class="kw-2">&amp;</span><span class="ident">algebra</span>.<span class="ident">basis_element_to_string</span>(<span class="kw-2">*</span><span class="ident">deg_2</span>, <span class="kw-2">*</span><span class="ident">idx_2</span>))
+                        );
+                    }
+                    <span class="ident">relation_string</span>.<span class="ident">pop</span>(); <span class="ident">relation_string</span>.<span class="ident">pop</span>(); <span class="ident">relation_string</span>.<span class="ident">pop</span>();
+                    <span class="ident">relation_string</span>.<span class="ident">pop</span>(); <span class="ident">relation_string</span>.<span class="ident">pop</span>();
+                    <span class="kw">let</span> <span class="ident">value_string</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">element_to_string</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="kw-2">&amp;</span><span class="ident">output_vec</span>);
+                    <span class="macro">assert</span><span class="macro">!</span>(<span class="bool-val">false</span>,
+                        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">ModuleFailedRelationError</span> {<span class="ident">relation</span> : <span class="ident">relation_string</span>, <span class="ident">value</span> : <span class="ident">value_string</span>})
+                    );
+                }
+            }
+        }
+    }    
 }</pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rust_ext";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

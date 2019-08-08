@@ -1240,6 +1240,9 @@
 <span id="1222">1222</span>
 <span id="1223">1223</span>
 <span id="1224">1224</span>
+<span id="1225">1225</span>
+<span id="1226">1226</span>
+<span id="1227">1227</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -1548,6 +1551,9 @@
         <span class="kw">let</span> <span class="ident">min_limb</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_min_limb</span>();
         <span class="kw">let</span> <span class="ident">max_limb</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_max_limb</span>();
         <span class="kw">let</span> <span class="ident">number_of_limbs</span> <span class="op">=</span> <span class="ident">max_limb</span> <span class="op">-</span> <span class="ident">min_limb</span>;
+        <span class="kw">if</span> <span class="ident">number_of_limbs</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">return</span> <span class="bool-val">true</span>;
+        }
         <span class="kw">let</span> <span class="ident">limbs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_limbs_cvec</span>();
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">number_of_limbs</span><span class="op">-</span><span class="number">1</span> {
             <span class="kw">if</span> <span class="ident">limbs</span>[<span class="ident">min_limb</span> <span class="op">+</span> <span class="ident">i</span>] <span class="op">!=</span> <span class="number">0</span> {
