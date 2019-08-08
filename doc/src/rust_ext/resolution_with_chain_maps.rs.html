@@ -303,9 +303,6 @@
 <span id="285">285</span>
 <span id="286">286</span>
 <span id="287">287</span>
-<span id="288">288</span>
-<span id="289">289</span>
-<span id="290">290</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>;
@@ -349,9 +346,6 @@
     <span class="ident">chain_maps_to_trivial_module</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">ResolutionHomomorphism</span><span class="op">&lt;</span><span class="ident">M1</span>, <span class="ident">F1</span>, <span class="ident">CC1</span>, <span class="ident">M2</span>, <span class="ident">F2</span>, <span class="ident">CC2</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>,
     <span class="ident">self_maps</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SelfMap</span><span class="op">&lt;</span><span class="ident">M1</span>, <span class="ident">F1</span>, <span class="ident">CC1</span>, <span class="ident">M1</span>, <span class="ident">F1</span>, <span class="ident">CC1</span><span class="op">&gt;&gt;</span>
 }
-
-<span class="kw">use</span> <span class="ident">wasm_bindgen</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">web_sys</span>::<span class="ident">console</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span>
     <span class="ident">M1</span> : <span class="ident">Module</span>, <span class="ident">F1</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">M1</span>, <span class="ident">M1</span><span class="op">&gt;</span>, <span class="ident">CC1</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">M1</span>, <span class="ident">F1</span><span class="op">&gt;</span>,

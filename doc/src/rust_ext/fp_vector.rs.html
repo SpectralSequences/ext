@@ -1240,9 +1240,6 @@
 <span id="1222">1222</span>
 <span id="1223">1223</span>
 <span id="1224">1224</span>
-<span id="1225">1225</span>
-<span id="1226">1226</span>
-<span id="1227">1227</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -1984,8 +1981,6 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rstest</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
@@ -2388,9 +2383,8 @@
         }
     }
 
-    <span class="attribute">#[<span class="ident">rstest_parametrize</span>(<span class="ident">p</span>, <span class="ident">case</span>(<span class="number">2</span>), <span class="ident">case</span>(<span class="number">3</span>), <span class="ident">case</span>(<span class="number">5</span>), <span class="ident">case</span>(<span class="number">7</span>))]</span><span class="comment">//</span>
-    <span class="kw">fn</span> <span class="ident">test_assign_to_slice</span>(<span class="ident">p</span> : <span class="ident">u32</span>) {
-        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;p : {}&quot;</span>, <span class="ident">p</span>);
+    <span class="attribute">#[<span class="ident">rstest_parametrize</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>, <span class="ident">case</span>(<span class="number">2</span>, <span class="number">32</span>), <span class="ident">case</span>(<span class="number">3</span>, <span class="number">108</span>))]</span><span class="comment">//</span>
+    <span class="kw">fn</span> <span class="ident">test_assign_to_slice</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">max_degree</span> : <span class="ident">i32</span>) {
         <span class="ident">initialize_limb_bit_index_table</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">dim_list</span> <span class="op">=</span> [<span class="number">10</span>, <span class="number">20</span>, <span class="number">70</span>, <span class="number">100</span>, <span class="number">1000</span>];
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">dim_list</span>.<span class="ident">len</span>() {
