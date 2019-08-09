@@ -301,10 +301,10 @@
     <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="ident">load_module_from_file</span>(<span class="ident">config</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">json</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="kw-2">&amp;</span><span class="ident">contents</span>)<span class="question-mark">?</span>;
 
-    <span class="ident">construct_from_json</span>(<span class="ident">json</span>, <span class="ident">config</span>.<span class="ident">algebra_name</span>.<span class="ident">clone</span>(), <span class="ident">config</span>.<span class="ident">max_degree</span>)
+    <span class="ident">construct_from_json</span>(<span class="ident">json</span>, <span class="ident">config</span>.<span class="ident">algebra_name</span>.<span class="ident">clone</span>())
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_from_json</span>(<span class="kw-2">mut</span> <span class="ident">json</span> : <span class="ident">Value</span>, <span class="ident">algebra_name</span> : <span class="ident">String</span>, <span class="ident">max_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_from_json</span>(<span class="kw-2">mut</span> <span class="ident">json</span> : <span class="ident">Value</span>, <span class="ident">algebra_name</span> : <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;p&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
 
     <span class="comment">// You need a box in order to allow for different possible types implementing the same trait</span>
@@ -318,7 +318,7 @@
     <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">algebra</span>);
     <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from_json</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>)<span class="question-mark">?</span>);
     <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="ident">max_degree</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
+    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
     <span class="prelude-val">Ok</span>(<span class="ident">AlgebraicObjectsBundle</span> {
         <span class="ident">algebra</span>,
         <span class="ident">module</span>,
@@ -332,7 +332,7 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_resolve</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct</span>(<span class="ident">config</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">borrow</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">borrow_mut</span>();
     <span class="ident">resolution</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">config</span>.<span class="ident">max_degree</span>);
     <span class="prelude-val">Ok</span>(<span class="ident">resolution</span>.<span class="ident">graded_dimension_string</span>())
 }
@@ -355,7 +355,7 @@
     <span class="kw">let</span> <span class="ident">decomposition</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">decompose_basis_element</span>(<span class="number">60</span>, <span class="ident">idx</span>);
     <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;decomposition : {:?}&quot;</span>, <span class="ident">decomposition</span>);
 
-    <span class="kw">return</span>;
+<span class="comment">//    return;</span>
     <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">25</span>;
     <span class="comment">// let contents = std::fs::read_to_string(&quot;static/modules/S_3.json&quot;).unwrap();</span>
     <span class="comment">// S_3</span>
@@ -367,8 +367,8 @@
     <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>)));
     <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FDModule</span>::<span class="ident">from_json</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>));
     <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="ident">max_degree</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)); 
-    <span class="comment">// resolution.resolve_through_degree(max_degree);</span>
+    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
+    <span class="comment">// resolution.borrow_mut().resolve_through_degree(max_degree);</span>
     <span class="comment">// let f = ResolutionHomomorphism::new(&quot;test&quot;.to_string(), Rc::clone(&amp;resolution), Rc::clone(&amp;resolution), 1, 4);</span>
     <span class="comment">// let mut v = matrix::Matrix::new(p, 1, 1);</span>
     <span class="comment">// v[0].set_entry(0, 1);</span>
@@ -378,11 +378,11 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res_with_maps</span> <span class="op">=</span> <span class="ident">ResolutionWithChainMaps</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>), <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>));
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">map_data</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::<span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>);
     <span class="ident">map_data</span>[<span class="number">0</span>].<span class="ident">set_entry</span>(<span class="number">0</span>, <span class="number">1</span>);
-    <span class="ident">res_with_maps</span>.<span class="ident">add_self_map</span>(<span class="number">4</span>, <span class="number">12</span>, <span class="string">&quot;v_1&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">map_data</span>);
-    <span class="comment">// res_with_maps.add_product(2, 12, 0, &quot;beta&quot;.to_string());</span>
-    <span class="comment">// res_with_maps.add_product(2, 9, 0, &quot;\\alpha_{2}&quot;.to_string());</span>
+    <span class="comment">// res_with_maps.add_self_map(4, 12, &quot;v_1&quot;.to_string(), map_data);</span>
+    <span class="ident">res_with_maps</span>.<span class="ident">add_product</span>(<span class="number">2</span>, <span class="number">12</span>, <span class="number">0</span>, <span class="string">&quot;beta&quot;</span>.<span class="ident">to_string</span>());
+    <span class="ident">res_with_maps</span>.<span class="ident">add_product</span>(<span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span>, <span class="string">&quot;\\alpha_{2}&quot;</span>.<span class="ident">to_string</span>());
     <span class="ident">res_with_maps</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">max_degree</span>);
-    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">resolution</span>.<span class="ident">graded_dimension_string</span>());
+    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">resolution</span>.<span class="ident">borrow</span>().<span class="ident">graded_dimension_string</span>());
 }
 
 

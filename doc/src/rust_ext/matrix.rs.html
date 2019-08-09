@@ -930,7 +930,7 @@
 <span class="doccomment">/// In general, before one uses a matrix, they must run</span>
 <span class="doccomment">/// `fp_vector::initialize_limb_bit_index_table(p)`. This only has to be done once and will be</span>
 <span class="doccomment">/// omitted from all examples.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Matrix</span> {
     <span class="ident">p</span> : <span class="ident">u32</span>,
     <span class="ident">rows</span> : <span class="ident">usize</span>,
@@ -1347,7 +1347,7 @@
 <span class="doccomment">///  * `column_to_pivot_row` - If the column is a pivot column, the entry is the row the pivot</span>
 <span class="doccomment">///  corresponds to. If the column is not a pivot column, this is some negative number &amp;mdash; not</span>
 <span class="doccomment">///  necessarily -1!</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Subspace</span> {
     <span class="kw">pub</span> <span class="ident">matrix</span> : <span class="ident">Matrix</span>,
     <span class="kw">pub</span> <span class="ident">column_to_pivot_row</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>

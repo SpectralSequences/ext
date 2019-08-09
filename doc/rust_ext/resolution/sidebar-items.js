@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Resolution",""]],"type":[["ModuleResolution",""]]});
+initSidebarItems({"struct":[["Resolution","#Fields * `kernels` - For each internal degree, store the kernel of the most recently calculated chain map as returned by `generate_old_kernel_and_compute_new_kernel`, to be used if we run resolve_through_degree again."]],"type":[["ModuleResolution",""]]});
