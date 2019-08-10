@@ -1240,9 +1240,6 @@
 <span id="1222">1222</span>
 <span id="1223">1223</span>
 <span id="1224">1224</span>
-<span id="1225">1225</span>
-<span id="1226">1226</span>
-<span id="1227">1227</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -1325,6 +1322,8 @@
     <span class="ident">bit_index</span> : <span class="ident">usize</span>
 }
 
+<span class="doccomment">/// This table tells us which limb and which bitfield of that limb to look for a given index of</span>
+<span class="doccomment">/// the vector in.</span>
 <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">LIMB_BIT_INDEX_TABLE</span> : [<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">LimbBitIndexPair</span><span class="op">&gt;&gt;</span>; <span class="ident">MAX_PRIME_INDEX</span>] <span class="op">=</span> [
     <span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,
     <span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,<span class="prelude-val">None</span>,
@@ -1345,11 +1344,6 @@
     <span class="ident">Once</span>::<span class="ident">new</span>(),<span class="ident">Once</span>::<span class="ident">new</span>(), <span class="ident">Once</span>::<span class="ident">new</span>(), <span class="ident">Once</span>::<span class="ident">new</span>()
 ];
 
-<span class="doccomment">/**
- * Called by initializePrime
- * This table tells us which limb and which bitfield of that limb to look for a given index of
- * the vector in.
- */</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">initialize_limb_bit_index_table</span>(<span class="ident">p</span> : <span class="ident">u32</span>){
     <span class="kw">if</span> <span class="ident">p</span> <span class="op">==</span> <span class="number">2</span> {
         <span class="kw">return</span>;
