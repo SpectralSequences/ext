@@ -1396,8 +1396,6 @@
 <span id="1378">1378</span>
 <span id="1379">1379</span>
 <span id="1380">1380</span>
-<span id="1381">1381</span>
-<span id="1382">1382</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>;
 <span class="kw">use</span> <span class="ident">lazy_static</span>;
@@ -1583,7 +1581,6 @@
     <span class="kw">fn</span> <span class="ident">compute_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">max_degree</span> : <span class="ident">i32</span>) {
         <span class="kw">let</span> <span class="ident">genericq</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">generic</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> };
         <span class="comment">// assert!(max_degree + genericq &lt;= self.basis_table.len() as i32);</span>
-        <span class="ident">combinatorics</span>::<span class="ident">initialize_prime</span>(<span class="self">self</span>.<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">old_max_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_max_degree</span>();
         <span class="kw">if</span> <span class="ident">max_degree</span> <span class="op">&lt;=</span> <span class="ident">old_max_degree</span> {
             <span class="kw">return</span>;
@@ -1796,7 +1793,6 @@
 <span class="comment">// uint AdemAlgebra__generateName(AdemAlgebra *algebra); // defined in adem_io</span>
 <span class="kw">impl</span> <span class="ident">AdemAlgebra</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">generic</span> : <span class="ident">bool</span>, <span class="ident">unstable</span> : <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">initialize_prime</span>(<span class="ident">p</span>);
         <span class="kw">crate</span>::<span class="ident">fp_vector</span>::<span class="ident">initialize_limb_bit_index_table</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">even_basis_table</span> <span class="op">=</span> <span class="ident">OnceVec</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="ident">basis_table</span> <span class="op">=</span> <span class="ident">OnceVec</span>::<span class="ident">new</span>();
