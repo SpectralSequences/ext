@@ -226,6 +226,20 @@
 <span id="208">208</span>
 <span id="209">209</span>
 <span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -237,6 +251,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">algebra</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">adem_algebra</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">milnor_algebra</span>;
+<span class="comment">// pub mod change_of_basis;</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">module</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">module_homomorphism</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">finite_dimensional_module</span>;
@@ -341,7 +356,21 @@
 <span class="comment">//use crate::fp_vector::FpVectorT;</span>
 <span class="comment">// use crate::resolution_homomorphism::ResolutionHomomorphism;</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unreachable_code</span>)]</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_mut</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_test</span>() {
+    <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">2</span>;
+    <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">30</span>;
+    <span class="kw">let</span> <span class="ident">adem</span> <span class="op">=</span> <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>);
+    <span class="kw">let</span> <span class="ident">milnor</span> <span class="op">=</span> <span class="ident">MilnorAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>);<span class="comment">//, p != 2</span>
+    <span class="ident">adem</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span>);
+    <span class="ident">milnor</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span>);
+    <span class="kw">let</span> <span class="ident">degree</span> <span class="op">=</span> <span class="number">9</span>;
+    <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">4</span>;
+    <span class="kw">let</span> <span class="ident">dim</span> <span class="op">=</span> <span class="ident">adem</span>.<span class="ident">get_dimension</span>(<span class="ident">degree</span>, <span class="op">-</span><span class="number">1</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">adem_result</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::<span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">dim</span>, <span class="number">0</span>);
+    <span class="comment">// crate::change_of_basis::milnor_to_adem_on_basis(&amp;adem, &amp;milnor, &amp;mut adem_result, 1, degree, i);</span>
+    <span class="kw">return</span>;
+
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">3</span>;
     <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">80</span>;
     <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>);
@@ -355,7 +384,6 @@
     <span class="kw">let</span> <span class="ident">decomposition</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">decompose_basis_element</span>(<span class="number">60</span>, <span class="ident">idx</span>);
     <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;decomposition : {:?}&quot;</span>, <span class="ident">decomposition</span>);
 
-<span class="comment">//    return;</span>
     <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">25</span>;
     <span class="comment">// let contents = std::fs::read_to_string(&quot;static/modules/S_3.json&quot;).unwrap();</span>
     <span class="comment">// S_3</span>

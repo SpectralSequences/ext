@@ -910,6 +910,7 @@
 <span id="892">892</span>
 <span id="893">893</span>
 <span id="894">894</span>
+<span id="895">895</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
@@ -936,9 +937,9 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MilnorBasisElement</span> {
-    <span class="ident">q_part</span> : <span class="ident">u32</span>,
-    <span class="ident">p_part</span> : <span class="ident">PPart</span>,
-    <span class="ident">degree</span> : <span class="ident">i32</span>
+    <span class="kw">pub</span> <span class="ident">q_part</span> : <span class="ident">u32</span>,
+    <span class="kw">pub</span> <span class="ident">p_part</span> : <span class="ident">PPart</span>,
+    <span class="kw">pub</span> <span class="ident">degree</span> : <span class="ident">i32</span>
 }
 
 <span class="kw">const</span> <span class="ident">ZERO_QPART</span> : <span class="ident">QPart</span> <span class="op">=</span> <span class="ident">QPart</span> { <span class="ident">degree</span> : <span class="number">0</span>, <span class="ident">q_part</span> : <span class="number">0</span> };
@@ -1004,7 +1005,7 @@
     <span class="ident">name</span> : <span class="ident">String</span>,
     <span class="ident">next_degree</span> : <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
     <span class="ident">p</span> : <span class="ident">u32</span>,
-    <span class="ident">generic</span> : <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">generic</span> : <span class="ident">bool</span>,
     <span class="ident">ppart_table</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PPart</span><span class="op">&gt;&gt;</span>,
     <span class="ident">qpart_table</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">QPart</span><span class="op">&gt;&gt;</span>,
     <span class="ident">basis_table</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MilnorBasisElement</span><span class="op">&gt;&gt;</span>,
@@ -1228,6 +1229,7 @@
                 <span class="comment">// So our output term looks like b^{e1} P^{x+y-j} b^{e2} P^{j}</span>
                 <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">x</span><span class="op">/</span><span class="ident">p</span> <span class="op">+</span> <span class="number">1</span> {
                     <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="ident">p</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">j</span>, <span class="ident">e1</span>, <span class="ident">e2</span>);
+                    <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="number">0</span> { <span class="kw">continue</span>; }
                     <span class="kw">if</span> <span class="ident">j</span> <span class="op">==</span> <span class="number">0</span> {
                         <span class="ident">relation</span>.<span class="ident">push</span>((<span class="ident">c</span>, <span class="self">self</span>.<span class="ident">get_beps_pn</span>(<span class="ident">e1</span>, <span class="ident">x</span> <span class="op">+</span> <span class="ident">y</span>), (<span class="ident">e2</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="number">0</span>)));
                         <span class="kw">continue</span>;

@@ -1774,6 +1774,7 @@
                 <span class="comment">// So our output term looks like b^{e1} P^{x+y-j} b^{e2} P^{j}</span>
                 <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">x</span><span class="op">/</span><span class="ident">p</span> <span class="op">+</span> <span class="number">1</span> {
                     <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="ident">p</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">j</span>, <span class="ident">e1</span>, <span class="ident">e2</span>);
+                    <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="number">0</span> { <span class="kw">continue</span>; }
                     <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">AdemBasisElement</span>{
                         <span class="ident">degree</span>,
                         <span class="ident">excess</span> : <span class="number">0</span>,
@@ -2225,6 +2226,9 @@
             <span class="comment">// So our output term looks like b^{e1} P^{x+y-j} b^{e2} P^{j}</span>
             <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">x</span><span class="op">/</span><span class="ident">p</span> <span class="op">+</span> <span class="number">1</span> {
                 <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="ident">p</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">j</span>, <span class="ident">e1</span>, <span class="ident">e2</span>);
+                <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="number">0</span> {
+                    <span class="kw">continue</span>;
+                }
                 <span class="kw">if</span> <span class="ident">j</span> <span class="op">==</span> <span class="number">0</span> {
                     <span class="kw">if</span> <span class="ident">e2</span> <span class="op">&amp;</span> (<span class="ident">working_elt</span>.<span class="ident">bocksteins</span> <span class="op">&gt;&gt;</span> <span class="number">1</span>) <span class="op">==</span> <span class="number">1</span> {
                         <span class="comment">// Two bocksteins run into each other:</span>
@@ -2280,7 +2284,6 @@
                             <span class="kw">continue</span>;
                         }
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_from_index</span>(<span class="ident">n</span>, <span class="ident">output_index</span>).<span class="ident">clone</span>();
-                        <span class="comment">// let z = self.basis_element_from_index_mut(n, output_index);</span>
                         <span class="kw">if</span> <span class="ident">z</span>.<span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">0</span> {
                             <span class="ident">z</span>.<span class="ident">bocksteins</span> <span class="op">|=</span> <span class="number">1</span>;
                             <span class="ident">z</span>.<span class="ident">degree</span> <span class="op">+=</span> <span class="number">1</span>;
@@ -2659,7 +2662,7 @@
 <span class="comment">//     return algebra-&gt;excess_table[degree][excess];</span>
 <span class="comment">// }</span>
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">testa</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -2689,7 +2692,6 @@
         <span class="ident">case</span>(<span class="number">3</span>, <span class="number">106</span>)    
     )]</span>
     <span class="kw">fn</span> <span class="ident">test_adem_basis</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">max_degree</span> : <span class="ident">i32</span>){
-        <span class="ident">combinatorics</span>::<span class="ident">initialize_prime</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>);
         <span class="ident">algebra</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span> <span class="op">+</span> <span class="number">1</span>); <span class="comment">// TODO: Why is this +1 needed to pass test?</span>
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">max_degree</span> {
@@ -2709,7 +2711,6 @@
         <span class="ident">case</span>(<span class="number">3</span>, <span class="number">106</span>)    
     )]</span>
     <span class="kw">fn</span> <span class="ident">test_adem_decompose</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">max_degree</span> : <span class="ident">i32</span>){
-        <span class="ident">combinatorics</span>::<span class="ident">initialize_prime</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>);
         <span class="ident">algebra</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">max_degree</span> {
@@ -2741,7 +2742,6 @@
         <span class="ident">case</span>(<span class="number">3</span>, <span class="number">106</span>)    
     )]</span>
     <span class="kw">fn</span> <span class="ident">test_adem_relations</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">max_degree</span> : <span class="ident">i32</span>){
-        <span class="ident">combinatorics</span>::<span class="ident">initialize_prime</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>);
         <span class="ident">algebra</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span> <span class="op">+</span> <span class="number">1</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output_vec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">0</span>, <span class="number">0</span>);
