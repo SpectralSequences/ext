@@ -348,7 +348,6 @@
             <span class="kw">let</span> <span class="ident">op_gen</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">r</span>[<span class="number">0</span>].<span class="number">1</span>;
             <span class="kw">let</span> <span class="ident">degree</span> <span class="op">=</span> <span class="ident">op_gen</span>.<span class="ident">operation_degree</span> <span class="op">+</span> <span class="ident">op_gen</span>.<span class="ident">generator_degree</span>;
             <span class="kw">let</span> <span class="ident">degree_idx</span> <span class="op">=</span> (<span class="ident">degree</span> <span class="op">-</span> <span class="ident">min_degree</span>) <span class="kw">as</span> <span class="ident">usize</span>;
-            <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;degree : {}&quot;</span>, <span class="ident">degree</span>);
             <span class="ident">relations_by_degree</span>[<span class="ident">degree_idx</span>].<span class="ident">push</span>(<span class="ident">r</span>);
         }
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">max_gen_degree</span>, <span class="ident">max_relation_degree</span>);
@@ -356,13 +355,14 @@
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="ident">name</span>, <span class="ident">min_degree</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">min_degree</span> .. <span class="ident">max_gen_degree</span> {
             <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> (<span class="ident">i</span> <span class="op">-</span> <span class="ident">min_degree</span>) <span class="kw">as</span> <span class="ident">usize</span>;
-            <span class="ident">result</span>.<span class="ident">generators</span>.<span class="ident">add_generators_immediate</span>(<span class="ident">i</span>, <span class="ident">num_gens_in_degree</span>[<span class="ident">idx</span>]);
+            <span class="kw">let</span> <span class="ident">gen_names</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+            <span class="ident">result</span>.<span class="ident">generators</span>.<span class="ident">add_generators_immediate</span>(<span class="ident">i</span>, <span class="ident">num_gens_in_degree</span>[<span class="ident">idx</span>], <span class="ident">gen_names</span>);
         }
         <span class="ident">result</span>.<span class="ident">generators</span>.<span class="ident">extend_by_zero</span>(<span class="ident">max_degree</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">min_degree</span> ..= <span class="ident">max_relation_degree</span> {
             <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> (<span class="ident">i</span> <span class="op">-</span> <span class="ident">min_degree</span>) <span class="kw">as</span> <span class="ident">usize</span>;
             <span class="kw">let</span> <span class="ident">num_relns</span> <span class="op">=</span> <span class="ident">relations_by_degree</span>[<span class="ident">idx</span>].<span class="ident">len</span>();
-            <span class="ident">result</span>.<span class="ident">relations</span>.<span class="ident">add_generators_immediate</span>(<span class="ident">i</span>, <span class="ident">num_relns</span>);
+            <span class="ident">result</span>.<span class="ident">relations</span>.<span class="ident">add_generators_immediate</span>(<span class="ident">i</span>, <span class="ident">num_relns</span>, <span class="prelude-val">None</span>);
             <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;degree : {}, num_relns : {}&quot;</span>, <span class="ident">i</span>, <span class="ident">num_relns</span>);
             <span class="kw">let</span> <span class="ident">gens_dim</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">generators</span>.<span class="ident">get_dimension</span>(<span class="ident">i</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">relations_matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">num_relns</span>, <span class="ident">gens_dim</span>);

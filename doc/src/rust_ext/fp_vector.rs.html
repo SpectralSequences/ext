@@ -1259,6 +1259,10 @@
 <span id="1241">1241</span>
 <span id="1242">1242</span>
 <span id="1243">1243</span>
+<span id="1244">1244</span>
+<span id="1245">1245</span>
+<span id="1246">1246</span>
+<span id="1247">1247</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -1446,6 +1450,8 @@
         <span class="kw">let</span> <span class="ident">container</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_vector_container_mut</span>();
         <span class="ident">container</span>.<span class="ident">slice_end</span> <span class="op">=</span> <span class="ident">container</span>.<span class="ident">slice_start</span> <span class="op">+</span> <span class="ident">slice_end</span>;
         <span class="ident">container</span>.<span class="ident">slice_start</span> <span class="op">+=</span> <span class="ident">slice_start</span>;
+        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">container</span>.<span class="ident">slice_start</span> <span class="op">&lt;=</span> <span class="ident">container</span>.<span class="ident">slice_end</span>);
+        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">container</span>.<span class="ident">slice_end</span> <span class="op">&lt;=</span> <span class="ident">container</span>.<span class="ident">dimension</span>);        
     }
 
     <span class="kw">fn</span> <span class="ident">restore_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">slice</span> : (<span class="ident">usize</span>, <span class="ident">usize</span>)) {
@@ -1643,11 +1649,13 @@
         }
     }
 
+    <span class="doccomment">/// Adds `c` * `other` to `self`. `other` must have the same length, offset, and prime as self, and `c` must be between `0` and `p - 1`.</span>
     <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">c</span> : <span class="ident">u32</span>){
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">get_prime</span>() <span class="op">==</span> <span class="ident">other</span>.<span class="ident">get_prime</span>());
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">get_offset</span>() <span class="op">==</span> <span class="ident">other</span>.<span class="ident">get_offset</span>());
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">get_dimension</span>() <span class="op">==</span> <span class="ident">other</span>.<span class="ident">get_dimension</span>(),
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;self.dim {} not equal to other.dim {}&quot;</span>, <span class="self">self</span>.<span class="ident">get_dimension</span>(), <span class="ident">other</span>.<span class="ident">get_dimension</span>()));
+        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">c</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">get_prime</span>());
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_prime</span>();
         <span class="kw">let</span> <span class="ident">min_target_limb</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_min_limb</span>();
         <span class="kw">let</span> <span class="ident">max_target_limb</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_max_limb</span>();
@@ -1902,7 +1910,7 @@
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_prime</span>();
         <span class="self">self</span>.<span class="ident">clear_slice</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span>;
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">get_dimension</span>() <span class="op">&lt;</span> <span class="ident">dimension</span> {
+        <span class="kw">if</span> <span class="ident">dimension</span> <span class="op">&lt;=</span> <span class="self">self</span>.<span class="ident">get_dimension</span>() {
             <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>;
         } <span class="kw">else</span> {
             <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">get_scratch_vector</span>(<span class="ident">p</span>, <span class="ident">dimension</span>);

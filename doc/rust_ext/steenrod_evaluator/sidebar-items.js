@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["evaluate_algebra",""],["evaluate_algebra_tree",""],["evaluate_algebra_tree_helper",""],["evaluate_basis_element",""]],"struct":[["DegreeError",""]]});

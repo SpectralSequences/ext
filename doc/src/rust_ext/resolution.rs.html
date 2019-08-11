@@ -639,7 +639,7 @@
         }
         <span class="self">self</span>.<span class="ident">extend_through_degree</span>(<span class="ident">degree</span>);
 
-        <span class="self">self</span>.<span class="ident">get_algebra</span>().<span class="ident">compute_basis</span>(<span class="ident">degree</span> <span class="op">+</span> <span class="number">1</span>);<span class="comment">// because Adem has off-by-one</span>
+        <span class="self">self</span>.<span class="ident">get_algebra</span>().<span class="ident">compute_basis</span>(<span class="ident">degree</span>);
 
         <span class="comment">// So far, we have computed everything for t, s &lt; next_degree.</span>
         <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="ident">min_degree</span> ..=<span class="ident">degree</span> {
@@ -889,7 +889,7 @@
             <span class="comment">// Now we add new generators to hit any cycles in old_kernel that we don&#39;t want in our homology.</span>
             <span class="ident">num_new_gens</span> <span class="op">+=</span> <span class="ident">matrix</span>.<span class="ident">extend_image</span>(<span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">num_new_gens</span>, <span class="ident">padded_target_cc_dimension</span>, <span class="ident">padded_target_cc_dimension</span> <span class="op">+</span> <span class="ident">target_res_dimension</span>, <span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="ident">old_kernel</span>).<span class="ident">len</span>();
         }
-        <span class="ident">source</span>.<span class="ident">add_generators</span>(<span class="ident">degree</span>, <span class="ident">source_lock</span>, <span class="ident">source_module_table</span>, <span class="ident">num_new_gens</span>);
+        <span class="ident">source</span>.<span class="ident">add_generators</span>(<span class="ident">degree</span>, <span class="ident">source_lock</span>, <span class="ident">source_module_table</span>, <span class="ident">num_new_gens</span>, <span class="prelude-val">None</span>);
         <span class="ident">current_chain_map</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="ident">first_new_row</span>, <span class="number">0</span>, <span class="ident">num_new_gens</span>);
         <span class="ident">current_differential</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">differential_lock</span>, <span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="ident">first_new_row</span>, <span class="ident">padded_target_cc_dimension</span>, <span class="ident">num_new_gens</span>);
 

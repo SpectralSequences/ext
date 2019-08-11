@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["adem_to_milnor",""],["adem_to_milnor_on_basis",""],["get_adem_plist",""],["get_adem_q",""],["milnor_to_adem",""],["milnor_to_adem_on_basis",""],["milnor_to_adem_on_basis_2",""],["milnor_to_adem_on_basis_generic",""]]});
