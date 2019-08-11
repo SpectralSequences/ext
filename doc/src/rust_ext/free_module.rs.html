@@ -289,7 +289,6 @@
 <span id="271">271</span>
 <span id="272">272</span>
 <span id="273">273</span>
-<span id="274">274</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{ <span class="ident">Mutex</span>, <span class="ident">MutexGuard</span> };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">once</span>::<span class="ident">OnceBiVec</span>;
@@ -336,7 +335,6 @@
     }
 
     <span class="kw">fn</span> <span class="ident">get_dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
-        <span class="comment">// println!(&quot;Get dimension of {} in degree {}&quot;, self.name, degree);</span>
         <span class="kw">if</span> <span class="ident">degree</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">min_degree</span> {
             <span class="kw">return</span> <span class="number">0</span>;
         }

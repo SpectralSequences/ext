@@ -746,7 +746,6 @@
 <span id="728">728</span>
 <span id="729">729</span>
 <span id="730">730</span>
-<span id="731">731</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
@@ -1135,7 +1134,7 @@
         <span class="kw">let</span> <span class="ident">padded_target_cc_dimension</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">get_padded_dimension</span>(<span class="ident">p</span>, <span class="ident">target_cc_dimension</span>);
         <span class="kw">let</span> <span class="ident">padded_target_res_dimension</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">get_padded_dimension</span>(<span class="ident">p</span>, <span class="ident">target_res_dimension</span>);
         <span class="kw">let</span> <span class="ident">padded_target_dimension</span> <span class="op">=</span> <span class="ident">padded_target_res_dimension</span> <span class="op">+</span> <span class="ident">padded_target_cc_dimension</span>;
-        <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">max</span>(<span class="ident">source_dimension</span>, <span class="ident">target_dimension</span>);
+        <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">source_dimension</span> <span class="op">+</span> <span class="ident">target_dimension</span>;
         <span class="kw">let</span> <span class="ident">columns</span> <span class="op">=</span> <span class="ident">padded_target_dimension</span> <span class="op">+</span> <span class="ident">source_dimension</span> <span class="op">+</span> <span class="ident">rows</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">rows</span>, <span class="ident">columns</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pivots</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>;<span class="ident">matrix</span>.<span class="ident">get_columns</span>()];
@@ -1151,7 +1150,7 @@
 
         <span class="kw">let</span> <span class="ident">new_kernel</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">compute_kernel</span>(<span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="ident">padded_target_dimension</span>);
         <span class="kw">let</span> <span class="ident">kernel_rows</span> <span class="op">=</span> <span class="ident">new_kernel</span>.<span class="ident">matrix</span>.<span class="ident">get_rows</span>();
-        <span class="kw">let</span> <span class="ident">first_new_row</span> <span class="op">=</span> <span class="ident">source_dimension</span> <span class="op">-</span> <span class="ident">kernel_rows</span>;
+        <span class="kw">let</span> <span class="ident">first_new_row</span> <span class="op">=</span> <span class="ident">source_dimension</span>;
         <span class="ident">matrix</span>.<span class="ident">clear_slice</span>();
 
         <span class="comment">// Now add generators to surject onto C_{s, t}.</span>
@@ -1209,7 +1208,6 @@
         <span class="ident">matrix</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">image_rows</span>, <span class="number">0</span>, <span class="ident">padded_target_dimension</span> <span class="op">+</span> <span class="ident">source_dimension</span> <span class="op">+</span> <span class="ident">num_new_gens</span>); 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_pivots</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>;<span class="ident">matrix</span>.<span class="ident">get_columns</span>()];
         <span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">new_pivots</span>);
-        <span class="comment">// println!(&quot;{}&quot;, matrix);</span>
         <span class="kw">let</span> (<span class="ident">cm_qi</span>, <span class="ident">res_qi</span>) <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">compute_quasi_inverses</span>(
             <span class="kw-2">&amp;</span><span class="ident">new_pivots</span>, 
             <span class="ident">padded_target_cc_dimension</span>, 
@@ -1315,7 +1313,7 @@
         <span class="kw">for</span> <span class="ident">l</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">get_number_of_gens_in_bidegree</span>(<span class="ident">target_s</span>, <span class="ident">target_t</span>) {
             <span class="ident">f</span>.<span class="ident">get_map</span>(<span class="ident">elt</span>.<span class="ident">s</span>).<span class="ident">apply_to_generator</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="number">1</span>, <span class="ident">target_t</span>, <span class="ident">l</span>);
 
-            <span class="kw">let</span> <span class="ident">vector_idx</span> <span class="op">=</span> <span class="number">0</span>; <span class="comment">// output_module.operation_generator_to_index(0, 0, elt.t, elt.idx);</span>
+            <span class="kw">let</span> <span class="ident">vector_idx</span> <span class="op">=</span> <span class="ident">output_module</span>.<span class="ident">operation_generator_to_index</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="ident">elt</span>.<span class="ident">t</span>, <span class="ident">elt</span>.<span class="ident">index</span>);
             <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">get_entry</span>(<span class="ident">vector_idx</span>) <span class="op">!=</span> <span class="number">0</span> {
                 <span class="self">self</span>.<span class="ident">add_structline</span>(<span class="kw-2">&amp;</span><span class="ident">elt</span>.<span class="ident">name</span>, <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">idx</span>, <span class="ident">target_s</span>, <span class="ident">target_t</span>, <span class="ident">l</span>);
             }
