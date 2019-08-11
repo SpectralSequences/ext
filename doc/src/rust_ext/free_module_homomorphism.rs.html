@@ -183,7 +183,6 @@
 <span id="165">165</span>
 <span id="166">166</span>
 <span id="167">167</span>
-<span id="168">168</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Mutex</span>, <span class="ident">MutexGuard</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
@@ -281,7 +280,6 @@
     <span class="comment">// We don&#39;t actually mutate &amp;mut matrix, we just slice it.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lock</span> : <span class="kw-2">&amp;</span><span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">matrix</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Matrix</span>, <span class="ident">first_new_row</span> : <span class="ident">usize</span>, <span class="ident">first_target_column</span> : <span class="ident">usize</span>, <span class="ident">new_generators</span> : <span class="ident">usize</span>){
         <span class="comment">// println!(&quot;    add_gens_from_matrix degree : {}, first_new_row : {}, new_generators : {}&quot;, degree, first_new_row, new_generators);</span>
-        <span class="kw">let</span> <span class="ident">dimension</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">get_dimension</span>(<span class="ident">degree</span>);
         <span class="comment">// println!(&quot;    dimension : {} target name : {}&quot;, dimension, self.target.get_name());</span>
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&gt;=</span> <span class="self">self</span>.<span class="ident">min_degree</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">degree</span>, <span class="self">self</span>.<span class="ident">outputs</span>.<span class="ident">len</span>());
@@ -290,7 +288,7 @@
         <span class="kw">let</span> <span class="ident">dimension</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">get_dimension</span>(<span class="ident">degree</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">degree_shift</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_outputs</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">new_generators</span>);
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">new_generators</span> {
-            <span class="ident">new_outputs</span>.<span class="ident">push</span>(<span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">dimension</span>, <span class="number">0</span>));
+            <span class="ident">new_outputs</span>.<span class="ident">push</span>(<span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">dimension</span>));
         }
         <span class="kw">if</span> <span class="ident">dimension</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="self">self</span>.<span class="ident">outputs</span>.<span class="ident">push</span>(<span class="ident">new_outputs</span>);

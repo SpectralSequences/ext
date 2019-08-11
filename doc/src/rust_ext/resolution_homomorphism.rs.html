@@ -190,7 +190,6 @@
 <span id="172">172</span>
 <span id="173">173</span>
 <span id="174">174</span>
-<span id="175">175</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Weak</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
@@ -267,7 +266,6 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extend_step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_homological_degree</span> : <span class="ident">u32</span>, <span class="ident">input_internal_degree</span> : <span class="ident">i32</span>, <span class="ident">extra_images</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Matrix</span><span class="op">&gt;</span>){
         <span class="kw">let</span> <span class="ident">output_homological_degree</span> <span class="op">=</span> <span class="ident">input_homological_degree</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">homological_degree_shift</span>;
-        <span class="kw">let</span> <span class="ident">output_internal_degree</span> <span class="op">=</span> <span class="ident">input_internal_degree</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">internal_degree_shift</span>;
         <span class="kw">let</span> <span class="ident">f_cur</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_map_ensure_length</span>(<span class="ident">output_homological_degree</span>);
         <span class="kw">let</span> <span class="ident">computed_degree</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">f_cur</span>.<span class="ident">get_lock</span>();
         <span class="kw">if</span> <span class="ident">input_internal_degree</span> <span class="op">&lt;=</span> <span class="ident">computed_degree</span> {
@@ -331,8 +329,8 @@
         <span class="kw">let</span> <span class="ident">d_quasi_inverse</span> <span class="op">=</span> <span class="ident">d_target</span>.<span class="ident">get_quasi_inverse</span>(<span class="ident">output_internal_degree</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">dx_dimension</span> <span class="op">=</span> <span class="ident">f_prev</span>.<span class="ident">get_source</span>().<span class="ident">get_dimension</span>(<span class="ident">input_internal_degree</span>);
         <span class="kw">let</span> <span class="ident">fdx_dimension</span> <span class="op">=</span> <span class="ident">f_prev</span>.<span class="ident">get_target</span>().<span class="ident">get_dimension</span>(<span class="ident">output_internal_degree</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dx_vector</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">dx_dimension</span>, <span class="number">0</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fdx_vector</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">fdx_dimension</span>, <span class="number">0</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dx_vector</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">dx_dimension</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fdx_vector</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">fdx_dimension</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">extra_image_row</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
             <span class="ident">d_source</span>.<span class="ident">apply_to_generator</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dx_vector</span>, <span class="number">1</span>, <span class="ident">input_internal_degree</span>, <span class="ident">k</span>);
