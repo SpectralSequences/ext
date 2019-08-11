@@ -548,7 +548,7 @@
                 <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">number_of_operations</span> {
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">in_idx_vec</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">number_of_inputs</span>);
                     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">number_of_inputs</span> {
-                        <span class="ident">in_idx_vec</span>.<span class="ident">push</span>(<span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">algebra</span>.<span class="ident">get_prime</span>(), <span class="ident">number_of_outputs</span>, <span class="number">0</span>));
+                        <span class="ident">in_idx_vec</span>.<span class="ident">push</span>(<span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">algebra</span>.<span class="ident">prime</span>(), <span class="ident">number_of_outputs</span>, <span class="number">0</span>));
                     }
                     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">in_idx_vec</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="ident">number_of_inputs</span>);
                     <span class="ident">ops_vec</span>.<span class="ident">push</span>(<span class="ident">in_idx_vec</span>);
@@ -646,7 +646,7 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_validity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_deg</span> : <span class="ident">i32</span>, <span class="ident">output_deg</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(),<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span>{
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">output_deg</span> <span class="op">&gt;</span> <span class="ident">input_deg</span>);
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_prime</span>();
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_algebra</span>();
         <span class="kw">let</span> <span class="ident">op_deg</span> <span class="op">=</span> <span class="ident">output_deg</span> <span class="op">-</span> <span class="ident">input_deg</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output_vec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="self">self</span>.<span class="ident">get_dimension</span>(<span class="ident">output_deg</span>), <span class="number">0</span>);
@@ -688,7 +688,7 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extend_actions</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">input_deg</span> : <span class="ident">i32</span>, <span class="ident">output_deg</span> : <span class="ident">i32</span>){
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_prime</span>();
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_algebra</span>();
         <span class="kw">let</span> <span class="ident">op_deg</span> <span class="op">=</span> <span class="ident">output_deg</span> <span class="op">-</span> <span class="ident">input_deg</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output_vec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="self">self</span>.<span class="ident">get_dimension</span>(<span class="ident">output_deg</span>), <span class="number">0</span>);
@@ -717,7 +717,7 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">actions_to_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Value</span> {
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_prime</span>();
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_algebra</span>();
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>();
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">min_degree</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>;

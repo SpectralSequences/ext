@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["WasmAlgebra",""],["WasmCCDZ",""],["WasmModule",""],["WasmResolution",""],["WasmResolutionWithChainMaps",""]]});
+initSidebarItems({"struct":[["WasmAlgebra",""],["WasmCCDZ",""],["WasmModule",""],["WasmResolution",""]]});

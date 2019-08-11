@@ -272,6 +272,16 @@
 <span id="254">254</span>
 <span id="255">255</span>
 <span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -295,7 +305,6 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">chain_complex</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">resolution</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">resolution_homomorphism</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">resolution_with_chain_maps</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">wasm_bindings</span>;
 <span class="kw">mod</span> <span class="ident">cli_module_loaders</span>;
 
@@ -320,14 +329,12 @@
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">nom</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::<span class="ident">FpVectorT</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">adem_algebra</span>::<span class="ident">AdemAlgebra</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">milnor_algebra</span>::<span class="ident">MilnorAlgebra</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">FiniteModule</span>, <span class="ident">Module</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplexConcentratedInDegreeZero</span> <span class="kw">as</span> <span class="ident">CCDZ</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModule</span> <span class="kw">as</span> <span class="ident">FDModule</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution</span>::{<span class="ident">Resolution</span>, <span class="ident">ModuleResolution</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution_with_chain_maps</span>::<span class="ident">ResolutionWithChainMaps</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
@@ -376,6 +383,19 @@
     <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from_json</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>)<span class="question-mark">?</span>);
     <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
     <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
+
+    <span class="kw">let</span> <span class="ident">products_value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">json</span>[<span class="string">&quot;products&quot;</span>];
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">products_value</span>.<span class="ident">is_null</span>() {
+        <span class="kw">let</span> <span class="ident">products</span> <span class="op">=</span> <span class="ident">products_value</span>.<span class="ident">as_array</span>().<span class="ident">unwrap</span>();
+        <span class="kw">for</span> <span class="ident">prod</span> <span class="kw">in</span> <span class="ident">products</span> {
+            <span class="kw">let</span> <span class="ident">hom_deg</span> <span class="op">=</span> <span class="ident">prod</span>[<span class="string">&quot;hom_deg&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
+            <span class="kw">let</span> <span class="ident">int_deg</span> <span class="op">=</span> <span class="ident">prod</span>[<span class="string">&quot;int_deg&quot;</span>].<span class="ident">as_i64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">prod</span>[<span class="string">&quot;index&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+            <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">prod</span>[<span class="string">&quot;name&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
+            <span class="ident">resolution</span>.<span class="ident">borrow_mut</span>().<span class="ident">add_product</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">idx</span>, <span class="ident">name</span>.<span class="ident">to_string</span>());
+        }
+    }
+
     <span class="prelude-val">Ok</span>(<span class="ident">AlgebraicObjectsBundle</span> {
         <span class="ident">algebra</span>,
         <span class="ident">module</span>,
@@ -389,9 +409,9 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_resolve</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct</span>(<span class="ident">config</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">borrow_mut</span>();
-    <span class="ident">resolution</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">config</span>.<span class="ident">max_degree</span>);
-    <span class="prelude-val">Ok</span>(<span class="ident">resolution</span>.<span class="ident">graded_dimension_string</span>())
+    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">borrow</span>();
+    <span class="ident">res</span>.<span class="ident">resolve_through_degree</span>(<span class="kw-2">&amp;</span><span class="ident">bundle</span>.<span class="ident">resolution</span>, <span class="ident">config</span>.<span class="ident">max_degree</span>);
+    <span class="prelude-val">Ok</span>(<span class="ident">res</span>.<span class="ident">graded_dimension_string</span>())
 }
 
 
@@ -467,14 +487,14 @@
     <span class="comment">// f.extend_step(1, 4, Some(&amp;mut v));</span>
     <span class="comment">// f.extend(3, 15);</span>
     
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res_with_maps</span> <span class="op">=</span> <span class="ident">ResolutionWithChainMaps</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>), <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>));
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">map_data</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::<span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>);
-    <span class="ident">map_data</span>[<span class="number">0</span>].<span class="ident">set_entry</span>(<span class="number">0</span>, <span class="number">1</span>);
-    <span class="comment">// res_with_maps.add_self_map(4, 12, &quot;v_1&quot;.to_string(), map_data);</span>
-    <span class="ident">res_with_maps</span>.<span class="ident">add_product</span>(<span class="number">2</span>, <span class="number">12</span>, <span class="number">0</span>, <span class="string">&quot;beta&quot;</span>.<span class="ident">to_string</span>());
-    <span class="ident">res_with_maps</span>.<span class="ident">add_product</span>(<span class="number">2</span>, <span class="number">9</span>, <span class="number">0</span>, <span class="string">&quot;\\alpha_{2}&quot;</span>.<span class="ident">to_string</span>());
-    <span class="ident">res_with_maps</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">max_degree</span>);
-    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">resolution</span>.<span class="ident">borrow</span>().<span class="ident">graded_dimension_string</span>());
+<span class="comment">//    let mut res_with_maps = ResolutionWithChainMaps::new(Rc::clone(&amp;resolution), Rc::clone(&amp;resolution));</span>
+<span class="comment">//    let mut map_data = crate::matrix::Matrix::new(2, 1, 1);</span>
+<span class="comment">//    map_data[0].set_entry(0, 1);</span>
+<span class="comment">//    // res_with_maps.add_self_map(4, 12, &quot;v_1&quot;.to_string(), map_data);</span>
+<span class="comment">//    res_with_maps.add_product(2, 12, 0, &quot;beta&quot;.to_string());</span>
+<span class="comment">//    res_with_maps.add_product(2, 9, 0, &quot;\\alpha_{2}&quot;.to_string());</span>
+<span class="comment">//    res_with_maps.resolve_through_degree(max_degree);</span>
+<span class="comment">//    println!(&quot;{}&quot;, resolution.borrow().graded_dimension_string());</span>
 }
 
 

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ResolutionHomomorphism",""]]});
+initSidebarItems({"struct":[["ResolutionHomomorphism",""]],"type":[["ResolutionHomomorphismToUnit",""]]});
