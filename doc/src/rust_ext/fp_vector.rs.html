@@ -1118,6 +1118,8 @@
 <span id="1100">1100</span>
 <span id="1101">1101</span>
 <span id="1102">1102</span>
+<span id="1103">1103</span>
+<span id="1104">1104</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -1448,6 +1450,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">get_entry</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">index</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">get_dimension</span>());
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">bit_mask</span> <span class="op">=</span> <span class="ident">get_bitmask</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">limb_index</span> <span class="op">=</span> <span class="ident">get_limb_bit_index_pair</span>(<span class="ident">p</span>, <span class="ident">index</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">get_min_index</span>());
@@ -1458,6 +1461,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">set_entry</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">index</span> : <span class="ident">usize</span>, <span class="ident">value</span> : <span class="ident">u32</span>){
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">index</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">get_dimension</span>());
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">bit_mask</span> <span class="op">=</span> <span class="ident">get_bitmask</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">limb_index</span> <span class="op">=</span> <span class="ident">get_limb_bit_index_pair</span>(<span class="ident">p</span>, <span class="ident">index</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">get_min_index</span>());
