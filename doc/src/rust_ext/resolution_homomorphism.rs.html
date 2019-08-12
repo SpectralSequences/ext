@@ -182,7 +182,6 @@
 <span id="164">164</span>
 <span id="165">165</span>
 <span id="166">166</span>
-<span id="167">167</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Weak</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
@@ -190,10 +189,9 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">once</span>::<span class="ident">OnceVec</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{ <span class="ident">FpVector</span>, <span class="ident">FpVectorT</span> };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::<span class="ident">Matrix</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">OptionModule</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">OptionModule</span>, <span class="ident">FiniteModule</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module</span>::<span class="ident">FreeModule</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module_homomorphism</span>::{<span class="ident">ZeroHomomorphism</span>, <span class="ident">ModuleHomomorphism</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModule</span> <span class="kw">as</span> <span class="ident">FDModule</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module_homomorphism</span>::<span class="ident">FreeModuleHomomorphism</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplex</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplexConcentratedInDegreeZero</span> <span class="kw">as</span> <span class="ident">CCDZ</span>;
@@ -345,9 +343,9 @@
 }
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ResolutionHomomorphismToUnit</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span>, <span class="ident">CC</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">ResolutionHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span>, <span class="ident">CC</span>,
-    <span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;</span>,
-    <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;</span>, <span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;&gt;</span>,
-    <span class="ident">CCDZ</span><span class="op">&lt;</span><span class="ident">FDModule</span><span class="op">&gt;</span>
+    <span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>,
+    <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>, <span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">CCDZ</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>
 <span class="op">&gt;</span>;
 
 <span class="comment">// FreeModuleHomomorphism *ResolutionHomomorphism_getMap(ResolutionHomomorphism *f, uint homological_degree);</span>
