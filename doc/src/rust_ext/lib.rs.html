@@ -282,6 +282,7 @@
 <span id="264">264</span>
 <span id="265">265</span>
 <span id="266">266</span>
+<span id="267">267</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -383,6 +384,7 @@
     <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from_json</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>)<span class="question-mark">?</span>);
     <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
     <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
+    <span class="ident">resolution</span>.<span class="ident">borrow_mut</span>().<span class="ident">set_self</span>(<span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>));
 
     <span class="kw">let</span> <span class="ident">products_value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">json</span>[<span class="string">&quot;products&quot;</span>];
     <span class="kw">if</span> <span class="op">!</span><span class="ident">products_value</span>.<span class="ident">is_null</span>() {
@@ -410,7 +412,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_resolve</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct</span>(<span class="ident">config</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">borrow</span>();
-    <span class="ident">res</span>.<span class="ident">resolve_through_degree</span>(<span class="kw-2">&amp;</span><span class="ident">bundle</span>.<span class="ident">resolution</span>, <span class="ident">config</span>.<span class="ident">max_degree</span>);
+    <span class="ident">res</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">config</span>.<span class="ident">max_degree</span>);
     <span class="prelude-val">Ok</span>(<span class="ident">res</span>.<span class="ident">graded_dimension_string</span>())
 }
 

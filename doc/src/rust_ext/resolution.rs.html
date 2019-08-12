@@ -746,9 +746,54 @@
 <span id="728">728</span>
 <span id="729">729</span>
 <span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::{<span class="ident">Rc</span>, <span class="ident">Weak</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Mutex</span>;
@@ -768,6 +813,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplexConcentratedInDegreeZero</span> <span class="kw">as</span> <span class="ident">CCDZ</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution_homomorphism</span>::{<span class="ident">ResolutionHomomorphism</span>, <span class="ident">ResolutionHomomorphismToUnit</span>};
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">struct</span> <span class="ident">Cocycle</span> {
     <span class="ident">s</span> : <span class="ident">u32</span>,
     <span class="ident">t</span> : <span class="ident">i32</span>,
@@ -789,7 +835,12 @@
 <span class="doccomment">///  * `kernels` - For each *internal* degree, store the kernel of the most recently calculated</span>
 <span class="doccomment">///  chain map as returned by `generate_old_kernel_and_compute_new_kernel`, to be used if we run</span>
 <span class="doccomment">///  resolve_through_degree again.</span>
+<span class="doccomment">///  * `self_` - This should be a weak reference to yourself. This can be set in the method</span>
+<span class="doccomment">///  `set_self` after constructing the resolution, and is automatically taken care of by the</span>
+<span class="doccomment">///  `construct` function in `lib`. This is useful because we need a weak reference to `self` when</span>
+<span class="doccomment">///  construction resolution homomorphisms to unit and self maps.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">Module</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;&gt;</span> {
+    <span class="ident">self_</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span>, <span class="ident">CC</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>,
     <span class="ident">complex</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>,
     <span class="ident">modules</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>,
     <span class="ident">zero_module</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span>,
@@ -836,6 +887,7 @@
         <span class="kw">let</span> <span class="ident">zero_module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FreeModule</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="string">&quot;F_{-1}&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">min_degree</span>));
 
         <span class="self">Self</span> {
+            <span class="ident">self_</span>: <span class="prelude-val">None</span>,
             <span class="ident">complex</span>,
             <span class="ident">chain_maps</span> : <span class="ident">OnceVec</span>::<span class="ident">new</span>(),
 
@@ -895,6 +947,11 @@
         <span class="kw">return</span> <span class="ident">target</span>.<span class="ident">element_to_string</span>(<span class="ident">int_deg</span>, <span class="kw-2">&amp;</span><span class="ident">result_vector</span>);
     }
 
+    <span class="doccomment">/// Sets `self.self_`. See struct documentation for more about `self.self_`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_self</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">self_</span>: <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span>, <span class="ident">CC</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>) {
+        <span class="self">self</span>.<span class="ident">self_</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">self_</span>);
+    }
+
     <span class="doccomment">/// This function prepares the Resolution object to perform computations up to the specified</span>
     <span class="doccomment">/// s degree. It does *not* perform any computations by itself. It simply lengthens the</span>
     <span class="doccomment">/// `OnceVec`s `modules`, `chain_maps`, etc. to the right length.</span>
@@ -919,7 +976,7 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_bidegree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">self_</span>: <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;&gt;</span>, <span class="kw-2">mut</span> <span class="ident">max_s</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">max_t</span> : <span class="ident">i32</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_bidegree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">max_s</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">max_t</span> : <span class="ident">i32</span>) {
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_s</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
@@ -934,7 +991,7 @@
         <span class="self">self</span>.<span class="ident">get_algebra</span>().<span class="ident">compute_basis</span>(<span class="ident">max_t</span>);<span class="comment">// because Adem has off-by-one</span>
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">unit_res</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span> {
-            <span class="ident">unit_res</span>.<span class="ident">borrow</span>().<span class="ident">resolve_through_bidegree</span>(<span class="kw-2">&amp;</span><span class="ident">unit_res</span>, <span class="self">self</span>.<span class="ident">max_product_homological_degree</span>, <span class="ident">max_t</span>);
+            <span class="ident">unit_res</span>.<span class="ident">borrow</span>().<span class="ident">resolve_through_bidegree</span>(<span class="self">self</span>.<span class="ident">max_product_homological_degree</span>, <span class="ident">max_t</span>);
         }
 
         <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="ident">min_degree</span> ..= <span class="ident">max_t</span> {
@@ -943,7 +1000,7 @@
 
             <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">t</span> <span class="op">&lt;</span> <span class="kw-2">*</span><span class="ident">next_t</span> { <span class="kw-2">*</span><span class="ident">next_s</span> } <span class="kw">else</span> { <span class="number">0</span> };
             <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="ident">start</span> ..= <span class="ident">max_s</span> {
-                <span class="ident">new_kernel</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">step</span>(<span class="kw-2">&amp;</span><span class="ident">self_</span>, <span class="ident">s</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">t</span>, <span class="ident">new_kernel</span>));
+                <span class="ident">new_kernel</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">step</span>(<span class="ident">s</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">t</span>, <span class="ident">new_kernel</span>));
             }
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">kernels</span>[<span class="ident">t</span>].<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="ident">new_kernel</span>;
         }
@@ -954,11 +1011,11 @@
 
     <span class="comment">// We cannot do self : Rc&lt;RefCell&lt;Self&gt;&gt;. We should probably check that self_ and &amp;self</span>
     <span class="comment">// indeed refer to the same thing...</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">self_</span>: <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;&gt;</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) {
-        <span class="self">self</span>.<span class="ident">resolve_through_bidegree</span>(<span class="ident">self_</span>, <span class="ident">degree</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">degree</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) {
+        <span class="self">self</span>.<span class="ident">resolve_through_bidegree</span>(<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">degree</span>);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">self_</span>: <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;&gt;</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>, <span class="ident">old_kernel</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Subspace</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>, <span class="ident">old_kernel</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Subspace</span> {
         <span class="comment">// println!(&quot;step : hom_deg : {}, int_deg : {}&quot;, homological_degree, degree);</span>
         <span class="kw">if</span> <span class="ident">s</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="self">self</span>.<span class="ident">zero_module</span>.<span class="ident">extend_by_zero</span>(<span class="ident">t</span>);
@@ -977,8 +1034,8 @@
                 <span class="self">self</span>.<span class="ident">compute_filtration_one_products</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">i</span>);
             }
         }
-        <span class="self">self</span>.<span class="ident">extend_maps_to_unit</span>(<span class="ident">self_</span>, <span class="ident">s</span>, <span class="ident">t</span>);
-        <span class="self">self</span>.<span class="ident">compute_products</span>(<span class="ident">s</span>, <span class="ident">t</span>);
+        <span class="self">self</span>.<span class="ident">extend_maps_to_unit</span>(<span class="ident">s</span>, <span class="ident">t</span>);
+        <span class="self">self</span>.<span class="ident">compute_products</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">product_list</span>);
         <span class="self">self</span>.<span class="ident">compute_self_maps</span>(<span class="ident">s</span>, <span class="ident">t</span>);
         <span class="ident">new_kernel</span>
     }
@@ -1261,19 +1318,48 @@
     <span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span>
 {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>, <span class="ident">index</span> : <span class="ident">usize</span>, <span class="ident">name</span> : <span class="ident">String</span>) {
-         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">is_none</span>() {
-             <span class="self">self</span>.<span class="ident">construct_unit_resolution</span>();
-         }
-         <span class="kw">if</span> <span class="ident">s</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">max_product_homological_degree</span> {
-             <span class="self">self</span>.<span class="ident">max_product_homological_degree</span> <span class="op">=</span> <span class="ident">s</span>;
-         }
-         <span class="self">self</span>.<span class="ident">product_list</span>.<span class="ident">push</span>(<span class="ident">Cocycle</span> { <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">index</span>, <span class="ident">name</span> });
+        <span class="self">self</span>.<span class="ident">construct_unit_resolution</span>();
+        <span class="kw">if</span> <span class="ident">s</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">max_product_homological_degree</span> {
+            <span class="self">self</span>.<span class="ident">max_product_homological_degree</span> <span class="op">=</span> <span class="ident">s</span>;
+        }
+
+        <span class="comment">// We must add a product into product_list before calling compute_products, since</span>
+        <span class="comment">// compute_products aborts when product_list is empty.</span>
+        <span class="self">self</span>.<span class="ident">product_list</span>.<span class="ident">push</span>(<span class="ident">Cocycle</span> { <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">index</span>, <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">clone</span>() });
+    }
+
+    <span class="doccomment">/// This function computes the products between the element most recently added to product_list</span>
+    <span class="doccomment">/// and the parts of Ext that have already been computed. This function should be called right</span>
+    <span class="doccomment">/// after `add_product`, unless `resolve_through_degree`/`resolve_through_bidegree` has never been</span>
+    <span class="doccomment">/// called.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This is made separate from `add_product` because extend_maps_to_unit needs a borrow of</span>
+    <span class="doccomment">/// `self`, but `add_product` takes in a mutable borrow.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">catch_up_products</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">let</span> <span class="ident">new_product</span> <span class="op">=</span> [<span class="self">self</span>.<span class="ident">product_list</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">clone</span>()];
+        <span class="kw">let</span> <span class="ident">next_s</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">if</span> <span class="ident">next_s</span> <span class="op">&gt;</span> <span class="number">0</span> {
+            <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>();
+            <span class="kw">let</span> <span class="ident">max_s</span> <span class="op">=</span> <span class="ident">next_s</span> <span class="op">-</span> <span class="number">1</span>;
+            <span class="kw">let</span> <span class="ident">max_t</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">-</span> <span class="number">1</span>;
+
+            <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="ident">min_degree</span> ..= <span class="ident">max_t</span> {
+                <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> ..= <span class="ident">max_s</span> {
+                    <span class="self">self</span>.<span class="ident">extend_maps_to_unit</span>(<span class="ident">s</span>, <span class="ident">t</span>);
+                    <span class="self">self</span>.<span class="ident">compute_products</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="ident">new_product</span>);
+                }
+            }
+        }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_unit_resolution</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-         <span class="kw">let</span> <span class="ident">unit_module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from</span>(<span class="ident">FDModule</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">get_algebra</span>(), <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;unit&quot;</span>), <span class="ident">BiVec</span>::<span class="ident">from_vec</span>(<span class="number">0</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]))));
-         <span class="kw">let</span> <span class="ident">ccdz</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">unit_module</span>));
-         <span class="self">self</span>.<span class="ident">unit_resolution</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">ccdz</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>))));
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">is_none</span>() {
+            <span class="kw">let</span> <span class="ident">unit_module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from</span>(<span class="ident">FDModule</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">get_algebra</span>(), <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;unit&quot;</span>), <span class="ident">BiVec</span>::<span class="ident">from_vec</span>(<span class="number">0</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]))));
+            <span class="kw">let</span> <span class="ident">ccdz</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">unit_module</span>));
+            <span class="kw">let</span> <span class="ident">unit_resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">ccdz</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
+            <span class="ident">unit_resolution</span>.<span class="ident">borrow_mut</span>().<span class="ident">set_self</span>(<span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">unit_resolution</span>));
+            <span class="self">self</span>.<span class="ident">unit_resolution</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">unit_resolution</span>);
+        }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_unit_resolution</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">unit_res</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>) {
@@ -1284,8 +1370,8 @@
     }
 
     <span class="doccomment">/// Compute products whose result lie in degrees up to (s, t)</span>
-    <span class="kw">fn</span> <span class="ident">compute_products</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>) {
-        <span class="kw">for</span> <span class="ident">elt</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">product_list</span> {
+    <span class="kw">fn</span> <span class="ident">compute_products</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>, <span class="ident">products</span>: <span class="kw-2">&amp;</span>[<span class="ident">Cocycle</span>]) {
+        <span class="kw">for</span> <span class="ident">elt</span> <span class="kw">in</span> <span class="ident">products</span> {
             <span class="kw">if</span> <span class="ident">s</span> <span class="op">&lt;</span> <span class="ident">elt</span>.<span class="ident">s</span> <span class="op">||</span> <span class="ident">t</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>() <span class="op">+</span> <span class="ident">elt</span>.<span class="ident">t</span> {
                 <span class="kw">continue</span>;
             }
@@ -1323,53 +1409,55 @@
 
     <span class="doccomment">/// This ensures the chain_maps_to_unit_resolution are defined such that we can compute products up</span>
     <span class="doccomment">/// to bidegree (s, t)</span>
-    <span class="kw">fn</span> <span class="ident">extend_maps_to_unit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">self_</span> : <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;&gt;</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>) {
+    <span class="kw">fn</span> <span class="ident">extend_maps_to_unit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>) {
         <span class="comment">// If there are no products, we return</span>
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">product_list</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">return</span>;
         }
 
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
-        <span class="kw">let</span> <span class="ident">s_idx</span> <span class="op">=</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">self_</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">self_</span> {
+            <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
+            <span class="kw">let</span> <span class="ident">s_idx</span> <span class="op">=</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>;
 
-        <span class="comment">// Now we populate the arrays if the ResolutionHomomorphisms have not been defined.</span>
-        <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">s</span>).<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">t</span>);
-        <span class="kw">if</span> <span class="ident">t</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>() {
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">s_idx</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>.<span class="ident">len</span>());
-            <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>.<span class="ident">push</span>(<span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">get_min_degree</span>()));
-        } <span class="kw">else</span> {
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">s_idx</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>.<span class="ident">len</span>());
-        }
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">s_idx</span>].<span class="ident">len</span>() <span class="op">==</span> <span class="ident">t</span>);
-
-        <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">s_idx</span>].<span class="ident">push</span>(<span class="ident">OnceVec</span>::<span class="ident">new</span>());
-        <span class="kw">if</span> <span class="ident">num_gens</span> <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">unit_vector</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">num_gens</span>, <span class="number">1</span>);
-            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
-                <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">ResolutionHomomorphism</span>::<span class="ident">new</span>(
-                    <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;(hom_deg : {}, int_deg : {}, idx : {})&quot;</span>, <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">j</span>),
-                    <span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="ident">self_</span>), <span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>()),
-                    <span class="ident">s</span>, <span class="ident">t</span>
-                );
-                <span class="ident">unit_vector</span>[<span class="ident">j</span>].<span class="ident">set_entry</span>(<span class="number">0</span>, <span class="number">1</span>);
-                <span class="ident">f</span>.<span class="ident">extend_step</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">unit_vector</span>));
-                <span class="ident">unit_vector</span>[<span class="ident">j</span>].<span class="ident">set_to_zero</span>();
-                <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">s_idx</span>][<span class="ident">t</span>].<span class="ident">push</span>(
-                    <span class="ident">f</span>
-                )
+            <span class="comment">// Now we populate the arrays if the ResolutionHomomorphisms have not been defined.</span>
+            <span class="kw">if</span> <span class="ident">s_idx</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>.<span class="ident">len</span>() {
+                <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>.<span class="ident">push</span>(<span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">get_min_degree</span>()));
+            } <span class="kw">else</span> {
+                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">s_idx</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>.<span class="ident">len</span>());
             }
-        }
 
-        <span class="comment">// Now we actually extend the maps.</span>
-        <span class="kw">let</span> <span class="ident">max_hom_deg</span> <span class="op">=</span> <span class="ident">min</span>(<span class="ident">s</span>, <span class="self">self</span>.<span class="ident">max_product_homological_degree</span>);
-        <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>();
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> ..= <span class="ident">max_hom_deg</span> {
-            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="ident">min_degree</span> ..= <span class="ident">t</span> {
-                <span class="kw">let</span> <span class="ident">hom_deg</span> <span class="op">=</span> <span class="ident">s</span> <span class="op">-</span> <span class="ident">i</span>;
-                <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">hom_deg</span>).<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">j</span>);
-                <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
-                    <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">hom_deg</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">j</span>][<span class="ident">k</span>];
-                    <span class="ident">f</span>.<span class="ident">extend</span>(<span class="ident">s</span>, <span class="ident">t</span>);
+            <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">s</span>).<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">t</span>);
+            <span class="kw">if</span> <span class="ident">t</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">s_idx</span>].<span class="ident">len</span>() {
+                <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">s_idx</span>].<span class="ident">push</span>(<span class="ident">OnceVec</span>::<span class="ident">new</span>());
+                <span class="kw">if</span> <span class="ident">num_gens</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">unit_vector</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">num_gens</span>, <span class="number">1</span>);
+                    <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
+                        <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">ResolutionHomomorphism</span>::<span class="ident">new</span>(
+                            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;(hom_deg : {}, int_deg : {}, idx : {})&quot;</span>, <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">j</span>),
+                            <span class="ident">self_</span>.<span class="ident">clone</span>(), <span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>()),
+                            <span class="ident">s</span>, <span class="ident">t</span>
+                            );
+                        <span class="ident">unit_vector</span>[<span class="ident">j</span>].<span class="ident">set_entry</span>(<span class="number">0</span>, <span class="number">1</span>);
+                        <span class="ident">f</span>.<span class="ident">extend_step</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">unit_vector</span>));
+                        <span class="ident">unit_vector</span>[<span class="ident">j</span>].<span class="ident">set_to_zero</span>();
+                        <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">s_idx</span>][<span class="ident">t</span>].<span class="ident">push</span>(<span class="ident">f</span>);
+                    }
+                }
+            } <span class="kw">else</span> {
+                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">t</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">s_idx</span>].<span class="ident">len</span>());
+            }
+
+            <span class="comment">// Now we actually extend the maps.</span>
+            <span class="kw">let</span> <span class="ident">max_hom_deg</span> <span class="op">=</span> <span class="ident">min</span>(<span class="ident">s</span>, <span class="self">self</span>.<span class="ident">max_product_homological_degree</span>);
+            <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>();
+            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> ..= <span class="ident">s</span> {
+                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="ident">min_degree</span> ..= <span class="ident">t</span> {
+                    <span class="kw">let</span> <span class="ident">max_s</span> <span class="op">=</span> <span class="ident">min</span>(<span class="ident">s</span>, <span class="ident">i</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">max_product_homological_degree</span>);
+                    <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">i</span>).<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">j</span>);
+                    <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
+                        <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">j</span>][<span class="ident">k</span>];
+                        <span class="ident">f</span>.<span class="ident">extend</span>(<span class="ident">max_s</span>, <span class="ident">t</span>);
+                    }
                 }
             }
         }
@@ -1382,12 +1470,14 @@
     <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">M</span><span class="op">&gt;</span>,
     <span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span>
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_self_map</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">self_</span>: <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;&gt;</span>,  <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>, <span class="ident">name</span> : <span class="ident">String</span>, <span class="ident">map_data</span> : <span class="ident">Matrix</span>) {
-        <span class="self">self</span>.<span class="ident">self_maps</span>.<span class="ident">push</span>(
-            <span class="ident">SelfMap</span> {
-                <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">name</span>, <span class="ident">map_data</span> : <span class="ident">TempStorage</span>::<span class="ident">new</span>(<span class="ident">map_data</span>),
-                <span class="ident">map</span> : <span class="ident">ResolutionHomomorphism</span>::<span class="ident">new</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="ident">self_</span>), <span class="ident">Rc</span>::<span class="ident">downgrade</span>(<span class="ident">self_</span>), <span class="ident">s</span>, <span class="ident">t</span>)
-            });
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_self_map</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>, <span class="ident">name</span> : <span class="ident">String</span>, <span class="ident">map_data</span> : <span class="ident">Matrix</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">self_</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">self_</span> {
+            <span class="self">self</span>.<span class="ident">self_maps</span>.<span class="ident">push</span>(
+                <span class="ident">SelfMap</span> {
+                    <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">name</span>, <span class="ident">map_data</span> : <span class="ident">TempStorage</span>::<span class="ident">new</span>(<span class="ident">map_data</span>),
+                    <span class="ident">map</span> : <span class="ident">ResolutionHomomorphism</span>::<span class="ident">new</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">self_</span>.<span class="ident">clone</span>(), <span class="ident">self_</span>.<span class="ident">clone</span>(), <span class="ident">s</span>, <span class="ident">t</span>)
+                });
+        }
     }
 
     <span class="doccomment">/// We compute the products by self maps where the result has degree (s, t).</span>
