@@ -340,6 +340,12 @@
 <span id="322">322</span>
 <span id="323">323</span>
 <span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">ws</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rust_ext</span>;
@@ -464,8 +470,9 @@
         <span class="kw">let</span> <span class="ident">module_name</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;module&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>(); <span class="comment">// Need to handle error</span>
         <span class="kw">let</span> <span class="ident">algebra_name</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;algebra&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;maxDegree&quot;</span>].<span class="ident">as_i64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">i32</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dir</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">env</span>::<span class="ident">current_dir</span>()<span class="question-mark">?</span>;
-        <span class="ident">dir</span>.<span class="ident">push</span>(<span class="string">&quot;modules&quot;</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dir</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">env</span>::<span class="ident">current_exe</span>().<span class="ident">unwrap</span>();
+        <span class="ident">dir</span>.<span class="ident">pop</span>(); <span class="ident">dir</span>.<span class="ident">pop</span>(); <span class="ident">dir</span>.<span class="ident">pop</span>();
+        <span class="ident">dir</span>.<span class="ident">push</span>(<span class="string">&quot;static/modules&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">rust_ext</span>::<span class="ident">construct</span>(<span class="kw-2">&amp;</span><span class="ident">Config</span> {
              <span class="ident">module_paths</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">dir</span>],
@@ -636,9 +643,14 @@
     <span class="kw">fn</span> <span class="ident">serve_files</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request_path</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">WsResult</span><span class="op">&lt;</span>(<span class="ident">Response</span>)<span class="op">&gt;</span> {
         <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Request path: {}&quot;</span>, <span class="ident">request_path</span>);
         <span class="kw">let</span> <span class="ident">request_path</span> <span class="op">=</span> <span class="ident">request_path</span>.<span class="ident">split</span>(<span class="string">&quot;?&quot;</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;&gt;</span>()[<span class="number">0</span>]; <span class="comment">// Ignore ?...</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dir</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">env</span>::<span class="ident">current_exe</span>().<span class="ident">unwrap</span>();
+        <span class="ident">dir</span>.<span class="ident">pop</span>(); <span class="ident">dir</span>.<span class="ident">pop</span>(); <span class="ident">dir</span>.<span class="ident">pop</span>();
+        <span class="ident">dir</span>.<span class="ident">push</span>(<span class="string">&quot;ext-websocket/interface&quot;</span>);
+
         <span class="kw">for</span> (<span class="ident">path</span>, <span class="ident">file</span>, <span class="ident">mime</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">FILE_LIST</span> {
             <span class="kw">if</span> <span class="ident">request_path</span> <span class="op">==</span> <span class="kw-2">*</span><span class="ident">path</span> {
-                <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="ident">fs</span>::<span class="ident">read</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;interface/{}&quot;</span>, <span class="ident">file</span>))<span class="question-mark">?</span>;
+                <span class="ident">dir</span>.<span class="ident">push</span>(<span class="ident">file</span>);
+                <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="ident">fs</span>::<span class="ident">read</span>(<span class="ident">dir</span>)<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">Response</span>::<span class="ident">new</span>(<span class="number">200</span>, <span class="string">&quot;OK&quot;</span>, <span class="ident">contents</span>);
                 <span class="kw">let</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">response</span>.<span class="ident">headers_mut</span>();
                 <span class="ident">headers</span>.<span class="ident">push</span>((<span class="string">&quot;Content-type&quot;</span>.<span class="ident">to_string</span>(), (<span class="kw-2">*</span><span class="ident">mime</span>).<span class="ident">into</span>()));

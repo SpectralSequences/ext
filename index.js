@@ -6028,7 +6028,7 @@ DragEvent.prototype.on = function() {
 
 // Ignore right-click, since that should open the context menu.
 function defaultFilter() {
-  return !d3_selection_src["event"].button;
+  return !d3_selection_src["event"].ctrlKey && !d3_selection_src["event"].button;
 }
 
 function defaultContainer() {
@@ -6040,7 +6040,7 @@ function defaultSubject(d) {
 }
 
 function defaultTouchable() {
-  return "ontouchstart" in this;
+  return navigator.maxTouchPoints || ("ontouchstart" in this);
 }
 
 /* harmony default export */ var src_drag = (function() {
