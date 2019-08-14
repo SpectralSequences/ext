@@ -786,9 +786,6 @@
 <span id="768">768</span>
 <span id="769">769</span>
 <span id="770">770</span>
-<span id="771">771</span>
-<span id="772">772</span>
-<span id="773">773</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::{<span class="ident">Rc</span>, <span class="ident">Weak</span>};
@@ -853,8 +850,9 @@
     <span class="kw">pub</span> <span class="ident">add_class</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">u32</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;&gt;</span>,
     <span class="kw">pub</span> <span class="ident">add_structline</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(
         <span class="kw-2">&amp;</span><span class="ident">str</span>,
-        <span class="ident">u32</span>, <span class="ident">i32</span>, <span class="ident">usize</span>, 
-        <span class="ident">u32</span>, <span class="ident">i32</span>, <span class="ident">usize</span>
+        <span class="ident">u32</span>, <span class="ident">i32</span>,
+        <span class="ident">u32</span>, <span class="ident">i32</span>,
+        <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>
     )<span class="op">&gt;&gt;</span>,
 
     <span class="ident">filtration_one_products</span> : <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>,
@@ -877,8 +875,9 @@
         <span class="ident">add_class</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="ident">u32</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;&gt;</span>,
         <span class="ident">add_structline</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(
             <span class="kw-2">&amp;</span><span class="ident">str</span>,
-            <span class="ident">u32</span>, <span class="ident">i32</span>, <span class="ident">usize</span>, 
-            <span class="ident">u32</span>, <span class="ident">i32</span>, <span class="ident">usize</span>
+            <span class="ident">u32</span>, <span class="ident">i32</span>,
+            <span class="ident">u32</span>, <span class="ident">i32</span>,
+            <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>
         )<span class="op">&gt;&gt;</span>
     ) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">complex</span>.<span class="ident">get_algebra</span>();
@@ -1031,53 +1030,57 @@
                 <span class="ident">f</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">num_gens</span>);
             }
         }
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">num_gens</span> {
-            <span class="self">self</span>.<span class="ident">compute_filtration_one_products</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">i</span>);
-        }
+        <span class="self">self</span>.<span class="ident">compute_filtration_one_products</span>(<span class="ident">s</span>, <span class="ident">t</span>);
         <span class="self">self</span>.<span class="ident">extend_maps_to_unit</span>(<span class="ident">s</span>, <span class="ident">t</span>);
         <span class="self">self</span>.<span class="ident">compute_products</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">product_list</span>);
         <span class="self">self</span>.<span class="ident">compute_self_maps</span>(<span class="ident">s</span>, <span class="ident">t</span>);
         <span class="ident">new_kernel</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">compute_filtration_one_products</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">homological_degree</span> : <span class="ident">u32</span>, <span class="ident">internal_degree</span> : <span class="ident">i32</span>, <span class="ident">source_idx</span> : <span class="ident">usize</span>){
-        <span class="kw">if</span> <span class="ident">homological_degree</span> <span class="op">==</span> <span class="number">0</span> {
+    <span class="kw">fn</span> <span class="ident">compute_filtration_one_products</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">target_s</span> : <span class="ident">u32</span>, <span class="ident">target_t</span> : <span class="ident">i32</span>){
+        <span class="kw">if</span> <span class="ident">target_s</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">return</span>;
         }
-        <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_differential</span>(<span class="ident">homological_degree</span>);
-        <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">homological_degree</span> <span class="op">-</span> <span class="number">1</span>);
-        <span class="kw">let</span> <span class="ident">dx</span> <span class="op">=</span> <span class="ident">d</span>.<span class="ident">get_output</span>(<span class="ident">internal_degree</span>, <span class="ident">source_idx</span>);
+
+        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">target_s</span> <span class="op">-</span> <span class="number">1</span>);
+        <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">target_s</span>);
+
+        <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">target_t</span>);
+        <span class="kw">let</span> <span class="ident">source_s</span> <span class="op">=</span> <span class="ident">target_s</span> <span class="op">-</span> <span class="number">1</span>;
+
         <span class="kw">for</span> (<span class="ident">op_name</span>, <span class="ident">op_degree</span>, <span class="ident">op_index</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">filtration_one_products</span> {
-            <span class="kw">let</span> <span class="ident">gen_degree</span> <span class="op">=</span> <span class="ident">internal_degree</span> <span class="op">-</span> <span class="kw-2">*</span><span class="ident">op_degree</span>;
-
-            <span class="kw">if</span> <span class="ident">gen_degree</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>(){
-                <span class="kw">break</span>;
+            <span class="kw">let</span> <span class="ident">source_t</span> <span class="op">=</span> <span class="ident">target_t</span> <span class="op">-</span> <span class="kw-2">*</span><span class="ident">op_degree</span>;
+            <span class="kw">if</span> <span class="ident">target_t</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>(){
+                <span class="kw">continue</span>;
             }
+            <span class="kw">let</span> <span class="ident">source_dim</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">source_t</span>);
 
-            <span class="kw">let</span> <span class="ident">num_target_generators</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">gen_degree</span>);
-            <span class="kw">for</span> <span class="ident">target_idx</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_target_generators</span> {
-                <span class="kw">let</span> <span class="ident">vector_idx</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">operation_generator_to_index</span>(<span class="kw-2">*</span><span class="ident">op_degree</span>, <span class="kw-2">*</span><span class="ident">op_index</span>, <span class="ident">gen_degree</span>, <span class="ident">target_idx</span>);
-                <span class="kw">if</span> <span class="ident">vector_idx</span> <span class="op">&gt;=</span> <span class="ident">dx</span>.<span class="ident">get_dimension</span>() {
-                    <span class="comment">// println!(&quot;Out of bounds index when computing product:&quot;);</span>
-                    <span class="comment">// println!(&quot;  ==  degree: {}, hom_deg: {}, dim: {}, idx: {}&quot;, degree, homological_degree, dx.dimension, vector_idx);</span>
-                } <span class="kw">else</span> {
-                    <span class="comment">// printf(&quot;hom_deg: %d, deg: %d, source_idx: %d, op_deg: %d, entry: %d\n&quot;, homological_degree, degree, source_idx, op_degree, Vector_getEntry(dx, vector_idx));</span>
-                    <span class="kw">if</span> <span class="ident">dx</span>.<span class="ident">get_entry</span>(<span class="ident">vector_idx</span>) <span class="op">!=</span> <span class="number">0</span> {
-                        <span class="self">self</span>.<span class="ident">add_structline</span>(<span class="ident">op_name</span>, <span class="ident">homological_degree</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">gen_degree</span>, <span class="ident">target_idx</span>, <span class="ident">homological_degree</span>, <span class="ident">internal_degree</span>, <span class="ident">source_idx</span>);
-                    }
+            <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_differential</span>(<span class="ident">target_s</span>);
+
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">products</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">target_dim</span>); <span class="ident">source_dim</span>];
+
+            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">target_dim</span> {
+                <span class="kw">let</span> <span class="ident">dx</span> <span class="op">=</span> <span class="ident">d</span>.<span class="ident">get_output</span>(<span class="ident">target_t</span>, <span class="ident">i</span>);
+
+                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">source_dim</span> {
+                    <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">operation_generator_to_index</span>(<span class="kw-2">*</span><span class="ident">op_degree</span>, <span class="kw-2">*</span><span class="ident">op_index</span>, <span class="ident">source_t</span>, <span class="ident">j</span>);
+                    <span class="ident">products</span>[<span class="ident">j</span>].<span class="ident">push</span>(<span class="ident">dx</span>.<span class="ident">get_entry</span>(<span class="ident">idx</span>));
                 }
             }
+
+            <span class="self">self</span>.<span class="ident">add_structline</span>(<span class="ident">op_name</span>, <span class="ident">source_s</span>, <span class="ident">source_t</span>, <span class="ident">target_s</span>, <span class="ident">target_t</span>, <span class="ident">products</span>);
         }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_structline</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>, 
             <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">str</span>,
-            <span class="ident">source_hom_deg</span> : <span class="ident">u32</span>, <span class="ident">source_int_deg</span> : <span class="ident">i32</span>, <span class="ident">source_idx</span> : <span class="ident">usize</span>, 
-            <span class="ident">target_hom_deg</span> : <span class="ident">u32</span>, <span class="ident">target_int_deg</span> : <span class="ident">i32</span>, <span class="ident">target_idx</span> : <span class="ident">usize</span>
+            <span class="ident">source_s</span> : <span class="ident">u32</span>, <span class="ident">source_t</span> : <span class="ident">i32</span>,
+            <span class="ident">target_s</span> : <span class="ident">u32</span>, <span class="ident">target_t</span> : <span class="ident">i32</span>,
+            <span class="ident">products</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>
     ){
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">add_structline</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">add_structline</span> {
-            <span class="ident">add_structline</span>(<span class="ident">name</span>, <span class="ident">source_hom_deg</span>, <span class="ident">source_int_deg</span>, <span class="ident">source_idx</span>, <span class="ident">target_hom_deg</span>, <span class="ident">target_int_deg</span>, <span class="ident">target_idx</span>);
+            <span class="ident">add_structline</span>(<span class="ident">name</span>, <span class="ident">source_s</span>, <span class="ident">source_t</span>, <span class="ident">target_s</span>, <span class="ident">target_t</span>, <span class="ident">products</span>);
         }
     }
 
@@ -1373,35 +1376,36 @@
                 <span class="kw">continue</span>;
             }
 
-            <span class="kw">let</span> <span class="ident">source_s</span> <span class="op">=</span> <span class="ident">s</span> <span class="op">-</span> <span class="ident">elt</span>.<span class="ident">s</span>;
-            <span class="kw">let</span> <span class="ident">source_t</span> <span class="op">=</span> <span class="ident">t</span> <span class="op">-</span> <span class="ident">elt</span>.<span class="ident">t</span>;
-
-            <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span>.. <span class="self">self</span>.<span class="ident">get_number_of_gens_in_bidegree</span>(<span class="ident">source_s</span>, <span class="ident">source_t</span>) {
-                <span class="self">self</span>.<span class="ident">compute_product_step</span>(<span class="ident">elt</span>, <span class="ident">source_s</span>, <span class="ident">source_t</span>, <span class="ident">k</span>);
-            }
+            <span class="self">self</span>.<span class="ident">compute_product_step</span>(<span class="ident">elt</span>, <span class="ident">s</span>, <span class="ident">t</span>);
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">compute_product_step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elt</span> : <span class="kw-2">&amp;</span><span class="ident">Cocycle</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>)
+    <span class="doccomment">/// Target = result of the product</span>
+    <span class="doccomment">/// Source = multiplicand</span>
+    <span class="kw">fn</span> <span class="ident">compute_product_step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elt</span> : <span class="kw-2">&amp;</span><span class="ident">Cocycle</span>, <span class="ident">target_s</span> : <span class="ident">u32</span>, <span class="ident">target_t</span> : <span class="ident">i32</span>)
     {
-        <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">s</span>][<span class="ident">t</span>][<span class="ident">idx</span>];
-        <span class="kw">let</span> <span class="ident">target_s</span> <span class="op">=</span> <span class="ident">s</span> <span class="op">+</span> <span class="ident">elt</span>.<span class="ident">s</span>;
-        <span class="kw">let</span> <span class="ident">target_t</span> <span class="op">=</span> <span class="ident">t</span> <span class="op">+</span> <span class="ident">elt</span>.<span class="ident">t</span>;
+        <span class="kw">let</span> <span class="ident">source_s</span> <span class="op">=</span> <span class="ident">target_s</span> <span class="op">-</span> <span class="ident">elt</span>.<span class="ident">s</span>;
+        <span class="kw">let</span> <span class="ident">source_t</span> <span class="op">=</span> <span class="ident">target_t</span> <span class="op">-</span> <span class="ident">elt</span>.<span class="ident">t</span>;
 
-        <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">borrow</span>();
-        <span class="kw">let</span> <span class="ident">output_module</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">get_module</span>(<span class="ident">elt</span>.<span class="ident">s</span>);
+        <span class="kw">let</span> <span class="ident">source_dim</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_number_of_gens_in_bidegree</span>(<span class="ident">source_s</span>, <span class="ident">source_t</span>);
+        <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_number_of_gens_in_bidegree</span>(<span class="ident">target_s</span>, <span class="ident">target_t</span>);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">output_module</span>.<span class="ident">get_dimension</span>(<span class="ident">elt</span>.<span class="ident">t</span>));
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">products</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">source_dim</span>);
+        <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">source_dim</span> {
+            <span class="ident">products</span>.<span class="ident">push</span>(<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">target_dim</span>));
 
-        <span class="kw">for</span> <span class="ident">l</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">get_number_of_gens_in_bidegree</span>(<span class="ident">target_s</span>, <span class="ident">target_t</span>) {
-            <span class="ident">f</span>.<span class="ident">get_map</span>(<span class="ident">elt</span>.<span class="ident">s</span>).<span class="ident">apply_to_generator</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="number">1</span>, <span class="ident">target_t</span>, <span class="ident">l</span>);
+            <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">source_s</span>][<span class="ident">source_t</span>][<span class="ident">k</span>];
 
-            <span class="kw">let</span> <span class="ident">vector_idx</span> <span class="op">=</span> <span class="ident">output_module</span>.<span class="ident">operation_generator_to_index</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="ident">elt</span>.<span class="ident">t</span>, <span class="ident">elt</span>.<span class="ident">index</span>);
-            <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">get_entry</span>(<span class="ident">vector_idx</span>) <span class="op">!=</span> <span class="number">0</span> {
-                <span class="self">self</span>.<span class="ident">add_structline</span>(<span class="kw-2">&amp;</span><span class="ident">elt</span>.<span class="ident">name</span>, <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">idx</span>, <span class="ident">target_s</span>, <span class="ident">target_t</span>, <span class="ident">l</span>);
+            <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">borrow</span>();
+            <span class="kw">let</span> <span class="ident">output_module</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">get_module</span>(<span class="ident">elt</span>.<span class="ident">s</span>);
+
+            <span class="kw">for</span> <span class="ident">l</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">target_dim</span> {
+                <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">get_map</span>(<span class="ident">elt</span>.<span class="ident">s</span>).<span class="ident">get_output</span>(<span class="ident">target_t</span>, <span class="ident">l</span>);
+                <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">output_module</span>.<span class="ident">operation_generator_to_index</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="ident">elt</span>.<span class="ident">t</span>, <span class="ident">elt</span>.<span class="ident">index</span>);
+                <span class="ident">products</span>[<span class="ident">k</span>].<span class="ident">push</span>(<span class="ident">result</span>.<span class="ident">get_entry</span>(<span class="ident">idx</span>));
             }
-            <span class="ident">result</span>.<span class="ident">set_to_zero</span>();
         }
+        <span class="self">self</span>.<span class="ident">add_structline</span>(<span class="kw-2">&amp;</span><span class="ident">elt</span>.<span class="ident">name</span>, <span class="ident">source_s</span>, <span class="ident">source_t</span>, <span class="ident">target_s</span>, <span class="ident">target_t</span>, <span class="ident">products</span>);
     }
 
     <span class="doccomment">/// This ensures the chain_maps_to_unit_resolution are defined such that we can compute products up</span>
@@ -1478,48 +1482,38 @@
     }
 
     <span class="doccomment">/// We compute the products by self maps where the result has degree (s, t).</span>
-    <span class="kw">fn</span> <span class="ident">compute_self_maps</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>) {
+    <span class="kw">fn</span> <span class="ident">compute_self_maps</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">target_s</span> : <span class="ident">u32</span>, <span class="ident">target_t</span> : <span class="ident">i32</span>) {
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">for</span> <span class="ident">f</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">self_maps</span> {
-            <span class="kw">if</span> <span class="ident">s</span> <span class="op">&lt;</span> <span class="ident">f</span>.<span class="ident">s</span> <span class="op">||</span> <span class="ident">t</span> <span class="op">&lt;</span> <span class="ident">f</span>.<span class="ident">t</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>() {
+            <span class="kw">if</span> <span class="ident">target_s</span> <span class="op">&lt;</span> <span class="ident">f</span>.<span class="ident">s</span> <span class="op">||</span> <span class="ident">target_t</span> <span class="op">&lt;</span> <span class="ident">f</span>.<span class="ident">t</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>() {
                 <span class="kw">continue</span>;
             }
-            <span class="kw">if</span> <span class="ident">s</span> <span class="op">==</span> <span class="ident">f</span>.<span class="ident">s</span> <span class="op">&amp;&amp;</span> <span class="ident">t</span> <span class="op">==</span> <span class="ident">f</span>.<span class="ident">t</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>() {
+            <span class="kw">if</span> <span class="ident">target_s</span> <span class="op">==</span> <span class="ident">f</span>.<span class="ident">s</span> <span class="op">&amp;&amp;</span> <span class="ident">target_t</span> <span class="op">==</span> <span class="ident">f</span>.<span class="ident">t</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">get_min_degree</span>() {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">map_data</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">map_data</span>.<span class="ident">take</span>();
-                <span class="ident">f</span>.<span class="ident">map</span>.<span class="ident">extend_step</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">map_data</span>));
+                <span class="ident">f</span>.<span class="ident">map</span>.<span class="ident">extend_step</span>(<span class="ident">target_s</span>, <span class="ident">target_t</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">map_data</span>));
             }
-            <span class="ident">f</span>.<span class="ident">map</span>.<span class="ident">extend</span>(<span class="ident">s</span>, <span class="ident">t</span>);
+            <span class="ident">f</span>.<span class="ident">map</span>.<span class="ident">extend</span>(<span class="ident">target_s</span>, <span class="ident">target_t</span>);
 
-            <span class="kw">let</span> <span class="ident">target_s</span> <span class="op">=</span> <span class="ident">s</span> <span class="op">-</span> <span class="ident">f</span>.<span class="ident">s</span>;
-            <span class="kw">let</span> <span class="ident">target_t</span> <span class="op">=</span> <span class="ident">t</span> <span class="op">-</span> <span class="ident">f</span>.<span class="ident">t</span>;
+            <span class="kw">let</span> <span class="ident">source_s</span> <span class="op">=</span> <span class="ident">target_s</span> <span class="op">-</span> <span class="ident">f</span>.<span class="ident">s</span>;
+            <span class="kw">let</span> <span class="ident">source_t</span> <span class="op">=</span> <span class="ident">target_t</span> <span class="op">-</span> <span class="ident">f</span>.<span class="ident">t</span>;
 
-            <span class="kw">let</span> <span class="ident">source_module</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">s</span>);
-            <span class="kw">let</span> <span class="ident">target_module</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">target_s</span>);
+            <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">source_s</span>);
+            <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">target_s</span>);
 
-            <span class="kw">let</span> <span class="ident">num_source_gens</span> <span class="op">=</span> <span class="ident">source_module</span>.<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">t</span>);
-            <span class="kw">let</span> <span class="ident">num_target_gens</span> <span class="op">=</span> <span class="ident">target_module</span>.<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">target_t</span>);
+            <span class="kw">let</span> <span class="ident">source_dim</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">source_t</span>);
+            <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">target_t</span>);
 
-            <span class="kw">if</span> <span class="ident">num_source_gens</span> <span class="op">==</span> <span class="number">0</span> <span class="op">||</span> <span class="ident">num_target_gens</span> <span class="op">==</span> <span class="number">0</span> {
-                <span class="kw">continue</span>;
-            }
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">products</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">target_dim</span>); <span class="ident">source_dim</span>];
 
-            <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="ident">target_module</span>.<span class="ident">get_dimension</span>(<span class="ident">target_t</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">target_dim</span>);
+            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">target_dim</span> {
+                <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">map</span>.<span class="ident">get_map</span>(<span class="ident">source_s</span>).<span class="ident">get_output</span>(<span class="ident">target_t</span>, <span class="ident">j</span>);
 
-            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_source_gens</span> {
-                <span class="ident">f</span>.<span class="ident">map</span>.<span class="ident">get_map</span>(<span class="ident">target_s</span>).<span class="ident">apply_to_generator</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="number">1</span>, <span class="ident">t</span>, <span class="ident">j</span>);
-                <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_target_gens</span> {
-                    <span class="kw">let</span> <span class="ident">vector_idx</span> <span class="op">=</span> <span class="ident">target_module</span>.<span class="ident">operation_generator_to_index</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="ident">target_t</span>, <span class="ident">k</span>);
-                    <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">get_entry</span>(<span class="ident">vector_idx</span>) <span class="op">!=</span> <span class="number">0</span> {
-                        <span class="self">self</span>.<span class="ident">add_structline</span>(
-                            <span class="kw-2">&amp;</span><span class="ident">f</span>.<span class="ident">name</span>,
-                            <span class="ident">target_s</span>, <span class="ident">target_t</span>, <span class="ident">k</span>,
-                            <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">j</span>
-                            );
-                    }
+                <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">source_dim</span> {
+                    <span class="kw">let</span> <span class="ident">vector_idx</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">operation_generator_to_index</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="ident">source_t</span>, <span class="ident">k</span>);
+                    <span class="ident">products</span>[<span class="ident">k</span>].<span class="ident">push</span>(<span class="ident">result</span>.<span class="ident">get_entry</span>(<span class="ident">vector_idx</span>));
                 }
-                <span class="ident">result</span>.<span class="ident">set_to_zero</span>();
             }
+            <span class="self">self</span>.<span class="ident">add_structline</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>.<span class="ident">name</span>, <span class="ident">source_s</span>, <span class="ident">source_t</span>, <span class="ident">target_s</span>, <span class="ident">target_t</span>, <span class="ident">products</span>);
         }
     }
 }
