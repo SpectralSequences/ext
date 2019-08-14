@@ -789,11 +789,6 @@
 <span id="771">771</span>
 <span id="772">772</span>
 <span id="773">773</span>
-<span id="774">774</span>
-<span id="775">775</span>
-<span id="776">776</span>
-<span id="777">777</span>
-<span id="778">778</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::{<span class="ident">Rc</span>, <span class="ident">Weak</span>};
@@ -1036,10 +1031,8 @@
                 <span class="ident">f</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">num_gens</span>);
             }
         }
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">add_structline</span> {
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">num_gens</span> {
-                <span class="self">self</span>.<span class="ident">compute_filtration_one_products</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">i</span>);
-            }
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">num_gens</span> {
+            <span class="self">self</span>.<span class="ident">compute_filtration_one_products</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">i</span>);
         }
         <span class="self">self</span>.<span class="ident">extend_maps_to_unit</span>(<span class="ident">s</span>, <span class="ident">t</span>);
         <span class="self">self</span>.<span class="ident">compute_products</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">product_list</span>);
@@ -1070,10 +1063,7 @@
                 } <span class="kw">else</span> {
                     <span class="comment">// printf(&quot;hom_deg: %d, deg: %d, source_idx: %d, op_deg: %d, entry: %d\n&quot;, homological_degree, degree, source_idx, op_degree, Vector_getEntry(dx, vector_idx));</span>
                     <span class="kw">if</span> <span class="ident">dx</span>.<span class="ident">get_entry</span>(<span class="ident">vector_idx</span>) <span class="op">!=</span> <span class="number">0</span> {
-                        <span class="comment">// There was a product!</span>
-                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">add_structline</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">add_structline</span> {
-                            <span class="ident">add_structline</span>(<span class="ident">op_name</span>, <span class="ident">homological_degree</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">gen_degree</span>, <span class="ident">target_idx</span>, <span class="ident">homological_degree</span>, <span class="ident">internal_degree</span>, <span class="ident">source_idx</span>);
-                        }
+                        <span class="self">self</span>.<span class="ident">add_structline</span>(<span class="ident">op_name</span>, <span class="ident">homological_degree</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">gen_degree</span>, <span class="ident">target_idx</span>, <span class="ident">homological_degree</span>, <span class="ident">internal_degree</span>, <span class="ident">source_idx</span>);
                     }
                 }
             }
