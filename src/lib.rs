@@ -27,6 +27,7 @@ pub mod resolution;
 pub mod resolution_homomorphism;
 #[cfg(target_arch = "wasm32")]
 pub mod wasm_bindings;
+pub mod sseq;
 mod cli_module_loaders;
 
 
