@@ -1860,16 +1860,16 @@
     <span class="doccomment">/// let mut v = FpVector::new(p, 2);</span>
     <span class="doccomment">/// v.pack(vec![3, 1]);</span>
     <span class="doccomment">/// let mut result = FpVector::new(p, 3);</span>
+    <span class="doccomment">/// let mut desired_result = FpVector::new(p, 3);</span>
     <span class="doccomment">/// result.pack(vec![3, 5, 1]);</span>
-    <span class="doccomment">/// assert_eq!(m.apply(&amp;v), result);</span>
+    <span class="doccomment">/// m.apply(&amp;mut result, 1, &amp;v);</span>
+    <span class="doccomment">/// assert_eq!(result, desired_result);</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) <span class="op">-&gt;</span> <span class="ident">FpVector</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">input</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">input</span>.<span class="ident">get_dimension</span>(), <span class="self">self</span>.<span class="ident">get_rows</span>());
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="self">self</span>.<span class="ident">get_columns</span>());
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">input</span>.<span class="ident">get_dimension</span>() {
-            <span class="ident">result</span>.<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">vectors</span>[<span class="ident">i</span>], <span class="ident">input</span>.<span class="ident">get_entry</span>(<span class="ident">i</span>));
+            <span class="ident">result</span>.<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">vectors</span>[<span class="ident">i</span>], (<span class="ident">coeff</span> <span class="op">*</span> <span class="ident">input</span>.<span class="ident">get_entry</span>(<span class="ident">i</span>)) <span class="op">%</span> <span class="self">self</span>.<span class="ident">p</span>);
         }
-        <span class="ident">result</span>
     }
 }
 

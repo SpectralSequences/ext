@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["FiniteDimensionalModule",""]],"type":[["OptionFDModule",""]]});
+initSidebarItems({"struct":[["FiniteDimensionalModule",""]],"trait":[["FiniteDimensionalModuleT",""]],"type":[["OptionFDModule",""]]});

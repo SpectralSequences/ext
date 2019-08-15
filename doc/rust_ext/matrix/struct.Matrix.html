@@ -213,7 +213,7 @@ is not contained in <code>desired_image</code>, but is not guaranteed to do so.<
 by <code>desired_image</code>. It simply calls <code>extends_image_to_surjection</code> or
 <code>extend_image_to_surjection</code> depending on the value of <code>desired_image</code>. Refer to these
 functions for documentation.</p>
-</div><h4 id='method.apply' class="method"><code id='apply.v'>pub fn <a href='#method.apply' class='fnname'>apply</a>(&amp;self, input: &amp;<a class="enum" href="../../rust_ext/fp_vector/enum.FpVector.html" title="enum rust_ext::fp_vector::FpVector">FpVector</a>) -&gt; <a class="enum" href="../../rust_ext/fp_vector/enum.FpVector.html" title="enum rust_ext::fp_vector::FpVector">FpVector</a></code><a class='srclink' href='../../src/rust_ext/matrix.rs.html#892-899' title='goto source code'>[src]</a></h4><div class='docblock'><p>Applies a matrix to a vector.</p>
+</div><h4 id='method.apply' class="method"><code id='apply.v'>pub fn <a href='#method.apply' class='fnname'>apply</a>(&amp;self, result: &amp;mut <a class="enum" href="../../rust_ext/fp_vector/enum.FpVector.html" title="enum rust_ext::fp_vector::FpVector">FpVector</a>, coeff: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, input: &amp;<a class="enum" href="../../rust_ext/fp_vector/enum.FpVector.html" title="enum rust_ext::fp_vector::FpVector">FpVector</a>)</code><a class='srclink' href='../../src/rust_ext/matrix.rs.html#894-899' title='goto source code'>[src]</a></h4><div class='docblock'><p>Applies a matrix to a vector.</p>
 <h1 id="example-6" class="section-header"><a href="#example-6">Example</a></h1>
 <p>let p = 7;</p>
 <h1 id="use-rust_extmatrixmatrix" class="section-header"><a href="#use-rust_extmatrixmatrix">use rust_ext::matrix::Matrix;</a></h1><h1 id="rust_extfp_vectorinitialize_limb_bit_index_tablep" class="section-header"><a href="#rust_extfp_vectorinitialize_limb_bit_index_tablep">rust_ext::fp_vector::initialize_limb_bit_index_table(p);</a></h1>
@@ -223,8 +223,10 @@ vec![0, 3, 4]];</p>
 let mut v = FpVector::new(p, 2);
 v.pack(vec![3, 1]);
 let mut result = FpVector::new(p, 3);
+let mut desired_result = FpVector::new(p, 3);
 result.pack(vec![3, 5, 1]);
-assert_eq!(m.apply(&amp;v), result);</p>
+m.apply(&amp;mut result, 1, &amp;v);
+assert_eq!(result, desired_result);</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered">
 </pre></div>
