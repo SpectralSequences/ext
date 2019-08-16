@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["tests",""]],"struct":[["HomModule",""]]});
+initSidebarItems({"struct":[["HomSpace",""]]});
