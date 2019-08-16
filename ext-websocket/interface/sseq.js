@@ -10,12 +10,15 @@ export class ExtSseq extends EventEmitter {
         this.min_page_idx = 0;
         this.class_scale = 0.5;
         this.classes = new StringifyingMap();
-        this.edges = new StringifyingMap();
+        this.structlines = new StringifyingMap();
+        this.differentials = new StringifyingMap();
+        this.differentialColors = [undefined, undefined, "cyan", "red", "green"];
         this.page_list = [2];
 
-        // The largest x/y of the products we have. This is useful for figuring which edges to draw.
+        // The largest x/y of the products we have. This is useful for figuring which structlines to draw.
         this.maxMultX = 0;
         this.maxMultY = 0;
+        this.maxDiffPage = 0;
 
         this.defaultNode = new Node();
         this.defaultNode.hcolor = "red";
@@ -103,13 +106,41 @@ export class ExtSseq extends EventEmitter {
         this.emit("update");
     }
 
+    _setDifferential(data) {
+        let x = data.x;
+        let y = data.y;
+
+        let differentials = [];
+        for (let [page, matrix] of data.differentials.entries()) {
+            page = page + 2;
+            this.maxDiffPage = Math.max(this.maxDiffPage, page);
+
+            for (let i = 0; i < matrix.length; i++) {
+                for (let j = 0; j < matrix[i].length; j++) {
+                    if (matrix[i][j] != 0) {
+                        let line = new Differential(this, [x, y, i], [x - 1, y + page, j], page);
+                        if (this.differentialColors[page]) {
+                            line.color = this.differentialColors[page];
+                        }
+
+                        if (!differentials[page])
+                            differentials[page] = [];
+                        differentials[page].push(line);
+                    }
+                }
+            }
+        }
+
+        this.differentials.set([x, y], differentials);
+        this.emit("update");
+    }
+
     _setStructline(data) {
         let x = data.x;
         let y = data.y;
-        let structlines = data.structlines;
 
-        let edges = [];
-        for (let mult of structlines) {
+        let structlines = [];
+        for (let mult of data.structlines) {
             for (let [page, matrix] of mult["matrices"].entries()) {
                 page = page + 2;
                 let name = mult["name"];
@@ -121,9 +152,9 @@ export class ExtSseq extends EventEmitter {
                         if (matrix[i][j] != 0) {
                             let line = new Structline(this, [x, y, i], [x + multX, y + multY, j]);
                             line.setProduct(name);
-                            if (!edges[page])
-                                edges[page] = [];
-                            edges[page].push(line);
+                            if (!structlines[page])
+                                structlines[page] = [];
+                            structlines[page].push(line);
                         }
                     }
                 }
@@ -132,7 +163,7 @@ export class ExtSseq extends EventEmitter {
             }
         }
 
-        this.edges.set([x, y], edges);
+        this.structlines.set([x, y], structlines);
         this.emit("update");
     }
 
@@ -164,12 +195,12 @@ export class ExtSseq extends EventEmitter {
         }
 
         let displayEdges = [];
-        for (let x = xmin - this.maxMultX; x <= xmax + this.maxMultX; x++) {
-            for (let y = ymin - this.maxMultY; y <= ymax + this.maxMultY; y++) {
+
+        let xbuffer = Math.max(this.maxMultX, 1);
+        let ybuffer = Math.max(this.maxMultY, this.maxDiffPage);
+        for (let x = xmin - xbuffer; x <= xmax + xbuffer; x++) {
+            for (let y = ymin - ybuffer; y <= ymax + ybuffer; y++) {
                 let edges = this.getEdges(x, y, page);
-                if (edges === undefined) {
-                    continue;
-                }
                 for (let edge of edges) {
                     edge.source_node = this.getClasses(x, y, page)[edge.source[2]];
                     edge.target_node = this.getClasses(edge.target[0], edge.target[1], page)[edge.target[2]];
@@ -189,7 +220,26 @@ export class ExtSseq extends EventEmitter {
     }
 
     getEdges(x, y, page) {
-        let result = this.edges.get([x, y]);
+        let differentials = this.getDifferentials(x, y, page);
+        let structlines = this.getStructlines(x, y, page);
+
+        if (!differentials) {
+            differentials = [];
+        }
+        if (!structlines) {
+            structlines = [];
+        }
+        return differentials.concat(structlines);
+    }
+
+    getDifferentials(x, y, page) {
+        let result = this.differentials.get([x, y]);
+        if (!result) return undefined;
+        return result[page];
+    }
+
+    getStructlines(x, y, page) {
+        let result = this.structlines.get([x, y]);
         if (!result) return undefined;
         if (result.length == 2) return undefined;
 

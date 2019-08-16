@@ -185,7 +185,7 @@ impl ResolutionManager {
         };
 
         let sender = self.sender.clone();
-        let add_structline = move |name : &str, source_s: u32, source_t: i32, target_s : u32, target_t : i32, products : Vec<Vec<u32>>| {
+        let add_structline = move |name : &str, source_s: u32, source_t: i32, target_s : u32, target_t : i32, left : bool, products : Vec<Vec<u32>>| {
             let mult_s = target_s - source_s;
             let mult_t = target_t - source_t;
 
@@ -197,6 +197,7 @@ impl ResolutionManager {
                     "source_t": source_t,
                     "mult_s": mult_s,
                     "mult_t": mult_t,
+                    "left": left,
                     "products": json!(products).to_string() // Find a better way of doing this
                 });
 
@@ -314,12 +315,24 @@ impl SseqManager {
         let source_y = source_s;
 
         let name = json["name"].as_str().unwrap();
+        // Left is a boolean telling us whether we multiply on the left or right. I don't
+        // really know what this means with all the duals all around. By convention, compositions with
+        // maps S^k -> S^l are multiplication on the left; compositions with self maps are
+        // multiplication on the right.
+        let left = json["left"].as_bool().unwrap();
 
 
-        let product : Vec<Vec<u32>> = serde_json::from_str(json["products"].as_str().unwrap()).unwrap();
+        let mut product : Vec<Vec<u32>> = serde_json::from_str(json["products"].as_str().unwrap()).unwrap();
 
         if let Some(sseq) = &mut self.sseq {
-            sseq.add_product(name, source_x, source_y, mult_x, mult_y, product);
+            if mult_s * source_t % 2 != 0 {
+                for a in 0 .. product.len() {
+                    for b in 0 .. product[a].len() {
+                        product[a][b] = ((sseq.p - 1) * product[a][b]) % sseq.p;
+                    }
+                }
+            }
+            sseq.add_product(name, source_x, source_y, mult_x, mult_y, left, product);
         }
         Ok(())
     }

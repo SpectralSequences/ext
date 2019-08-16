@@ -62,6 +62,7 @@ pub struct Resolution<M : Module, F : ModuleHomomorphism<M, M>, CC : ChainComple
         &str,
         u32, i32,
         u32, i32,
+        bool,
         Vec<Vec<u32>>
     )>>,
 
@@ -87,6 +88,7 @@ impl<M : Module, F : ModuleHomomorphism<M, M>, CC : ChainComplex<M, F>> Resoluti
             &str,
             u32, i32,
             u32, i32,
+            bool,
             Vec<Vec<u32>>
         )>>
     ) -> Self {
@@ -288,7 +290,7 @@ impl<M : Module, F : ModuleHomomorphism<M, M>, CC : ChainComplex<M, F>> Resoluti
                 }
             }
 
-            self.add_structline(op_name, source_s, source_t, target_s, target_t, products);
+            self.add_structline(op_name, source_s, source_t, target_s, target_t, true, products);
         }
     }
 
@@ -297,10 +299,11 @@ impl<M : Module, F : ModuleHomomorphism<M, M>, CC : ChainComplex<M, F>> Resoluti
             name : &str,
             source_s : u32, source_t : i32,
             target_s : u32, target_t : i32,
+            left : bool,
             products : Vec<Vec<u32>>
     ){
         if let Some(add_structline) = &self.add_structline {
-            add_structline(name, source_s, source_t, target_s, target_t, products);
+            add_structline(name, source_s, source_t, target_s, target_t, left, products);
         }
     }
 
@@ -623,7 +626,7 @@ impl<M, F, CC> Resolution<M, F, CC> where
                 products[k].push(result.get_entry(idx));
             }
         }
-        self.add_structline(&elt.name, source_s, source_t, target_s, target_t, products);
+        self.add_structline(&elt.name, source_s, source_t, target_s, target_t, true, products);
     }
 
     /// This ensures the chain_maps_to_unit_resolution are defined such that we can compute products up
@@ -739,7 +742,7 @@ impl<M, F, CC> Resolution<M, F, CC> where
                     products[k].push(result.get_entry(vector_idx));
                 }
             }
-            self.add_structline(&f.name, source_s, source_t, target_s, target_t, products);
+            self.add_structline(&f.name, source_s, source_t, target_s, target_t, false, products);
         }
     }
 }
