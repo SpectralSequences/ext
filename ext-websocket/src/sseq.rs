@@ -288,6 +288,36 @@ impl Sseq {
     /// d$ when $p_1$, $p_2$ are products and $d$ is the differential. Our strategy is that we
     /// compute $p_2 p_1 d$ if and only if $p_1$ comes earlier in the list of products than $p_2$.
     pub fn add_differential_propagate(&mut self, r : i32, x : i32, y : i32, source : &FpVector, target : &FpVector, product_index : usize) {
+//
+//        let idx1 = self.product_name_to_index.get("v_1").unwrap();
+//        let idx2 = self.product_name_to_index.get("h_0").unwrap();
+//
+//        let product1 = &self.products[*idx1].matrices;
+//        let product2 = &self.products[*idx2].matrices;
+//
+//        let mut prod11 = FpVector::new(self.p, 1);
+//        let mut prod12 = FpVector::new(self.p, 1);
+//        let mut prod21 = FpVector::new(self.p, 1);
+//        let mut prod22 = FpVector::new(self.p, 1);
+//        if let Some(prod) = &product1[x][y] {
+//            prod.apply(&mut prod11, 1, source);
+//        }
+//        println!("v_1 * source = {}", prod11);
+//        if let Some(prod) = &product2[x + 4][y + 1] {
+//            prod.apply(&mut prod12, 1, &prod11);
+//        }
+//        println!("h_0 * v_1 * source = {}", prod12);
+//
+//        if let Some(prod) = &product2[x][y] {
+//            prod.apply(&mut prod21, 1, source);
+//        }
+//        println!("h_0 * source = {}", prod21);
+//        if let Some(prod) = &product1[x + 3][y + 1] {
+//            prod.apply(&mut prod22, 1, &prod21);
+//        }
+//        println!("v_1 * h_0 * source = {}", prod22);
+//
+//        return;
         if product_index == self.products.len() - 1 {
             self.add_differential(r, x, y, source, target);
         } else if product_index < self.products.len() - 1 {
@@ -310,7 +340,6 @@ impl Sseq {
                 let mut prod_source = FpVector::new(self.p, self.classes[x + prod_x][y + prod_y]);
                 source_matrix.apply(&mut prod_source, 1, source);
 
-                println!("Product of {} with {} at ({}, {}) is {}", source, product.name, x, y, prod_source);
                 // If prod_source is non-zero but prod_target is zero, this is still useful
                 // information.
                 if !prod_source.is_zero() {
@@ -318,9 +347,11 @@ impl Sseq {
                     // If target_matrix is 0, this means prod_target ought to be 0, and we do nothing.
                     if let Some(target_matrix) = &product.matrices[x - 1][y + r] {
                         target_matrix.apply(&mut prod_target, 1, target);
-                    }
 
-                    println!("Product of {} with {} at ({}, {}) is {}", target, product.name, x - 1, y + r, prod_target);
+                        if product.left && product.x % 2 == 1 {
+                            prod_target.scale(self.p - 1);
+                        }
+                    }
 
                     self.add_differential_propagate(r, x + prod_x, y + prod_y, &prod_source, &prod_target, product_index);
                 }

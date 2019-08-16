@@ -325,7 +325,8 @@ impl SseqManager {
         let mut product : Vec<Vec<u32>> = serde_json::from_str(json["products"].as_str().unwrap()).unwrap();
 
         if let Some(sseq) = &mut self.sseq {
-            if mult_s * source_t % 2 != 0 {
+            if (left && mult_s * source_t % 2 != 0) ||
+               (!left && mult_t * source_s % 2 != 0) {
                 for a in 0 .. product.len() {
                     for b in 0 .. product[a].len() {
                         product[a][b] = ((sseq.p - 1) * product[a][b]) % sseq.p;
