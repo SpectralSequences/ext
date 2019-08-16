@@ -971,6 +971,20 @@
 <span id="953">953</span>
 <span id="954">954</span>
 <span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1026,11 +1040,14 @@
         }
     }
 
-    <span class="doccomment">/// Produces a matrix from a list of rows. This panics if `vectors.len() == 0`, since there is</span>
-    <span class="doccomment">/// no way to determine the number of columns. The function does not check if the rows have</span>
-    <span class="doccomment">/// the same length, but please only input rows that do have the same length.</span>
+    <span class="doccomment">/// Produces a matrix from a list of rows. If `vectors.len() == 0`, this returns a matrix</span>
+    <span class="doccomment">/// with 0 rows and columns.  The function does not check if the rows have the same length,</span>
+    <span class="doccomment">/// but please only input rows that do have the same length.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_rows</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">vectors</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">vectors</span>.<span class="ident">len</span>();
+        <span class="kw">if</span> <span class="ident">rows</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">return</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">0</span>, <span class="number">0</span>);
+        }
         <span class="kw">let</span> <span class="ident">columns</span> <span class="op">=</span> <span class="ident">vectors</span>[<span class="number">0</span>].<span class="ident">get_dimension</span>();
         <span class="ident">Matrix</span> {
             <span class="ident">p</span>,
@@ -1053,12 +1070,23 @@
     <span class="doccomment">/// let m = Matrix::from_vec(p, &amp;input);</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_vec</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">input</span> : <span class="kw-2">&amp;</span>[<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>]) <span class="op">-&gt;</span> <span class="ident">Matrix</span> {
         <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">len</span>();
+        <span class="kw">if</span> <span class="ident">rows</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">return</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">0</span>, <span class="number">0</span>);
+        }
         <span class="kw">let</span> <span class="ident">cols</span> <span class="op">=</span> <span class="ident">input</span>[<span class="number">0</span>].<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">rows</span>, <span class="ident">cols</span>);
         <span class="kw">for</span> (<span class="ident">i</span>,<span class="ident">x</span>) <span class="kw">in</span> <span class="ident">input</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>(){
             <span class="ident">m</span>[<span class="ident">i</span>].<span class="ident">pack</span>(<span class="ident">x</span>);
         }
         <span class="ident">m</span>
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">get_columns</span>());
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">get_rows</span>() {
+            <span class="ident">result</span>.<span class="ident">push</span>(<span class="self">self</span>[<span class="ident">i</span>].<span class="ident">to_vector</span>());
+        }
+        <span class="ident">result</span>
     }
 
     <span class="doccomment">/// Produces a padded augmented matrix from an `&amp;[Vec&lt;u32&gt;]` object (produces [A|0|I] from</span>
