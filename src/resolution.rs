@@ -600,6 +600,14 @@ impl<M, F, CC> Resolution<M, F, CC> where
         let source_dim = self.get_number_of_gens_in_bidegree(source_s, source_t);
         let target_dim = self.get_number_of_gens_in_bidegree(target_s, target_t);
 
+        if source_dim == 0 {
+            return;
+        }
+
+        if target_dim == 0 {
+            return;
+        }
+
         let mut products = Vec::with_capacity(source_dim);
         for k in 0 .. source_dim {
             products.push(Vec::with_capacity(target_dim));
@@ -712,6 +720,14 @@ impl<M, F, CC> Resolution<M, F, CC> where
 
             let source_dim = source.get_number_of_gens_in_degree(source_t);
             let target_dim = target.get_number_of_gens_in_degree(target_t);
+
+            if source_dim == 0 {
+                return;
+            }
+
+            if target_dim == 0 {
+                return;
+            }
 
             let mut products = vec![Vec::with_capacity(target_dim); source_dim];
 

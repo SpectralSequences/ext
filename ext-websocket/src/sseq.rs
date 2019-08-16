@@ -260,8 +260,10 @@ impl Sseq {
             let product = &self.products[product_index];
             let prod_x = product.x;
             let prod_y = product.y;
-            let prod_source = product.matrices[x][y].apply(source);
-            let prod_target = product.matrices[x - 1][y + r].apply(target);
+            let mut prod_source = FpVector::new(self.p, product.matrices[x][y].get_columns());
+            let mut prod_target = FpVector::new(self.p, product.matrices[x - 1][y + r].get_columns());
+            product.matrices[x][y].apply(&mut prod_source, 1, source);
+            product.matrices[x - 1][y + r].apply(&mut prod_target, 1, target);
 
             // If prod_source is non-zero but prod_target is zero, this is still useful
             // information.
@@ -298,7 +300,8 @@ impl Sseq {
             let product = &self.products[product_index];
             let prod_x = product.x;
             let prod_y = product.y;
-            let prod_class = product.matrices[x][y].apply(class);
+            let mut prod_class = FpVector::new(self.p, product.matrices[x][y].get_columns());
+            product.matrices[x][y].apply(&mut prod_class, 1, class);
 
             if !prod_class.is_zero() {
                 self.set_permanent_class_propagate(x + prod_x, y + prod_y, &prod_class, product_index);
