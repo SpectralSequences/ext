@@ -1,7 +1,10 @@
-use crate::matrix::{Subspace, Matrix};
-use crate::fp_vector::{FpVector, FpVectorT};
+use rust_ext::matrix::{Subspace, Matrix};
+use rust_ext::fp_vector::{FpVector, FpVectorT};
 use std::collections::HashMap;
 use std::cmp::max;
+use std::sync::mpsc;
+use serde::Serialize;
+use serde_json::Value;
 use bivec::BiVec;
 
 const MIN_PAGE : i32 = 2;
@@ -81,30 +84,43 @@ pub struct Product {
     matrices : BiVec<BiVec<Matrix>>
 }
 
+#[derive(Serialize)]
+struct ProductItem {
+    name : String,
+    mult_x : i32,
+    mult_y : i32,
+    matrix : Vec<Vec<u32>>
+}
+
 pub struct Sseq {
     p : u32,
     min_x : i32,
     min_y : i32,
 
+    sender : Option<mpsc::Sender<Value>>,
+    page_list : Vec<i32>,
     product_name_to_index : HashMap<String, usize>,
     products : Vec<Product>,
     classes : BiVec<BiVec<usize>>, // x -> y -> number of elements
     differentials : BiVec<BiVec<BiVec<Differential>>>, // x -> y -> r -> differential
     permanent_classes : BiVec<BiVec<Subspace>>, // x -> y -> r -> permanent classes
     zeros : BiVec<BiVec<BiVec<Subspace>>>, // x -> y -> r -> subspace of elements that are zero on page r
-    pub page_classes : BiVec<BiVec<BiVec<Vec<FpVector>>>>, // x -> y -> r -> list of generators on the page.
-    pub page_differentials : BiVec<BiVec<BiVec<Vec<FpVector>>>>, // x -> y -> r -> list of d(x_i), where x_i is ith basis element in the list in page_classes.
+    page_classes : BiVec<BiVec<BiVec<Vec<FpVector>>>>, // x -> y -> r -> list of generators on the page.
+    page_differentials : BiVec<BiVec<BiVec<Vec<FpVector>>>>, // x -> y -> r -> list of d(x_i), where x_i is ith basis element in the list in page_classes.
+    page_structlines : BiVec<BiVec<BiVec<Vec<ProductItem>>>>, // x -> y -> r -> a list of products
 }
 
 impl Sseq {
-    pub fn new(p : u32, min_x : i32, min_y : i32) -> Self {
+    pub fn new(p : u32, min_x : i32, min_y : i32, sender : Option<mpsc::Sender<Value>>) -> Self {
         let mut classes = BiVec::new(min_x - 1); // We have an extra column to the left so that differentials have something to hit.
         classes.push(BiVec::new(min_y));
         Self {
             p,
             min_x,
             min_y,
+            sender,
 
+            page_list : vec![2],
             product_name_to_index : HashMap::new(),
             products : Vec::new(),
             classes,
@@ -112,7 +128,15 @@ impl Sseq {
             differentials : BiVec::new(min_x),
             page_classes : BiVec::new(min_x),
             page_differentials : BiVec::new(min_x),
+            page_structlines : BiVec::new(min_x),
             zeros : BiVec::new(min_x)
+        }
+    }
+
+    pub fn add_page(&mut self, r : i32) {
+        if !self.page_list.contains(&r) {
+            self.page_list.push(r);
+            self.page_list.sort_unstable();
         }
     }
 
@@ -122,29 +146,38 @@ impl Sseq {
         if x == self.min_x {
             self.classes[self.min_x - 1].push(0);
         }
+        while x > self.classes.len() {
+            self.set_class(self.classes.len(), self.min_y - 1, 0);
+        }
         if x == self.classes.len() {
             self.classes.push(BiVec::new(self.min_y));
+            self.differentials.push(BiVec::new(self.min_y));
+            self.zeros.push(BiVec::new(self.min_y));
             self.permanent_classes.push(BiVec::new(self.min_y));
+            self.page_classes.push(BiVec::new(self.min_y));
+            self.page_differentials.push(BiVec::new(self.min_y));
+            self.page_structlines.push(BiVec::new(self.min_y));
         }
+
+        if y < self.min_y {
+            return; // This happens when we are padding as before
+        }
+
+        while y > self.classes[x].len() {
+            self.set_class(x, self.classes[x].len(), 0);
+        }
+
         assert_eq!(self.classes[x].len(), y);
         assert_eq!(self.permanent_classes[x].len(), y);
         self.classes[x].push(num);
         self.permanent_classes[x].push(Subspace::new(self.p, num + 1, num));
+        self.differentials[x].push(BiVec::new(MIN_PAGE));
+        self.zeros[x].push(BiVec::new(MIN_PAGE));
+        self.page_classes[x].push(BiVec::new(MIN_PAGE));
+        self.page_differentials[x].push(BiVec::new(MIN_PAGE));
+        self.page_structlines[x].push(BiVec::new(MIN_PAGE));
 
-        // To avoid upsetting borrow checker
-        let min_y = self.min_y;
-
-        self.differentials.extend_with(x, |_| BiVec::new(min_y));
-        self.differentials[x].extend_with(y, |_| BiVec::new(MIN_PAGE));
-
-        self.zeros.extend_with(x, |_| BiVec::new(min_y));
-        self.zeros[x].extend_with(y, |_| BiVec::new(MIN_PAGE));
-
-        self.page_classes.extend_with(x, |_| BiVec::new(min_y));
-        self.page_classes[x].extend_with(y, |_| BiVec::new(MIN_PAGE));
-
-        self.page_differentials.extend_with(x, |_| BiVec::new(min_y));
-        self.page_differentials[x].extend_with(y, |_| BiVec::new(MIN_PAGE));
+        self.compute_pages(x, y);
     }
 
     /// Initializes `differentials[x][y][r]`. It sets the differentials of all known permament
@@ -204,6 +237,9 @@ impl Sseq {
         // set_permanent_class in turn sets the differentials on the targets of the differentials
         // to 0.
         self.set_permanent_class(x - 1, y + r, target);
+
+        self.add_page(r);
+        self.add_page(r + 1);
     }
 
     /// This function recursively propagates differentials. If this function is called, it will add
@@ -270,21 +306,75 @@ impl Sseq {
         }
     }
 
+    pub fn add_product(&mut self, name : &str, source_x : i32, source_y : i32, mult_x : i32, mult_y : i32, matrix : Vec<Vec<u32>>) {
+        if self.classes[source_x].max_degree() < source_y {
+            return;
+        }
+        let idx : usize =
+            match self.product_name_to_index.get(name) {
+                Some(i) => *i,
+                None => {
+                    let product = Product {
+                        name : name.to_string(),
+                        x : mult_x,
+                        y : mult_y,
+                        differential : None,
+                        matrices : BiVec::new(self.min_x)
+                    };
+                    self.products.push(product);
+                    self.product_name_to_index.insert(name.to_string(), self.products.len() - 1);
+                    self.products.len() - 1
+                }
+            };
+        if source_x > self.products[idx].matrices.len() {
+            self.add_product(&name, source_x - 1, self.min_y - 1, mult_x, mult_y, Vec::new());
+        }
+        if source_x == self.products[idx].matrices.len() {
+            self.products[idx].matrices.push(BiVec::new(self.min_y));
+        }
+        if source_y < self.min_y {
+            return;
+        }
+        if source_y > self.products[idx].matrices[source_x].len() {
+            self.add_product(&name, source_x, source_y - 1, mult_x, mult_y, Vec::new());
+        }
+
+        self.products[idx].matrices[source_x].push(Matrix::from_vec(self.p, &matrix));
+        self.compute_pages(source_x, source_y);
+    }
+
     pub fn compute_pages(&mut self, x : i32, y : i32) {
+        let source_dim = self.classes[x][y];
+        if source_dim == 0 {
+            return;
+        }
         let max_page = max(self.zeros[x][y].len(), self.differentials[x][y].len() + 1);
 
         let mut classes : BiVec<Vec<FpVector>> = BiVec::with_capacity(MIN_PAGE, max_page);
         let mut differentials : BiVec<Vec<FpVector>> = BiVec::with_capacity(MIN_PAGE, self.differentials[x][y].len());
+        let mut structlines : BiVec<Vec<ProductItem>> = BiVec::with_capacity(MIN_PAGE, self.differentials[x][y].len());
 
         // r = MIN_PAGE
-        let source_dim = self.classes[x][y];
         let mut class_list : Vec<FpVector> = Vec::with_capacity(source_dim);
         for i in 0 .. source_dim {
             let mut vec = FpVector::new(self.p, source_dim);
             vec.set_entry(i, 1);
             class_list.push(vec);
+
+        }
+        let mut product_list = Vec::new();
+        for mult in &self.products {
+            if mult.matrices.len() > x && mult.matrices[x].len() > y {
+                product_list.push(ProductItem {
+                    name : mult.name.clone(),
+                    mult_x : mult.x,
+                    mult_y : mult.y,
+                    matrix : mult.matrices[x][y].to_vec()
+                });
+            }
         }
         classes.push(class_list);
+        structlines.push(product_list);
 
         for r in MIN_PAGE + 1 .. max_page {
             if classes[r - 1].len() == 0 {
@@ -356,12 +446,32 @@ impl Sseq {
                     vec.add(&matrix[i], 1);
                     class_list.push(vec);
                 }
+//                for 
             }
             classes.push(class_list);
         }
 
         self.page_classes[x][y] = classes;
         self.page_differentials[x][y] = differentials;
+        self.page_structlines[x][y] = structlines;
+
+        if let Some(sender) = &self.sender {
+            sender.send(json!({
+                "command": "setClass",
+                "x": x,
+                "y": y,
+                "classes": self.page_classes[x][y].data,
+                "structlines": self.page_structlines[x][y].data
+            })).unwrap();
+        }
+    }
+
+    fn get_page_classes(&self, r : i32, x : i32, y : i32) -> &Vec<FpVector> {
+        if r >= self.page_classes[x][y].len() {
+            &self.page_classes[x][y][self.page_classes[x][y].max_degree()]
+        } else {
+            &self.page_classes[x][y][r]
+        }
     }
 }
 
@@ -372,8 +482,8 @@ mod tests {
     #[test]
     fn test_sseq_differential() {
         let p = 3;
-        crate::fp_vector::initialize_limb_bit_index_table(p);
-        let mut sseq = crate::sseq::Sseq::new(p, 0, 0);
+        rust_ext::fp_vector::initialize_limb_bit_index_table(p);
+        let mut sseq = crate::sseq::Sseq::new(p, 0, 0, None);
         sseq.set_class(0, 0, 1);
         sseq.set_class(1, 0, 2);
         sseq.set_class(1, 1, 2);
@@ -396,22 +506,22 @@ mod tests {
 
         assert_eq!(sseq.page_classes[1][0].max_degree(), 4);
         assert_eq!(sseq.page_classes[1][0][2], vec![FpVector::from_vec(p, &vec![1, 0]),
-                                             FpVector::from_vec(p, &vec![0, 1])]);
+                                                    FpVector::from_vec(p, &vec![0, 1])]);
 
         assert_eq!(sseq.page_classes[1][0][3], vec![FpVector::from_vec(p, &vec![1, 0])]);
         assert_eq!(sseq.page_classes[1][0][4], vec![]);
 
         assert_eq!(sseq.page_classes[1][1].max_degree(), 2);
         assert_eq!(sseq.page_classes[1][1][2], vec![FpVector::from_vec(p, &vec![1, 0]),
-                                             FpVector::from_vec(p, &vec![0, 1])]);
+                                                    FpVector::from_vec(p, &vec![0, 1])]);
 
         assert_eq!(sseq.page_classes[0][2].max_degree(), 3);
         assert_eq!(sseq.page_classes[0][2][2], vec![FpVector::from_vec(p, &vec![1, 0, 0]),
-                                             FpVector::from_vec(p, &vec![0, 1, 0]),
-                                             FpVector::from_vec(p, &vec![0, 0, 1])]);
+                                                    FpVector::from_vec(p, &vec![0, 1, 0]),
+                                                    FpVector::from_vec(p, &vec![0, 0, 1])]);
 
         assert_eq!(sseq.page_classes[0][2][3], vec![FpVector::from_vec(p, &vec![1, 0, 0]),
-                                             FpVector::from_vec(p, &vec![0, 0, 1])]);
+                                                    FpVector::from_vec(p, &vec![0, 0, 1])]);
 
         assert_eq!(sseq.page_classes[0][3].max_degree(), 4);
         assert_eq!(sseq.page_classes[0][3][2], vec![FpVector::from_vec(p, &vec![1])]);

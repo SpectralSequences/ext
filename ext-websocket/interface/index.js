@@ -1,4 +1,5 @@
 import { MainDisplay, UnitDisplay } from "./display.js";
+import { ExtSseq } from "./sseq.js";
 
 // For timer
 let t0, t_last;
@@ -70,14 +71,22 @@ if (!params.module) {
         });
     });
 } else {
-    window.maxDegree = parseInt(params.degree ? params.degree : 50);
-    openWebSocket(
-        {
-            command : "resolve",
-            algebra : "adem",
-            module : params.module,
-            maxDegree : maxDegree
-        });
+    let maxDegree = parseInt(params.degree ? params.degree : 50);
+    window.sseq = new ExtSseq(params.module, maxDegree);
+    window.sseq.on("initialized", () => {
+        window.display = new MainDisplay("#main", sseq, callbacks);
+    });
+    window.sseq.on("complete", () => {
+        window.display.runningSign.style.display = "none";
+    });
+
+//    openWebSocket(
+//        {
+//            command : "resolve",
+//            algebra : "adem",
+//            module : params.module,
+//            maxDegree : maxDegree
+//        });
 }
 
 function openWebSocket(initialData, maxDegree) {

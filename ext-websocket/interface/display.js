@@ -51,8 +51,8 @@ export class MainDisplay extends SidebarDisplay {
 
         this.tooltip = new Tooltip(this);
         this.on("mouseover", (node) => {
-            this.tooltip.setHTML(`(${node.c.x}, ${node.c.y})`);
-            this.tooltip.show(node.x, node.y);
+            this.tooltip.setHTML(`(${node.x}, ${node.y})`);
+            this.tooltip.show(node.canvas_x, node.canvas_y);
         });
 
         this.on("mouseout", () => {
