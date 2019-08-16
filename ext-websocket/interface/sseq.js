@@ -38,7 +38,7 @@ export class ExtSseq extends EventEmitter {
 
         this.webSocket.onopen = () => {
             this.send({
-                target: "resolver",
+                receiver: "resolver",
                 command: "resolve",
                 algebra : "adem",
                 module : moduleName,
@@ -51,6 +51,18 @@ export class ExtSseq extends EventEmitter {
         this.webSocket.send(JSON.stringify(data));
     }
 
+    addDifferential(r, source_x, source_y, source, target) {
+        this.send({
+            receiver: "sseq",
+            command: "add_differential",
+            r: r,
+            x: source_x,
+            y: source_y,
+            source: source,
+            target: target
+        });
+    }
+
     _resolving(data) {
         this.minDegree = data.minDegree;
         this.maxDegree = data.maxDegree;
@@ -60,6 +72,10 @@ export class ExtSseq extends EventEmitter {
         this.initialyRange = [0, Math.ceil((this.maxDegree - this.minDegree)/2) + 1];
 
         this.emit("initialized");
+    }
+
+    _setPageList(data) {
+        this.page_list = data.page_list;
     }
 
     _setClass(data) {
@@ -84,22 +100,30 @@ export class ExtSseq extends EventEmitter {
         classes.splice(0, 0, undefined, undefined);
         this.classes.set([x, y], classes);
 
+        this.emit("update");
+    }
+
+    _setStructline(data) {
+        let x = data.x;
+        let y = data.y;
         let structlines = data.structlines;
+
         let edges = [];
-        for (let page of structlines) {
-            edges.push([]);
-            for (let mult of page) {
+        for (let mult of structlines) {
+            for (let [page, matrix] of mult["matrices"].entries()) {
+                page = page + 2;
                 let name = mult["name"];
                 let multX = mult["mult_x"];
                 let multY = mult["mult_y"];
-                let matrix = mult["matrix"];
 
                 for (let i = 0; i < matrix.length; i++) {
                     for (let j = 0; j < matrix[i].length; j++) {
                         if (matrix[i][j] != 0) {
                             let line = new Structline(this, [x, y, i], [x + multX, y + multY, j]);
                             line.setProduct(name);
-                            edges[edges.length - 1].push(line);
+                            if (!edges[page])
+                                edges[page] = [];
+                            edges[page].push(line);
                         }
                     }
                 }
@@ -107,12 +131,8 @@ export class ExtSseq extends EventEmitter {
                 this.maxMultY = Math.max(this.maxMultY, multY);
             }
         }
-        edges.splice(0, 0, undefined, undefined);
-        this.edges.set([x, y], edges);
 
-        if (x == 0 && y == 0) {
-            console.log(data);
-        }
+        this.edges.set([x, y], edges);
         this.emit("update");
     }
 
@@ -132,13 +152,17 @@ export class ExtSseq extends EventEmitter {
                 let result = this.classes.get([x, y]);
                 if (!result) continue;
 
-                if (page >= result.length) page = result.length - 1;
+                if (page >= result.length)
+                    result = result[result.length - 1];
+                else
+                    result = result[page];
 
-                for (let node of result[page]) {
+                for (let node of result) {
                     displayClasses.push(node);
                 }
             }
         }
+
         let displayEdges = [];
         for (let x = xmin - this.maxMultX; x <= xmax + this.maxMultX; x++) {
             for (let y = ymin - this.maxMultY; y <= ymax + this.maxMultY; y++) {

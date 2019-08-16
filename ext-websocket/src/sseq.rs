@@ -9,6 +9,27 @@ use bivec::BiVec;
 
 const MIN_PAGE : i32 = 2;
 
+/// Given a vector `elt`, a subspace `zeros` of the total space (with a specified choice of
+/// complement) and a basis `basis` of a subspace of the complement, project `elt` to the complement and express
+/// as a linear combination of the basis. This assumes the projection of `elt` is indeed in the
+/// span of `basis`. The result is returned as a list of coefficients.
+fn express_basis(mut elt : FpVector, zeros : &Subspace, basis : &(Vec<isize>, Vec<FpVector>)) -> Vec<u32>{
+    zeros.reduce(&mut elt);
+    let mut result = Vec::with_capacity(basis.0.len());
+    for i in 0 .. basis.0.len() {
+        if basis.0[i] < 0 {
+            continue;
+        }
+        let c = elt.get_entry(i);
+        result.push(c);
+        if c != 0 {
+            elt.add(&basis.1[basis.0[i] as usize], (elt.prime() - 1) * c);
+        }
+    }
+//    assert!(elt.is_zero());
+    result
+}
+
 pub struct Differential {
     matrix : Matrix,
     source_dim : usize,
@@ -81,7 +102,7 @@ pub struct Product {
     x : i32,
     y : i32,
     differential : Option<(i32, Matrix)>, // page and matrix of the differential, if any
-    matrices : BiVec<BiVec<Matrix>>
+    matrices : BiVec<BiVec<Option<Matrix>>>
 }
 
 #[derive(Serialize)]
@@ -89,11 +110,11 @@ struct ProductItem {
     name : String,
     mult_x : i32,
     mult_y : i32,
-    matrix : Vec<Vec<u32>>
+    matrices : BiVec<Vec<Vec<u32>>> // page -> matrix
 }
 
 pub struct Sseq {
-    p : u32,
+    pub p : u32,
     min_x : i32,
     min_y : i32,
 
@@ -105,7 +126,7 @@ pub struct Sseq {
     differentials : BiVec<BiVec<BiVec<Differential>>>, // x -> y -> r -> differential
     permanent_classes : BiVec<BiVec<Subspace>>, // x -> y -> r -> permanent classes
     zeros : BiVec<BiVec<BiVec<Subspace>>>, // x -> y -> r -> subspace of elements that are zero on page r
-    page_classes : BiVec<BiVec<BiVec<Vec<FpVector>>>>, // x -> y -> r -> list of generators on the page.
+    page_classes : BiVec<BiVec<BiVec<(Vec<isize>, Vec<FpVector>)>>>, // x -> y -> r -> list of generators on the page.
     page_differentials : BiVec<BiVec<BiVec<Vec<FpVector>>>>, // x -> y -> r -> list of d(x_i), where x_i is ith basis element in the list in page_classes.
     page_structlines : BiVec<BiVec<BiVec<Vec<ProductItem>>>>, // x -> y -> r -> a list of products
 }
@@ -138,6 +159,12 @@ impl Sseq {
             self.page_list.push(r);
             self.page_list.sort_unstable();
         }
+        if let Some(sender) = &self.sender {
+            sender.send(json!({
+                "command": "setPageList",
+                "page_list": self.page_list
+            })).unwrap();
+        }
     }
 
     /// This function should only be called when everything to the left and bottom of (x, y)
@@ -160,7 +187,7 @@ impl Sseq {
         }
 
         if y < self.min_y {
-            return; // This happens when we are padding as before
+            return; // This happens when we are padding as above
         }
 
         while y > self.classes[x].len() {
@@ -177,7 +204,8 @@ impl Sseq {
         self.page_differentials[x].push(BiVec::new(MIN_PAGE));
         self.page_structlines[x].push(BiVec::new(MIN_PAGE));
 
-        self.compute_pages(x, y);
+        self.allocate_zeros_subspace(MIN_PAGE, x, y);
+        self.compute_classes(x, y);
     }
 
     /// Initializes `differentials[x][y][r]`. It sets the differentials of all known permament
@@ -218,8 +246,6 @@ impl Sseq {
             }
         }
 
-        let source_dim = self.classes[x][y];
-
         self.differentials[x][y][r].add(source, Some(target));
         for i in MIN_PAGE .. r {
             self.differentials[x][y][i].add(source, None)
@@ -240,6 +266,15 @@ impl Sseq {
 
         self.add_page(r);
         self.add_page(r + 1);
+
+        self.compute_classes(x, y);
+        self.compute_classes(x - 1, y + r);
+
+        // self.zeros[r] will be populated if there is a non-zero differential hit on a
+        // page <= r - 1. Check if these differentials now hit 0.
+        for r_ in r + 1 .. self.zeros[x - 1][y + r].len() - 1 {
+            self.compute_classes(x, y + r - r_);
+        }
     }
 
     /// This function recursively propagates differentials. If this function is called, it will add
@@ -256,19 +291,31 @@ impl Sseq {
 
         // We have to do this to avoid having an immutable borrow of self outside of the
         // context
-        if self.products[product_index].differential.is_none() && self.products[product_index].matrices.len() > x && self.products[product_index].matrices[x].len() > y {
+        if self.products[product_index].differential.is_none() &&
+           self.products[product_index].matrices.len() > x &&
+           self.products[product_index].matrices[x].len() > y &&
+           self.products[product_index].matrices[x - 1].len() > y + r {
+
             let product = &self.products[product_index];
             let prod_x = product.x;
             let prod_y = product.y;
-            let mut prod_source = FpVector::new(self.p, product.matrices[x][y].get_columns());
-            let mut prod_target = FpVector::new(self.p, product.matrices[x - 1][y + r].get_columns());
-            product.matrices[x][y].apply(&mut prod_source, 1, source);
-            product.matrices[x - 1][y + r].apply(&mut prod_target, 1, target);
 
-            // If prod_source is non-zero but prod_target is zero, this is still useful
-            // information.
-            if !prod_source.is_zero() {
-                self.add_differential_propagate(r, x + prod_x, y + prod_y, &prod_source, &prod_target, product_index);
+            // If source product is 0, nothing to do
+            if let Some(source_matrix) = &product.matrices[x][y] {
+                let mut prod_source = FpVector::new(self.p, self.classes[x + prod_x][y + prod_y]);
+                source_matrix.apply(&mut prod_source, 1, source);
+
+                // If prod_source is non-zero but prod_target is zero, this is still useful
+                // information.
+                if !prod_source.is_zero() {
+                    let mut prod_target = FpVector::new(self.p, self.classes[x + prod_x - 1][y + prod_y + r]);
+                    // If target_matrix is 0, this means prod_target ought to be 0, and we do nothing.
+                    if let Some(target_matrix) = &product.matrices[x - 1][y + r] {
+                        target_matrix.apply(&mut prod_target, 1, target);
+                    }
+
+                    self.add_differential_propagate(r, x + prod_x, y + prod_y, &prod_source, &prod_target, product_index);
+                }
             }
         }
     }
@@ -300,19 +347,25 @@ impl Sseq {
             let product = &self.products[product_index];
             let prod_x = product.x;
             let prod_y = product.y;
-            let mut prod_class = FpVector::new(self.p, product.matrices[x][y].get_columns());
-            product.matrices[x][y].apply(&mut prod_class, 1, class);
+            if let Some(matrix) = &product.matrices[x][y] {
+                let mut prod_class = FpVector::new(self.p, self.classes[x + prod_x][y + prod_y]);
+                matrix.apply(&mut prod_class, 1, class);
 
-            if !prod_class.is_zero() {
-                self.set_permanent_class_propagate(x + prod_x, y + prod_y, &prod_class, product_index);
+                if !prod_class.is_zero() {
+                    self.set_permanent_class_propagate(x + prod_x, y + prod_y, &prod_class, product_index);
+                }
             }
         }
     }
 
     pub fn add_product(&mut self, name : &str, source_x : i32, source_y : i32, mult_x : i32, mult_y : i32, matrix : Vec<Vec<u32>>) {
-        if self.classes[source_x].max_degree() < source_y {
+        if !self.class_defined(source_x, source_y) {
             return;
         }
+        if !self.class_defined(source_x + mult_x, source_y + mult_y) {
+            return;
+        }
+
         let idx : usize =
             match self.product_name_to_index.get(name) {
                 Some(i) => *i,
@@ -329,33 +382,199 @@ impl Sseq {
                     self.products.len() - 1
                 }
             };
-        if source_x > self.products[idx].matrices.len() {
-            self.add_product(&name, source_x - 1, self.min_y - 1, mult_x, mult_y, Vec::new());
+        while source_x > self.products[idx].matrices.len() {
+            self.products[idx].matrices.push(BiVec::new(self.min_y));
         }
         if source_x == self.products[idx].matrices.len() {
             self.products[idx].matrices.push(BiVec::new(self.min_y));
         }
-        if source_y < self.min_y {
-            return;
-        }
-        if source_y > self.products[idx].matrices[source_x].len() {
-            self.add_product(&name, source_x, source_y - 1, mult_x, mult_y, Vec::new());
+        while source_y > self.products[idx].matrices[source_x].len() {
+            self.products[idx].matrices[source_x].push(None);
         }
 
-        self.products[idx].matrices[source_x].push(Matrix::from_vec(self.p, &matrix));
-        self.compute_pages(source_x, source_y);
+        self.products[idx].matrices[source_x].push(Some(Matrix::from_vec(self.p, &matrix)));
+        self.compute_edges(source_x, source_y);
     }
 
-    pub fn compute_pages(&mut self, x : i32, y : i32) {
-        let source_dim = self.classes[x][y];
-        if source_dim == 0 {
+    /// Computes products whose source is at (x, y).
+    pub fn compute_edges(&self, x : i32, y : i32) {
+        if !self.class_defined(x, y) {
             return;
         }
+        if self.classes[x][y] == 0 {
+            return;
+        }
+
+        let mut global_max_page = self.page_classes[x][y].len();
+        for mult in &self.products {
+            if self.class_defined(x + mult.x, y + mult.y) {
+                global_max_page = max(global_max_page, self.page_classes[x + mult.x][y + mult.y].len());
+            }
+        }
+
+        let mut structlines : Vec<ProductItem> = Vec::with_capacity(self.products.len());
+        for mult in &self.products {
+            if !(mult.matrices.len() > x && mult.matrices[x].len() > y) {
+                continue;
+            }
+            let target_dim = self.classes[x + mult.x][y + mult.y];
+            if target_dim == 0 {
+                continue;
+            }
+
+            if let Some(matrix) = &mult.matrices[x][y] {
+                let max_page = max(self.page_classes[x][y].len(), self.page_classes[x + mult.x][y + mult.y].len());
+                let mut matrices : BiVec<Vec<Vec<u32>>> = BiVec::with_capacity(MIN_PAGE, max_page);
+
+                // E_2 page
+                matrices.push(matrix.to_vec());
+
+                // Compute the ones where something changes.
+                for r in MIN_PAGE + 1 .. max_page {
+                    let source_classes = self.get_page_classes(r, x, y);
+                    if source_classes.1.len() == 0 {
+                        break;
+                    }
+                    let target_classes = self.get_page_classes(r, x + mult.x, y + mult.y);
+                    let target_zeros = self.get_page_zeros(r, x + mult.x, y + mult.y);
+
+                    let mut result = Vec::with_capacity(source_classes.1.len());
+                    for vec in &source_classes.1 {
+                        let mut target = FpVector::new(self.p, target_dim);
+                        matrix.apply(&mut target, 1, vec);
+                        result.push(express_basis(target, target_zeros, target_classes));
+                    }
+                    matrices.push(result);
+                }
+                while matrices.len() < global_max_page {
+                    matrices.push(matrices.last().unwrap().clone());
+                }
+                assert_eq!(matrices.len(), global_max_page);
+
+                structlines.push(ProductItem {
+                    name : mult.name.clone(),
+                    mult_x : mult.x,
+                    mult_y : mult.y,
+                    matrices,
+                });
+            }
+        }
+
+        if let Some(sender) = &self.sender {
+            sender.send(json!({
+                "command": "setStructline",
+                "x": x,
+                "y": y,
+                "structlines": structlines
+            })).unwrap();
+        }
+    }
+
+    /// Compute the classes in next page assuming there is no differential coming out of the class
+    /// on that page. Returns a basis of the remaining classes together with column_to_pivot_row.
+    fn compute_next_page_no_d (p : u32 , old_classes : &(Vec<isize>, Vec<FpVector>), zeros : &Subspace) -> (Vec<isize>, Vec<FpVector>) {
+        let source_dim = old_classes.0.len();
+
+        let mut class_list = Vec::new();
+        let mut vectors : Vec<FpVector> = Vec::with_capacity(old_classes.1.len());
+
+        for vec in &old_classes.1 {
+            let mut result = vec.clone();
+            zeros.reduce(&mut result);
+            vectors.push(result);
+        }
+
+        let mut matrix = Matrix::from_rows(p, vectors);
+        let mut pivots = vec![-1; matrix.get_columns()];
+        matrix.row_reduce(&mut pivots);
+
+        for i in 0 .. matrix.get_rows() {
+            if matrix[i].is_zero() {
+                break;
+            }
+            let mut vec = FpVector::new(p, source_dim);
+            vec.add(&matrix[i], 1);
+            class_list.push(vec);
+        }
+        (pivots, class_list)
+    }
+
+    /// Compute the classes in next page assuming there might be a differential coming out of the
+    /// class on that page. Returns a basis of the remaining classes together with
+    /// column_to_pivot_row.
+    fn compute_next_page_with_d (p : u32, old_classes : &(Vec<isize>, Vec<FpVector>), source_zeros : &Subspace, target_zeros : &Subspace, d : &Differential) -> (Vec<isize>, Vec<FpVector>) {
+        let source_dim = d.source_dim;
+        let target_dim = d.target_dim;
+
+        if target_dim == 0 {
+            return Self::compute_next_page_no_d(p, old_classes, source_zeros);
+        }
+
+        let mut class_list = Vec::new();
+        let mut vectors : Vec<FpVector> = Vec::with_capacity(old_classes.1.len());
+
+//                differentials.push(Vec::with_capacity(classes[r - 1].1.len()));
+
+        for vec in &old_classes.1 {
+            let mut dvec = FpVector::new(p, target_dim);
+            d.evaluate(vec.clone(), &mut dvec);
+            println!("{}", dvec);
+            println!("{:?}", target_zeros);
+            target_zeros.reduce(&mut dvec);
+
+            let mut result = FpVector::new(p, source_dim + target_dim);
+            result.set_slice(0, source_dim);
+            result.add(&vec, 1);
+            source_zeros.reduce(&mut result);
+            result.clear_slice();
+
+            result.set_slice(source_dim, source_dim + target_dim);
+            result.shift_add(&dvec, 1);
+            result.clear_slice();
+
+            vectors.push(result);
+            //                    differentials[r - 1].push(dvec);
+        }
+        let mut matrix = Matrix::from_rows(p, vectors);
+        let mut pivots = vec![-1; matrix.get_columns()];
+        matrix.row_reduce_offset(&mut pivots, source_dim);
+
+        let mut first_kernel_row = 0;
+        for i in (source_dim .. source_dim + target_dim).rev() {
+            if pivots[i] >= 0 {
+                first_kernel_row = pivots[i] + 1;
+            }
+        }
+
+        matrix.set_slice(first_kernel_row as usize, matrix.get_rows(), 0, source_dim);
+        pivots.truncate(source_dim);
+        matrix.row_reduce(&mut pivots);
+        for i in 0 .. matrix.get_rows() {
+            if matrix[i].is_zero() {
+                break;
+            }
+            let mut vec = FpVector::new(p, source_dim);
+            vec.add(&matrix[i], 1);
+            class_list.push(vec);
+        }
+        (pivots, class_list)
+    }
+
+    pub fn compute_classes(&mut self, x : i32, y : i32) {
+        if !self.class_defined(x, y) {
+            return;
+        }
+
+        let source_dim = self.classes[x][y];
+        if source_dim == 0 {
+            self.page_classes[x][y] = BiVec::from_vec(MIN_PAGE, vec![(Vec::new(), Vec::new())]);
+            return;
+        }
+
         let max_page = max(self.zeros[x][y].len(), self.differentials[x][y].len() + 1);
 
-        let mut classes : BiVec<Vec<FpVector>> = BiVec::with_capacity(MIN_PAGE, max_page);
-        let mut differentials : BiVec<Vec<FpVector>> = BiVec::with_capacity(MIN_PAGE, self.differentials[x][y].len());
-        let mut structlines : BiVec<Vec<ProductItem>> = BiVec::with_capacity(MIN_PAGE, self.differentials[x][y].len());
+        let mut classes : BiVec<(Vec<isize>, Vec<FpVector>)> = BiVec::with_capacity(MIN_PAGE, max_page);
+//        let mut differentials : BiVec<Vec<FpVector>> = BiVec::with_capacity(MIN_PAGE, self.differentials[x][y].len());
 
         // r = MIN_PAGE
         let mut class_list : Vec<FpVector> = Vec::with_capacity(source_dim);
@@ -363,113 +582,68 @@ impl Sseq {
             let mut vec = FpVector::new(self.p, source_dim);
             vec.set_entry(i, 1);
             class_list.push(vec);
-
         }
-        let mut product_list = Vec::new();
-        for mult in &self.products {
-            if mult.matrices.len() > x && mult.matrices[x].len() > y {
-                product_list.push(ProductItem {
-                    name : mult.name.clone(),
-                    mult_x : mult.x,
-                    mult_y : mult.y,
-                    matrix : mult.matrices[x][y].to_vec()
-                });
-            }
-        }
-        classes.push(class_list);
-        structlines.push(product_list);
+        classes.push(((0..source_dim as isize).collect(), class_list));
 
         for r in MIN_PAGE + 1 .. max_page {
-            if classes[r - 1].len() == 0 {
+            if classes[r - 1].1.len() == 0 {
                 break;
             }
-            let mut class_list = Vec::new();
 
             // We only have to figure out what gets hit by differentials.
             if self.differentials[x][y].len() < r {
-                let mut vectors : Vec<FpVector> = Vec::with_capacity(classes[r - 1].len());
-                for vec in &classes[r - 1] {
-                    let mut result = vec.clone();
-                    self.zeros[x][y][r].reduce(&mut result);
-                    vectors.push(result);
-                }
-                let mut matrix = Matrix::from_rows(self.p, vectors);
-                let mut pivots = vec![-1; matrix.get_columns()];
-                matrix.row_reduce(&mut pivots);
-
-                for i in 0 .. matrix.get_rows() {
-                    if matrix[i].is_zero() {
-                        break;
-                    }
-                    let mut vec = FpVector::new(self.p, source_dim);
-                    vec.add(&matrix[i], 1);
-                    class_list.push(vec);
-                }
+                classes.push(Self::compute_next_page_no_d(self.p, &classes[r - 1], self.get_page_zeros(r, x, y)));
             } else {
-                let target_dim = self.classes[x - 1][y + r - 1];
-                let d = &self.differentials[x][y][r - 1];
-
-                let mut vectors : Vec<FpVector> = Vec::with_capacity(classes[r - 1].len());
-                differentials.push(Vec::with_capacity(classes[r - 1].len()));
-                for vec in &classes[r - 1] {
-                    let mut dvec = FpVector::new(self.p, target_dim);
-                    d.evaluate(vec.clone(), &mut dvec);
-                    self.zeros[x - 1][y + r - 1][r - 1].reduce(&mut dvec);
-
-                    let mut result = FpVector::new(self.p, source_dim + target_dim);
-                    result.set_slice(0, source_dim);
-                    result.add(&vec, 1);
-                    result.clear_slice();
-
-                    result.set_slice(source_dim, source_dim + target_dim);
-                    result.shift_add(&dvec, 1);
-                    result.clear_slice();
-
-                    vectors.push(result);
-                    differentials[r - 1].push(dvec);
-                }
-                let mut matrix = Matrix::from_rows(self.p, vectors);
-                let mut pivots = vec![-1; matrix.get_columns()];
-                matrix.row_reduce(&mut pivots);
-                matrix.row_reduce_offset(&mut pivots, source_dim);
-
-                let mut first_kernel_row = 0;
-                for i in (source_dim .. source_dim + target_dim).rev() {
-                    if pivots[i] >= 0 {
-                        first_kernel_row = pivots[i] + 1;
-                    }
-                }
-
-                matrix.set_slice(0, matrix.get_rows(), 0, source_dim);
-                for i in first_kernel_row as usize .. matrix.get_rows() {
-                    if matrix[i].is_zero() {
-                        break;
-                    }
-                    let mut vec = FpVector::new(self.p, source_dim);
-                    vec.add(&matrix[i], 1);
-                    class_list.push(vec);
-                }
-//                for 
+                println!("x, y, r: {}, {}, {}", x, y, r);
+                classes.push(Self::compute_next_page_with_d(self.p, &classes[r - 1], self.get_page_zeros(r, x, y), self.get_page_zeros(r - 1, x - 1, y + r - 1), &self.differentials[x][y][r - 1]));
             }
-            classes.push(class_list);
         }
 
         self.page_classes[x][y] = classes;
-        self.page_differentials[x][y] = differentials;
-        self.page_structlines[x][y] = structlines;
+//        self.page_differentials[x][y] = differentials;
 
-        if let Some(sender) = &self.sender {
-            sender.send(json!({
-                "command": "setClass",
-                "x": x,
-                "y": y,
-                "classes": self.page_classes[x][y].data,
-                "structlines": self.page_structlines[x][y].data
-            })).unwrap();
+        if source_dim > 0 {
+            if let Some(sender) = &self.sender {
+                sender.send(json!({
+                    "command": "setClass",
+                    "x": x,
+                    "y": y,
+                    "classes": self.page_classes[x][y].iter().map(|x| &x.1).collect::<Vec<&Vec<FpVector>>>()
+                })).unwrap();
+            }
+
+            self.compute_edges(x, y);
+            for prod in &self.products {
+                self.compute_edges(x - prod.x, y - prod.y);
+            }
         }
     }
 
-    fn get_page_classes(&self, r : i32, x : i32, y : i32) -> &Vec<FpVector> {
+    fn class_defined(&self, x : i32, y : i32) -> bool {
+        if x < self.min_x || y < self.min_y {
+            return false;
+        }
+
+        if x > self.classes.max_degree() {
+            return false;
+        }
+        if y > self.classes[x].max_degree() {
+            return false;
+        }
+        return true;
+    }
+
+    fn get_page_zeros(&self, r : i32, x : i32, y : i32) -> &Subspace {
+        println!("Get page zeros r, x, y: {}, {}, {}", r, x, y);
+        if r >= self.zeros[x][y].len() {
+            &self.zeros[x][y][self.zeros[x][y].max_degree()]
+        } else {
+            &self.zeros[x][y][r]
+        }
+    }
+
+    fn get_page_classes(&self, r : i32, x : i32, y : i32) -> &(Vec<isize>, Vec<FpVector>) {
+        assert!(self.page_classes[x][y].len() > MIN_PAGE, "No classes defined at ({}, {})", x, y);
         if r >= self.page_classes[x][y].len() {
             &self.page_classes[x][y][self.page_classes[x][y].max_degree()]
         } else {
@@ -502,34 +676,30 @@ mod tests {
                               &FpVector::from_vec(p, &vec![1, 0]),
                               &FpVector::from_vec(p, &vec![1]));
 
-        sseq.compute_pages(1, 0);
-        sseq.compute_pages(1, 1);
-        sseq.compute_pages(0, 2);
-        sseq.compute_pages(0, 3);
 
         assert_eq!(sseq.page_classes[1][0].max_degree(), 4);
-        assert_eq!(sseq.page_classes[1][0][2], vec![FpVector::from_vec(p, &vec![1, 0]),
+        assert_eq!(sseq.page_classes[1][0][2].1, vec![FpVector::from_vec(p, &vec![1, 0]),
                                                     FpVector::from_vec(p, &vec![0, 1])]);
 
-        assert_eq!(sseq.page_classes[1][0][3], vec![FpVector::from_vec(p, &vec![1, 0])]);
-        assert_eq!(sseq.page_classes[1][0][4], vec![]);
+        assert_eq!(sseq.page_classes[1][0][3].1, vec![FpVector::from_vec(p, &vec![1, 0])]);
+        assert_eq!(sseq.page_classes[1][0][4].1, vec![]);
 
         assert_eq!(sseq.page_classes[1][1].max_degree(), 2);
-        assert_eq!(sseq.page_classes[1][1][2], vec![FpVector::from_vec(p, &vec![1, 0]),
+        assert_eq!(sseq.page_classes[1][1][2].1, vec![FpVector::from_vec(p, &vec![1, 0]),
                                                     FpVector::from_vec(p, &vec![0, 1])]);
 
         assert_eq!(sseq.page_classes[0][2].max_degree(), 3);
-        assert_eq!(sseq.page_classes[0][2][2], vec![FpVector::from_vec(p, &vec![1, 0, 0]),
+        assert_eq!(sseq.page_classes[0][2][2].1, vec![FpVector::from_vec(p, &vec![1, 0, 0]),
                                                     FpVector::from_vec(p, &vec![0, 1, 0]),
                                                     FpVector::from_vec(p, &vec![0, 0, 1])]);
 
-        assert_eq!(sseq.page_classes[0][2][3], vec![FpVector::from_vec(p, &vec![1, 0, 0]),
+        assert_eq!(sseq.page_classes[0][2][3].1, vec![FpVector::from_vec(p, &vec![1, 0, 0]),
                                                     FpVector::from_vec(p, &vec![0, 0, 1])]);
 
         assert_eq!(sseq.page_classes[0][3].max_degree(), 4);
-        assert_eq!(sseq.page_classes[0][3][2], vec![FpVector::from_vec(p, &vec![1])]);
-        assert_eq!(sseq.page_classes[0][3][3], vec![FpVector::from_vec(p, &vec![1])]);
-        assert_eq!(sseq.page_classes[0][3][4], vec![]);
+        assert_eq!(sseq.page_classes[0][3][2].1, vec![FpVector::from_vec(p, &vec![1])]);
+        assert_eq!(sseq.page_classes[0][3][3].1, vec![FpVector::from_vec(p, &vec![1])]);
+        assert_eq!(sseq.page_classes[0][3][4].1, vec![]);
 
         assert_eq!(sseq.page_differentials[1][0].max_degree(), 3);
         assert_eq!(sseq.page_differentials[1][0][2], vec![FpVector::from_vec(p, &vec![0, 0, 0]),
@@ -544,35 +714,30 @@ mod tests {
                               &FpVector::from_vec(p, &vec![1, 0]),
                               &FpVector::from_vec(p, &vec![1]));
 
-        sseq.compute_pages(1, 0);
-        sseq.compute_pages(1, 1);
-        sseq.compute_pages(0, 2);
-        sseq.compute_pages(0, 3);
-
         assert_eq!(sseq.page_classes[1][0].max_degree(), 4);
-        assert_eq!(sseq.page_classes[1][0][2], vec![FpVector::from_vec(p, &vec![1, 0]),
+        assert_eq!(sseq.page_classes[1][0][2].1, vec![FpVector::from_vec(p, &vec![1, 0]),
                                                     FpVector::from_vec(p, &vec![0, 1])]);
 
-        assert_eq!(sseq.page_classes[1][0][3], vec![FpVector::from_vec(p, &vec![1, 0])]);
-        assert_eq!(sseq.page_classes[1][0][4], vec![FpVector::from_vec(p, &vec![1, 0])]);
+        assert_eq!(sseq.page_classes[1][0][3].1, vec![FpVector::from_vec(p, &vec![1, 0])]);
+        assert_eq!(sseq.page_classes[1][0][4].1, vec![FpVector::from_vec(p, &vec![1, 0])]);
 
         assert_eq!(sseq.page_classes[1][1].max_degree(), 3);
-        assert_eq!(sseq.page_classes[1][1][2], vec![FpVector::from_vec(p, &vec![1, 0]),
+        assert_eq!(sseq.page_classes[1][1][2].1, vec![FpVector::from_vec(p, &vec![1, 0]),
                                                     FpVector::from_vec(p, &vec![0, 1])]);
 
-        assert_eq!(sseq.page_classes[1][1][3], vec![FpVector::from_vec(p, &vec![0, 1])]);
+        assert_eq!(sseq.page_classes[1][1][3].1, vec![FpVector::from_vec(p, &vec![0, 1])]);
 
         assert_eq!(sseq.page_classes[0][2].max_degree(), 3);
-        assert_eq!(sseq.page_classes[0][2][2], vec![FpVector::from_vec(p, &vec![1, 0, 0]),
+        assert_eq!(sseq.page_classes[0][2][2].1, vec![FpVector::from_vec(p, &vec![1, 0, 0]),
                                                     FpVector::from_vec(p, &vec![0, 1, 0]),
                                                     FpVector::from_vec(p, &vec![0, 0, 1])]);
 
-        assert_eq!(sseq.page_classes[0][2][3], vec![FpVector::from_vec(p, &vec![1, 0, 0]),
+        assert_eq!(sseq.page_classes[0][2][3].1, vec![FpVector::from_vec(p, &vec![1, 0, 0]),
                                                     FpVector::from_vec(p, &vec![0, 0, 1])]);
 
         assert_eq!(sseq.page_classes[0][3].max_degree(), 3);
-        assert_eq!(sseq.page_classes[0][3][2], vec![FpVector::from_vec(p, &vec![1])]);
-        assert_eq!(sseq.page_classes[0][3][3], vec![]);
+        assert_eq!(sseq.page_classes[0][3][2].1, vec![FpVector::from_vec(p, &vec![1])]);
+        assert_eq!(sseq.page_classes[0][3][3].1, vec![]);
 
         assert_eq!(sseq.page_differentials[1][0].max_degree(), 3);
         assert_eq!(sseq.page_differentials[1][0][2], vec![FpVector::from_vec(p, &vec![0, 0, 0]),

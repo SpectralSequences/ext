@@ -65,6 +65,9 @@ export class MainDisplay extends SidebarDisplay {
             callbacks["queryTable"](x, y);
         });
 
+        Mousetrap.bind('left',  this.previousPage);
+        Mousetrap.bind('right', this.nextPage);
+
         this.structlinePanel = new StructlinePanel(this.sidebar.main_div, this);
         this.sidebar.addPanel(this.structlinePanel);
         this.sidebar.currentPanel = this.structlinePanel;

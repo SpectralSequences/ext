@@ -10,6 +10,7 @@ use rust_ext::Config;
 use rust_ext::module::{Module, FiniteModule};
 use rust_ext::resolution::{ModuleResolution};
 use rust_ext::chain_complex::ChainComplex;
+use rust_ext::fp_vector::FpVector;
 
 use std::{fs, thread};
 use std::sync::mpsc;
@@ -254,6 +255,7 @@ impl SseqManager {
             match json["command"].as_str() {
                 Some("resolving") => manager.resolving(json)?,
                 Some("complete") => manager.relay(json)?,
+                Some("add_differential") => manager.add_differential(json)?,
                 Some("addClass") => manager.add_class(json)?,
                 Some("addStructline") => manager.add_structline(json)?,
                 _ => {println!("SseqManager ignoring message:\n{:#}", json);}
@@ -271,6 +273,19 @@ impl SseqManager {
         self.sseq = Some(Sseq::new(p, min_degree, 0, Some(sender)));
 
         self.relay(json)
+    }
+
+    fn add_differential(&mut self, json : Value) -> Result<(), Box<dyn Error>> {
+        let x = json["x"].as_i64().unwrap() as i32;
+        let y = json["y"].as_i64().unwrap() as i32;
+        let r = json["r"].as_i64().unwrap() as i32;
+        let source : Vec<u32> = serde_json::from_str(&json["source"].to_string()).unwrap(); // Better way to do this?
+        let target : Vec<u32> = serde_json::from_str(&json["target"].to_string()).unwrap(); // Better way to do this?
+
+        if let Some(sseq) = &mut self.sseq {
+            sseq.add_differential_propagate(r, x, y, &FpVector::from_vec(sseq.p, &source), &FpVector::from_vec(sseq.p, &target), 0);
+        }
+        Ok(())
     }
 
     fn add_class(&mut self, json : Value) -> Result<(), Box<dyn Error>> {
@@ -345,8 +360,8 @@ impl Handler for Server {
         let json : Value = serde_json::from_str(&msg).unwrap();
         println!("Received message:\n{}", serde_json::to_string_pretty(&json).unwrap());
 
-        let target = json["target"].as_str().unwrap();
-        match target {
+        let receiver = json["receiver"].as_str().unwrap();
+        match receiver {
             "resolver" => {
                 match self.res_sender.send(json) {
                     Ok(_) => (),
@@ -359,7 +374,7 @@ impl Handler for Server {
                     Err(e) => eprintln!("Failed to send message to ResolutionManager: {}", e)
                 }
             },
-            _ => eprintln!("Unknown target: {}", target)
+            _ => eprintln!("Unknown target: {}", receiver)
         }
         Ok(())
     }
