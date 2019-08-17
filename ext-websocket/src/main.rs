@@ -273,7 +273,6 @@ impl SseqManager {
                 _ => {println!("SseqManager ignoring message:\n{:#}", json);}
             };
         }
-        println!("Dropping SseqManager");
         Ok(())
     }
 
@@ -437,12 +436,6 @@ impl Handler for Server {
     }
 }
 
-// When Server is dropped:
-//  - server_sender is dropped. This causes manager_receiver to terminate.
-//  - When manager_receiver is terminated, ResolutionManager::new() ends and manger is dropped. The
-//  manager thread ends.
-//  - When manager is dropped, manager_sender is dropped. So server_receiver terminates, and the
-//  messager thread ends.
 impl Server {
     fn new(out : Sender) -> Self {
         let (sseq_sender, sseq_receiver) = mpsc::channel();

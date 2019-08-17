@@ -734,6 +734,7 @@ impl Sseq {
             "x": x,
             "y": y,
             "state": state,
+            "permanents": self.permanent_classes[x][y].get_basis(),
             "classes": self.page_classes[x][y].iter().map(|x| &x.1).collect::<Vec<&Vec<FpVector>>>()
         }));
     }

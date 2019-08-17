@@ -6,6 +6,36 @@ const NODE_COLOR = {
     "Done": "gray"
 };
 
+// Prompts for an array of length `length`
+function promptClass(text, error, length) {
+    while (true) {
+        let response = prompt(text).trim();
+        if (!response) {
+            return null;
+        }
+        let vec = JSON.parse(response);
+        if (Array.isArray(vec) && vec.length == length) {
+            return vec;
+        }
+        alert(error);
+    }
+}
+
+function promptInteger(text, error) {
+    while (true) {
+        let response = prompt(text).trim();
+        if (!response) {
+            return;
+        }
+        let c = parseInt(response);
+        if (!isNaN(c)) {
+            return c;
+            break;
+        }
+        alert(error);
+    }
+}
+
 export class ExtSseq extends EventEmitter {
     constructor(name, webSocket) {
         super();
@@ -16,10 +46,14 @@ export class ExtSseq extends EventEmitter {
         this.maxDegree = 0;
         this.initial_page_idx = 0;
         this.min_page_idx = 0;
+
         this.classes = new StringifyingMap();
         this.structlines = new StringifyingMap();
+        this.products = new StringifyingMap();
         this.structlineTypes = new Set();
+        this.permanentClasses = new StringifyingMap();
         this.differentials = new StringifyingMap();
+
         this.differentialColors = [undefined, undefined, "cyan", "red", "green"];
         this.page_list = [2];
 
@@ -44,7 +78,7 @@ export class ExtSseq extends EventEmitter {
         this.webSocket.send(JSON.stringify(data));
     }
 
-    addPermanent(x, y, target) {
+    addPermanentClass(x, y, target) {
         this.send({
             recipient: "sseq",
             command: "add_permanent",
@@ -52,6 +86,81 @@ export class ExtSseq extends EventEmitter {
             y: y,
             class: target,
         });
+    }
+
+    pageBasisToE2Basis(r, x, y, c) {
+        let len = this.classes.get([x, y])[2].length;
+        let pageBasis = this.getClasses(x, y, r);
+
+        let result = [];
+        for (let i = 0; i < len; i ++) {
+            result.push(0);
+        }
+        for (let i = 0; i < pageBasis.length; i ++) {
+            let coef = c[i];
+            for (let j = 0; j < len; j++) {
+                result[j] += coef * pageBasis[i].data[j];
+            }
+        }
+        for (let i = 0; i < len; i ++) {
+            result[i] = result[i] % this.p;
+        }
+        return result;
+    }
+
+    addDifferentialInteractive(source, target) {
+        let page = target.y - source.y;
+        let source_dim = this.getClasses(source.x, source.y, page).length;
+        let target_dim = this.getClasses(target.x, target.y, page).length;
+
+        let source_vec = [];
+        let target_vec = [];
+        if (source_dim == 1) {
+            source_vec = [1];
+        } else {
+            source_vec = promptClass("Input source", `Invalid source. Express in terms of basis on page ${page}`, source_dim);
+            if (source_vec === null) {
+                return;
+            }
+        }
+        if (source_dim == 1 && target_dim == 1) {
+            if (this.p == 2) {
+                target_vec = [1];
+            } else {
+                let c = promptInteger("Coefficient of differential", `Invalid coefficient. Write down a single number.`);
+                if (c === null) {
+                    return;
+                }
+                target_vec = [c]; 
+            }
+        } else {
+            target_vec = promptClass("Input target",`Invalid target. Express in terms of basis on page ${page}`, target_dim);
+            if (target_vec === null) {
+                return;
+            }
+        }
+
+        source_vec = this.pageBasisToE2Basis(page, source.x, source.y, source_vec);
+        target_vec = this.pageBasisToE2Basis(page, source.x - 1, source.y + page, target_vec);
+
+        this.addDifferential(page, source.x, source.y, source_vec, target_vec);
+    }
+
+    addPermanentClassInteractive(node) {
+        let classes = this.classes.get([node.x, node.y]);
+
+        let last = classes[classes.length - 1];
+        let target;
+        if (last.length == 0) {
+            alert("There are no surviving classes. Action ignored");
+        } else if (last.length == 1) {
+            this.addPermanentClass(node.x, node.y, last[0].data);
+        } else {
+            target = promptClass("Input new permanent class", "Invalid class. Express in terms of basis on last page", last.length);
+        }
+        if (target) {
+            this.addPermanentClass(node.x, node.y, target);
+        }
     }
 
     addDifferential(r, source_x, source_y, source, target) {
@@ -67,7 +176,8 @@ export class ExtSseq extends EventEmitter {
     }
 
     resolveFurther(newmax) {
-        if (newmax === undefined) {
+        // This is usually an event callback and the argument could be any random thing.
+        if (!Number.isInteger(newmax)) {
             newmax = parseInt(prompt("New maximum degree", this.maxDegree + 10).trim());
         }
         if (newmax <= this.maxDegree) {
@@ -94,6 +204,7 @@ export class ExtSseq extends EventEmitter {
     }
 
     _resolving(data) {
+        this.p = data.p;
         this.minDegree = data.minDegree;
         this.maxDegree = data.maxDegree;
         this.xRange = [this.minDegree, this.maxDegree];
@@ -131,6 +242,7 @@ export class ExtSseq extends EventEmitter {
         // Insert empty space at r = 0, 1
         classes.splice(0, 0, undefined, undefined);
         this.classes.set([x, y], classes);
+        this.permanentClasses.set([x, y], data.permanents);
 
         this.emit("update");
     }
@@ -169,6 +281,7 @@ export class ExtSseq extends EventEmitter {
         let y = data.y;
 
         let structlines = [];
+        let products = [];
         for (let mult of data.structlines) {
             if (!this.structlineTypes.has(mult["name"])) {
                 // This sort-of defeats the purpose of using a Set, but we want
@@ -194,12 +307,19 @@ export class ExtSseq extends EventEmitter {
                         }
                     }
                 }
+                if (!products[page])
+                    products[page] = [];
+                products[page].push({
+                    name : name,
+                    matrix : matrix
+                });
                 this.maxMultX = Math.max(this.maxMultX, multX);
                 this.maxMultY = Math.max(this.maxMultY, multY);
             }
         }
 
         this.structlines.set([x, y], structlines);
+        this.products.set([x, y], products);
         this.emit("update");
     }
 
@@ -267,6 +387,15 @@ export class ExtSseq extends EventEmitter {
     getDifferentials(x, y, page) {
         let result = this.differentials.get([x, y]);
         if (!result) return undefined;
+        return result[page];
+    }
+
+    getProducts(x, y, page) {
+        let result = this.products.get([x, y]);
+        if (!result) return undefined;
+        if (result.length == 2) return undefined;
+
+        if (page >= result.length) page = result.length - 1;
         return result[page];
     }
 
