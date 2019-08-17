@@ -267,6 +267,7 @@ impl SseqManager {
                 Some("complete") => manager.relay(json)?,
                 Some("queryTableResult") => manager.relay(json)?,
                 Some("add_differential") => manager.add_differential(json)?,
+                Some("add_permanent") => manager.add_permanent(json)?,
                 Some("addClass") => manager.add_class(json)?,
                 Some("addStructline") => manager.add_structline(json)?,
                 _ => {println!("SseqManager ignoring message:\n{:#}", json);}
@@ -299,12 +300,26 @@ impl SseqManager {
         }
     }
 
+    fn add_permanent(&mut self, mut json : Value) -> Result<(), Box<dyn Error>> {
+        let x = json["x"].as_i64().unwrap() as i32;
+        let y = json["y"].as_i64().unwrap() as i32;
+        let class : Vec<u32> = serde_json::from_value(json["class"].take()).unwrap();
+
+        let origin = json["origin"].as_str();
+
+        if let Some(sseq) = self.get_sseq(origin) {
+            sseq.add_permanent_class_propagate(x, y, &FpVector::from_vec(sseq.p, &class), 0);
+//            sseq.add_permanent_class(x, y, &FpVector::from_vec(sseq.p, &class));
+        }
+        Ok(())
+    }
+
     fn add_differential(&mut self, mut json : Value) -> Result<(), Box<dyn Error>> {
         let x = json["x"].as_i64().unwrap() as i32;
         let y = json["y"].as_i64().unwrap() as i32;
         let r = json["r"].as_i64().unwrap() as i32;
-        let source : Vec<u32> = serde_json::from_value(json["source"].take()).unwrap(); // Better way to do this?
-        let target : Vec<u32> = serde_json::from_value(json["target"].take()).unwrap(); // Better way to do this?
+        let source : Vec<u32> = serde_json::from_value(json["source"].take()).unwrap();
+        let target : Vec<u32> = serde_json::from_value(json["target"].take()).unwrap();
 
         let origin = json["origin"].as_str();
 

@@ -519,9 +519,18 @@ impl Subspace {
         }
     }
 
+    pub fn dimension(&self) -> usize {
+        for &i in self.column_to_pivot_row.iter().rev() {
+            if i >= 0 {
+                return i as usize + 1 ;
+            }
+        }
+        return 0;
+    }
+
     /// Returns a basis of the subspace
-    pub fn get_basis(&self) -> &Vec<FpVector> {
-        &self.matrix.vectors
+    pub fn get_basis(&self) -> &[FpVector] {
+        &self.matrix.vectors[..self.dimension()]
     }
 }
 

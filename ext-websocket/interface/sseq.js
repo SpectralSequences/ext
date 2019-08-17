@@ -1,5 +1,11 @@
 const OFFSET_SIZE = 0.3;
 
+const NODE_COLOR = {
+    "InProgress": "black",
+    "Error": "#a6001a",
+    "Done": "gray"
+};
+
 export class ExtSseq extends EventEmitter {
     constructor(name, webSocket) {
         super();
@@ -36,6 +42,16 @@ export class ExtSseq extends EventEmitter {
     send(data) {
         data.origin = this.name;
         this.webSocket.send(JSON.stringify(data));
+    }
+
+    addPermanent(x, y, target) {
+        this.send({
+            recipient: "sseq",
+            command: "add_permanent",
+            x: x,
+            y: y,
+            class: target,
+        });
     }
 
     addDifferential(r, source_x, source_y, source, target) {
@@ -107,6 +123,8 @@ export class ExtSseq extends EventEmitter {
                 node.idx = i;
                 node.total_classes = l.length;
                 node.data = l[i];
+                node.state = data.state;
+                node.color = NODE_COLOR[node.state];
                 l[i] = node;
             }
         });
