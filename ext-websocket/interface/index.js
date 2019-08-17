@@ -18,11 +18,11 @@ callbacks.resolveFurther = () => {
 };
 
 callbacks.queryTable = (x, y) => {
-    webSocket.send(JSON.stringify({
-        command: "query_table",
-        s: y,
-        t: x + y
-    }));
+//    webSocket.send(JSON.stringify({
+//        command: "query_table",
+//        s: y,
+//        t: x + y
+//    }));
 };
 
 callbacks.addProduct = (x, y, idx) => {
@@ -74,7 +74,9 @@ if (!params.module) {
     let maxDegree = parseInt(params.degree ? params.degree : 50);
     window.sseq = new ExtSseq(params.module, maxDegree);
     window.sseq.on("initialized", () => {
-        window.display = new MainDisplay("#main", sseq, callbacks);
+        if (!window.display) {
+            window.display = new MainDisplay("#main", sseq, callbacks);
+        }
     });
     window.sseq.on("complete", () => {
         window.display.runningSign.style.display = "none";

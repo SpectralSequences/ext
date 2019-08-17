@@ -11,6 +11,7 @@ export class ExtSseq extends EventEmitter {
         this.class_scale = 0.5;
         this.classes = new StringifyingMap();
         this.structlines = new StringifyingMap();
+        this.structlineTypes = new Set();
         this.differentials = new StringifyingMap();
         this.differentialColors = [undefined, undefined, "cyan", "red", "green"];
         this.page_list = [2];
@@ -66,6 +67,18 @@ export class ExtSseq extends EventEmitter {
         });
     }
 
+    resolveFurther() {
+        let newmax = parseInt(prompt("New maximum degree", this.maxDegree + 10).trim());
+        if (newmax <= this.maxDegree) {
+            return;
+        }
+        this.webSocket.send(JSON.stringify({
+            receiver: "resolver",
+            command: "resolve_further",
+            maxDegree: newmax
+        }));
+
+    }
     _resolving(data) {
         this.minDegree = data.minDegree;
         this.maxDegree = data.maxDegree;
@@ -92,11 +105,13 @@ export class ExtSseq extends EventEmitter {
 
         classes.forEach(l => {
             for (let i of l.keys()) {
-                l[i] = new Node(this.defaultNode);
-                l[i].x = data.x;
-                l[i].y = data.y;
-                l[i].idx = i;
-                l[i].total_classes = l.length;
+                let node = new Node(this.defaultNode);
+                node.x = data.x;
+                node.y = data.y;
+                node.idx = i;
+                node.total_classes = l.length;
+                node.data = l[i];
+                l[i] = node;
             }
         });
         // Insert empty space at r = 0, 1
@@ -136,11 +151,20 @@ export class ExtSseq extends EventEmitter {
     }
 
     _setStructline(data) {
+        console.log("Setting structline: ")
+        console.log(data);
         let x = data.x;
         let y = data.y;
 
         let structlines = [];
         for (let mult of data.structlines) {
+            if (!this.structlineTypes.has(mult["name"])) {
+                // This sort-of defeats the purpose of using a Set, but we want
+                // to emit an event when we have a new structline
+                this.structlineTypes.add(mult["name"]);
+                this.emit("new-structline");
+            }
+
             for (let [page, matrix] of mult["matrices"].entries()) {
                 page = page + 2;
                 let name = mult["name"];

@@ -66,7 +66,7 @@ impl ResolutionManager {
             match json["command"].as_str() {
                 Some("resolve") => manager.construct_resolution(json)?,
 //                Some("resolve_json") => manager.construct_resolution_json(json)?,
-//                Some("resolve_further") => manager.resolve_further(json)?,
+                Some("resolve_further") => manager.resolve_further(json)?,
 //                Some("resolve_unit") => manager.resolve_unit(json)?,
 //                Some("add_product") => manager.add_product(json)?,
 //                Some("query_table") => manager.query_table(json)?,
@@ -270,8 +270,10 @@ impl SseqManager {
         let p = json["p"].as_u64().unwrap() as u32;
         let min_degree = json["minDegree"].as_i64().unwrap() as i32;
 
-        let sender = self.sender.clone();
-        self.sseq = Some(Sseq::new(p, min_degree, 0, Some(sender)));
+        if self.sseq.is_none() {
+            let sender = self.sender.clone();
+            self.sseq = Some(Sseq::new(p, min_degree, 0, Some(sender)));
+        }
 
         self.relay(json)
     }

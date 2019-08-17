@@ -9,7 +9,7 @@ class StructlinePanel extends Panel.Panel {
 
         this.newGroup();
 
-        let types = Array.from(this.display.sseq.getStructlineTypes()).sort();
+        let types = Array.from(this.display.sseq.structlineTypes).sort();
         for (let type of types) {
             let o = document.createElement("div");
             o.className = "form-row mb-2";
@@ -41,7 +41,7 @@ class StructlinePanel extends Panel.Panel {
             });
         }
 
-        this.addButton("Add", () => { window.unitDisplay.openModal(); }, { "tooltip": "Add product to display" });
+//        this.addButton("Add", () => { window.unitDisplay.openModal(); }, { "tooltip": "Add product to display" });
     }
 }
 
@@ -80,9 +80,15 @@ export class MainDisplay extends SidebarDisplay {
         this.runningSign.innerHTML = "Running...";
         this.sidebar.footer.addObject(this.runningSign);
 
-        this.sidebar.footer.addButton("Resolve further", callbacks["resolveFurther"]);
+        this.sidebar.footer.addButton("Resolve further", this.sseq.resolveFurther.bind(this.sseq));
         this.sidebar.footer.addButton("Download SVG", () => this.downloadSVG("sseq.svg"));
-        this.sidebar.footer.addButton("Save", () => this.sseq.download("sseq.json"));
+//        this.sidebar.footer.addButton("Save", () => this.sseq.download("sseq.json"));
+    }
+
+    setSseq(sseq) {
+        super.setSseq(sseq);
+
+        sseq.on("new-structline", () => this.sidebar.showPanel());
     }
 }
 
