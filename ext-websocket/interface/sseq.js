@@ -67,6 +67,8 @@ export class ExtSseq extends EventEmitter {
     }
 
     queryTable(x, y) {
+        if (y < 0) { return; }
+
         this.send({
             recipient: "resolver",
             command: "query_table",

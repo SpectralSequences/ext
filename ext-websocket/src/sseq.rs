@@ -101,12 +101,15 @@ impl Differential {
     }
 }
 
+/// # Fields
+///  * `matrices[x][y]` : This encodes the matrix of the product. If it is None, it means the
+///  product is zero. The converse need not be true.
 pub struct Product {
     name : String,
     x : i32,
     y : i32,
     left : bool,
-    differential : Option<(i32, Matrix)>, // page and matrix of the differential, if any
+    differential : Option<(i32, FpVector)>, // page and target of the differential, if any
     matrices : BiVec<BiVec<Option<Matrix>>>
 }
 
@@ -118,6 +121,12 @@ struct ProductItem {
     matrices : BiVec<Vec<Vec<u32>>> // page -> matrix
 }
 
+/// Here are some blanket assumptions we make about the order in which we add things.
+///  * If we add a class at (x, y), then all classes to the left and below of (x, y) have been
+///  computed. Moreover, every class at (x + 1, y - r) for r >= 1 have been computed. If these have
+///  not been set, the class is assumed to be zero.
+///  * The same is true for products, where the grading of a product is that of its source.
+///  * Whenever a product v . x is set, the target is already set.
 pub struct Sseq {
     pub p : u32,
     name : String, // The name is either "main" or "unit"
@@ -133,8 +142,6 @@ pub struct Sseq {
     permanent_classes : BiVec<BiVec<Subspace>>, // x -> y -> r -> permanent classes
     zeros : BiVec<BiVec<BiVec<Subspace>>>, // x -> y -> r -> subspace of elements that are zero on page r
     page_classes : BiVec<BiVec<BiVec<(Vec<isize>, Vec<FpVector>)>>>, // x -> y -> r -> list of generators on the page.
-//    page_differentials : BiVec<BiVec<BiVec<Vec<FpVector>>>>, // x -> y -> r -> list of d(x_i), where x_i is ith basis element in the list in page_classes.
-//    page_structlines : BiVec<BiVec<BiVec<Vec<ProductItem>>>>, // x -> y -> r -> a list of products
 }
 
 impl Sseq {
@@ -155,8 +162,6 @@ impl Sseq {
             permanent_classes : BiVec::new(min_x),
             differentials : BiVec::new(min_x),
             page_classes : BiVec::new(min_x),
-//            page_differentials : BiVec::new(min_x),
-//            page_structlines : BiVec::new(min_x),
             zeros : BiVec::new(min_x)
         }
     }
@@ -187,8 +192,6 @@ impl Sseq {
             self.zeros.push(BiVec::new(self.min_y));
             self.permanent_classes.push(BiVec::new(self.min_y));
             self.page_classes.push(BiVec::new(self.min_y));
-//            self.page_differentials.push(BiVec::new(self.min_y));
-//            self.page_structlines.push(BiVec::new(self.min_y));
         }
 
         if y < self.min_y {
@@ -206,8 +209,6 @@ impl Sseq {
         self.differentials[x].push(BiVec::new(MIN_PAGE));
         self.zeros[x].push(BiVec::new(MIN_PAGE));
         self.page_classes[x].push(BiVec::new(MIN_PAGE));
-//        self.page_differentials[x].push(BiVec::new(MIN_PAGE));
-//        self.page_structlines[x].push(BiVec::new(MIN_PAGE));
 
         self.allocate_zeros_subspace(MIN_PAGE, x, y);
         self.compute_classes(x, y);
@@ -294,39 +295,60 @@ impl Sseq {
             self.add_differential_propagate(r, x, y, source, target, product_index + 1);
         }
 
-        // We have to do this to avoid having an immutable borrow of self outside of the
-        // context
-        if self.products[product_index].differential.is_none() &&
-           self.products[product_index].matrices.len() > x &&
-           self.products[product_index].matrices[x].len() > y &&
-           self.products[product_index].matrices[x - 1].len() > y + r {
+        let new_d = self.product_differential(r, x, y, source, target, &self.products[product_index]);
 
-            let product = &self.products[product_index];
+        if let Some((new_x, new_y, new_source, new_target)) = new_d {
+            self.add_differential_propagate(r, new_x, new_y, &new_source, &new_target, product_index);
+        }
+    }
+
+    /// Given a page `r` and coordinates `x`, `y`, a differerntial from `source` to `target`
+    /// starting at (x, y), and a product `product`, return the result of propagating the
+    /// differential along the product. If the product is not defined or the product with the
+    /// source is zero, this returns None. Otherwise, it returns `Some((new_x, new_y, new_source,
+    /// new_target))`, where `new_x/new_y` are the coordinates of the source of the new
+    /// differential.
+    fn product_differential(&self, r : i32, x : i32, y : i32, source : &FpVector, target : &FpVector, product : &Product) -> Option<(i32, i32, FpVector, FpVector)>{
+        // Handle non-zero product differential.
+        if product.differential.is_some() {
+            return None;
+        }
+        if product.matrices.max_degree() < x {
+            return None;
+        }
+        if product.matrices[x].max_degree() < y {
+            return None;
+        }
+        if product.matrices[x - 1].max_degree() < y + r {
+            return None;
+        }
+
+        // None means source product is 0. Return None
+        if let Some(source_matrix) = &product.matrices[x][y] {
             let prod_x = product.x;
             let prod_y = product.y;
 
-            // If source product is 0, nothing to do
-            if let Some(source_matrix) = &product.matrices[x][y] {
-                let mut prod_source = FpVector::new(self.p, self.classes[x + prod_x][y + prod_y]);
-                source_matrix.apply(&mut prod_source, 1, source);
+            let mut prod_source = FpVector::new(self.p, self.classes[x + prod_x][y + prod_y]);
+            source_matrix.apply(&mut prod_source, 1, source);
 
-                // If prod_source is non-zero but prod_target is zero, this is still useful
-                // information.
-                if !prod_source.is_zero() {
-                    let mut prod_target = FpVector::new(self.p, self.classes[x + prod_x - 1][y + prod_y + r]);
-                    // If target_matrix is 0, this means prod_target ought to be 0, and we do nothing.
-                    if let Some(target_matrix) = &product.matrices[x - 1][y + r] {
-                        target_matrix.apply(&mut prod_target, 1, target);
+            // If prod_source is non-zero but prod_target is zero, this is still useful
+            // information.
+            if !prod_source.is_zero() {
+                let mut prod_target = FpVector::new(self.p, self.classes[x + prod_x - 1][y + prod_y + r]);
 
-                        if product.left && product.x % 2 == 1 {
-                            prod_target.scale(self.p - 1);
-                        }
+                // If target_matrix is 0, this means prod_target ought to be 0.
+                if let Some(target_matrix) = &product.matrices[x - 1][y + r] {
+                    let mut sign = 1;
+                    if product.left && product.x % 2 == 1 {
+                        sign = self.p - 1;
                     }
-
-                    self.add_differential_propagate(r, x + prod_x, y + prod_y, &prod_source, &prod_target, product_index);
+                    target_matrix.apply(&mut prod_target, sign, target);
                 }
+
+                return Some((x + prod_x, y + prod_y, prod_source, prod_target));
             }
         }
+        return None;
     }
 
     pub fn set_permanent_class(&mut self, x : i32, y : i32, class : &FpVector) {

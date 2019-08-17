@@ -144,6 +144,9 @@ impl ResolutionManager {
 
         let resolution = self.resolution().borrow();
         let module = resolution.get_module(s);
+        if t < module.get_min_degree() {
+            return Ok(());
+        }
         let string = module.generator_list_string(t);
         let data = json!(
             {
