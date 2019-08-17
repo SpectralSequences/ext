@@ -70,6 +70,24 @@ impl Differential {
         }
     }
 
+    pub fn get_source_target_pairs(&mut self) -> Vec<(FpVector, FpVector)> {
+        let p = self.matrix.prime();
+        let source_dim = self.source_dim;
+        let target_dim = self.target_dim;
+        self.matrix.iter_mut().map(|d| {
+            let mut source = FpVector::new(p, source_dim);
+            let mut target = FpVector::new(p, target_dim);
+
+            d.set_slice(0, source_dim);
+            source.add(&d, 1);
+            d.clear_slice();
+
+            d.set_slice(source_dim, source_dim + target_dim);
+            target.shift_add(&d, 1);
+            d.clear_slice();
+            (source, target)
+        }).collect::<Vec<_>>()
+    }
     /// This evaluates the differential on `source`, adding the result to `target`. This assumes
     /// all unspecified differentials are zero. More precisely, it assumes every non-pivot column
     /// of the differential matrix has zero differential. This may or may not be actually true
@@ -389,11 +407,11 @@ impl Sseq {
         }
     }
 
-    pub fn add_product(&mut self, name : &str, source_x : i32, source_y : i32, mult_x : i32, mult_y : i32, left : bool, matrix : Vec<Vec<u32>>) {
-        if !self.class_defined(source_x, source_y) {
+    pub fn add_product(&mut self, name : &str, x : i32, y : i32, mult_x : i32, mult_y : i32, left : bool, matrix : Vec<Vec<u32>>) {
+        if !self.class_defined(x, y) {
             return;
         }
-        if !self.class_defined(source_x + mult_x, source_y + mult_y) {
+        if !self.class_defined(x + mult_x, y + mult_y) {
             return;
         }
 
@@ -414,18 +432,36 @@ impl Sseq {
                     self.products.len() - 1
                 }
             };
-        while source_x > self.products[idx].matrices.len() {
+        while x > self.products[idx].matrices.len() {
             self.products[idx].matrices.push(BiVec::new(self.min_y));
         }
-        if source_x == self.products[idx].matrices.len() {
+        if x == self.products[idx].matrices.len() {
             self.products[idx].matrices.push(BiVec::new(self.min_y));
         }
-        while source_y > self.products[idx].matrices[source_x].len() {
-            self.products[idx].matrices[source_x].push(None);
+        while y > self.products[idx].matrices[x].len() {
+            self.products[idx].matrices[x].push(None);
         }
 
-        self.products[idx].matrices[source_x].push(Some(Matrix::from_vec(self.p, &matrix)));
-        self.compute_edges(source_x, source_y);
+        self.products[idx].matrices[x].push(Some(Matrix::from_vec(self.p, &matrix)));
+
+        // Now propagate differentials. We propagate differentials that *hit* us, because the
+        // target product is always set after the source product.
+        let max_r = self.zeros[x][y].len() - 1; // If there is a d_r hitting us, then zeros will be populated up to r + 1
+
+        for r in MIN_PAGE .. max_r {
+            if self.differentials[x + 1].max_degree() >= y - r
+               && self.differentials[x + 1][y - r].max_degree() >= r {
+
+                let d = &mut self.differentials[x + 1][y - r][r];
+                for (source, target) in d.get_source_target_pairs() {
+                    let new_d = self.product_differential(r, x + 1, y - r, &source, &target, &self.products[idx]);
+                    if let Some((x_, y_, source_, target_)) = new_d {
+                        self.add_differential(r, x_, y_, &source_, &target_);
+                    }
+                }
+           }
+        }
+        self.compute_edges(x, y);
     }
 
     /// Computes products whose source is at (x, y).
