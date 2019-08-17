@@ -294,7 +294,7 @@ impl Sseq {
         for i in r + 1 .. self.zeros[x - 1][y + r].len() {
             self.zeros[x - 1][y + r][i].add_vector(target);
         }
-        // set_permanent_class in turn sets the differentials on the targets of the differentials
+        // add_permanent_class in turn sets the differentials on the targets of the differentials
         // to 0.
         self.add_permanent_class(x - 1, y + r, target);
 
@@ -330,6 +330,26 @@ impl Sseq {
         }
     }
 
+
+    fn multiply(&self, x : i32, y : i32, class : &FpVector, product: &Product) -> Option<(i32, i32, FpVector)> {
+        if product.matrices.max_degree() < x {
+            return None;
+        }
+        if product.matrices[x].max_degree() < y {
+            return None;
+        }
+
+        if let Some(matrix) = &product.matrices[x][y] {
+            let prod_x = product.x;
+            let prod_y = product.y;
+
+            let mut prod = FpVector::new(self.p, self.classes[x + prod_x][y + prod_y]);
+            matrix.apply(&mut prod, 1, class);
+            return Some((x + prod_x, y + prod_y, prod));
+        }
+        return None;
+    }
+
     /// Given a page `r` and coordinates `x`, `y`, a differerntial from `source` to `target`
     /// starting at (x, y), and a product `product`, return the result of propagating the
     /// differential along the product. If the product is not defined or the product with the
@@ -341,42 +361,20 @@ impl Sseq {
         if product.differential.is_some() {
             return None;
         }
-        if product.matrices.max_degree() < x {
-            return None;
-        }
-        if product.matrices[x].max_degree() < y {
-            return None;
-        }
-        if product.matrices[x - 1].max_degree() < y + r {
-            return None;
-        }
 
-        // None means source product is 0. Return None
-        if let Some(source_matrix) = &product.matrices[x][y] {
-            let prod_x = product.x;
-            let prod_y = product.y;
-
-            let mut prod_source = FpVector::new(self.p, self.classes[x + prod_x][y + prod_y]);
-            source_matrix.apply(&mut prod_source, 1, source);
-
-            // If prod_source is non-zero but prod_target is zero, this is still useful
-            // information.
-            if !prod_source.is_zero() {
-                let mut prod_target = FpVector::new(self.p, self.classes[x + prod_x - 1][y + prod_y + r]);
-
-                // If target_matrix is 0, this means prod_target ought to be 0.
-                if let Some(target_matrix) = &product.matrices[x - 1][y + r] {
-                    let mut sign = 1;
-                    if product.left && product.x % 2 == 1 {
-                        sign = self.p - 1;
-                    }
-                    target_matrix.apply(&mut prod_target, sign, target);
+        if let Some((new_x, new_y, prod_source)) = self.multiply(x, y, source, product) {
+            if prod_source.is_zero() {
+                return None;
+            }
+            if let Some((_, _, mut prod_target)) = self.multiply(x - 1, y + r, target, product) {
+                if product.left && product.x % 2 == 1 {
+                    prod_target.scale(self.p - 1);
                 }
 
-                return Some((x + prod_x, y + prod_y, prod_source, prod_target));
+                return Some((new_x, new_y, prod_source, prod_target));
             }
         }
-        return None;
+        None
     }
 
     pub fn add_permanent_class(&mut self, x : i32, y : i32, class : &FpVector) {
@@ -390,7 +388,7 @@ impl Sseq {
         for r in MIN_PAGE .. self.differentials[x][y].len() {
             self.differentials[x][y][r].add(class, None);
         }
-        self.compute_classes(x, y);
+        self.send_class_data(x, y);
     }
 
     /// Same logic as add_differential_propagate
@@ -465,6 +463,14 @@ impl Sseq {
                 if let Some((x_, y_, source_, target_)) = new_d {
                     self.add_differential(r, x_, y_, &source_, &target_);
                 }
+            }
+        }
+
+        // Find a better way to do this. This is to circumevent borrow checker.
+        let classes = self.permanent_classes[x][y].get_basis().to_vec();
+        for class in classes {
+            if let Some((x_, y_, product)) = self.multiply(x, y, &class,  &self.products[idx]) {
+                self.add_permanent_class(x_, y_, &product);
             }
         }
         self.compute_edges(x, y);
@@ -670,7 +676,6 @@ impl Sseq {
         }
         classes.push(((0..source_dim as isize).collect(), class_list));
 
-        let mut error = false;
 
         for r in MIN_PAGE + 1 .. max_page {
             if classes[r - 1].1.len() == 0 {
@@ -681,8 +686,6 @@ impl Sseq {
             if self.differentials[x][y].len() < r {
                 classes.push(Self::compute_next_page_no_d(self.p, &classes[r - 1], self.get_page_zeros(r, x, y)));
             } else {
-                error |= self.differentials[x][y][r - 1].error;
-
                 let result = self.compute_next_page_with_d(r, x, y, &classes[r - 1]);
                 classes.push(result.0);
                 differentials.push(result.1);
@@ -691,26 +694,7 @@ impl Sseq {
 
         self.page_classes[x][y] = classes;
 
-        for r in self.get_differentials_hitting(x, y) {
-            error |= self.differentials[x + 1][y - r][r].error;
-        }
-
-        let state;
-        if error {
-            state = ClassState::Error;
-        } else if self.page_classes[x][y].last().unwrap().1.len() == self.permanent_classes[x][y].dimension() {
-            state = ClassState::Done;
-        } else {
-            state = ClassState::InProgress;
-        }
-
-        self.send(json!({
-            "command": "setClass",
-            "x": x,
-            "y": y,
-            "state": state,
-            "classes": self.page_classes[x][y].iter().map(|x| &x.1).collect::<Vec<&Vec<FpVector>>>()
-        }));
+        self.send_class_data(x, y);
 
         if differentials.len() > 0 {
             self.send(json!({
@@ -725,6 +709,33 @@ impl Sseq {
         for prod in &self.products {
             self.compute_edges(x - prod.x, y - prod.y);
         }
+    }
+
+    fn send_class_data(&self, x : i32, y : i32) {
+        let mut error = false;
+        for r in MIN_PAGE .. self.differentials[x][y].len() {
+            error |= self.differentials[x][y][r].error;
+        }
+        for r in self.get_differentials_hitting(x, y) {
+            error |= self.differentials[x + 1][y - r][r].error;
+        }
+
+        let state;
+        if error {
+            state = ClassState::Error;
+        } else if self.page_classes[x][y].last().unwrap().1.iter().fold(true, |b, c| b && self.permanent_classes[x][y].contains(c)) {
+            state = ClassState::Done;
+        } else {
+            state = ClassState::InProgress;
+        }
+
+        self.send(json!({
+            "command": "setClass",
+            "x": x,
+            "y": y,
+            "state": state,
+            "classes": self.page_classes[x][y].iter().map(|x| &x.1).collect::<Vec<&Vec<FpVector>>>()
+        }));
     }
 
     fn class_defined(&self, x : i32, y : i32) -> bool {
