@@ -65,11 +65,10 @@ impl ResolutionManager {
         for json in receiver {
             match json["command"].as_str() {
                 Some("resolve") => manager.construct_resolution(json)?,
-//                Some("resolve_json") => manager.construct_resolution_json(json)?,
+                Some("resolve_json") => manager.construct_resolution_json(json)?,
                 Some("resolve_further") => manager.resolve_further(json)?,
-//                Some("resolve_unit") => manager.resolve_unit(json)?,
-//                Some("add_product") => manager.add_product(json)?,
-//                Some("query_table") => manager.query_table(json)?,
+                Some("add_product") => manager.add_product(json)?,
+                Some("query_table") => manager.query_table(json)?,
                 _ => {println!("ResolutionManager ignoring message:\n{:#}", json);}
             };
         }
@@ -91,14 +90,10 @@ impl ResolutionManager {
     /// Resolve existing resolution to a larger degree
     fn resolve_further(&mut self, json : Value) -> Result<(), Box<dyn Error>> {
         let max_degree = json["maxDegree"].as_i64().unwrap() as i32;
-        self.resolve(max_degree)
-    }
-
-    fn resolve_unit(&mut self, json : Value) -> Result<(), Box<dyn Error>> {
-        let max_degree = json["maxDegree"].as_i64().unwrap() as i32;
-        let unit_resolution_option = &self.resolution().borrow().unit_resolution;
-        if let Some(unit_resolution) = unit_resolution_option {
-            unit_resolution.borrow().resolve_through_degree(max_degree);
+        match json["origin"].as_str() {
+            Some("main") => self.resolve(max_degree)?,
+            Some("unit") => self.resolve_unit(max_degree)?,
+            e => { eprintln!("Origin not recognized: {:?}. Unable to resolve further", e) }
         }
         Ok(())
     }
@@ -114,8 +109,8 @@ impl ResolutionManager {
         bundle.resolution.borrow_mut().construct_unit_resolution();
         self.resolution = Some(bundle.resolution);
 
-        self.setup_callback(&self.resolution, "");
-//        self.setup_callback(&self.resolution().borrow().unit_resolution, "Unit");
+        self.setup_callback(&self.resolution, "main");
+        self.setup_callback(&self.resolution().borrow().unit_resolution, "unit");
         self.resolve(max_degree)
     }
 
@@ -138,28 +133,28 @@ impl ResolutionManager {
         bundle.resolution.borrow_mut().construct_unit_resolution();
         self.resolution = Some(bundle.resolution);
 
-        self.setup_callback(&self.resolution, "");
-//        self.setup_callback(&self.resolution().borrow().unit_resolution, "Unit");
+        self.setup_callback(&self.resolution, "main");
+        self.setup_callback(&self.resolution().borrow().unit_resolution, "unit");
         self.resolve(max_degree)
     }
-//
-//    fn query_table(&self, json : Value) -> Result<(), Box<dyn Error>> {
-//        let s = json["s"].as_u64().unwrap() as u32;
-//        let t = json["t"].as_i64().unwrap() as i32;
-//
-//        let resolution = self.resolution().borrow();
-//        let module = resolution.get_module(s);
-//        let string = module.generator_list_string(t);
-//        let data = json!(
-//            {
-//                "command": "tableResult",
-//                "s": s,
-//                "t": t,
-//                "string": string
-//            });
-//        self.sender.send(data.to_string())?;
-//        Ok(())
-//    }
+
+    fn query_table(&self, json : Value) -> Result<(), Box<dyn Error>> {
+        let s = json["s"].as_u64().unwrap() as u32;
+        let t = json["t"].as_i64().unwrap() as i32;
+
+        let resolution = self.resolution().borrow();
+        let module = resolution.get_module(s);
+        let string = module.generator_list_string(t);
+        let data = json!(
+            {
+                "command": "queryTableResult",
+                "s": s,
+                "t": t,
+                "string": string
+            });
+        self.sender.send(data)?;
+        Ok(())
+    }
 }
 
 impl ResolutionManager {
@@ -167,13 +162,14 @@ impl ResolutionManager {
         &self.resolution.as_ref().unwrap()
     }
 
-    fn setup_callback(&self, resolution : &Option<Rc<RefCell<ModuleResolution<FiniteModule>>>>, postfix : &'static str) {
+    fn setup_callback(&self, resolution : &Option<Rc<RefCell<ModuleResolution<FiniteModule>>>>, sseq_name : &'static str) {
 
         let sender = self.sender.clone();
         let add_class = move |s: u32, t: i32, num_gen: usize| {
             let data = json!(
                 {
-                    "command": format!("addClass{}", postfix),
+                    "command": "addClass",
+                    "origin": sseq_name,
                     "s": s,
                     "t": t,
                     "num": num_gen
@@ -191,14 +187,15 @@ impl ResolutionManager {
 
             let data = json!(
                 {
-                    "command": format!("addStructline{}", postfix),
-                    "name": name.to_string(),
+                    "command": "addStructline",
+                    "origin": sseq_name,
+                    "name": name,
                     "source_s": source_s,
                     "source_t": source_t,
                     "mult_s": mult_s,
                     "mult_t": mult_t,
                     "left": left,
-                    "products": json!(products).to_string() // Find a better way of doing this
+                    "products": products
                 });
 
             match sender.send(data) {
@@ -212,8 +209,15 @@ impl ResolutionManager {
         resolution.add_structline = Some(Box::new(add_structline));
     }
 
-    fn resolve(&self, max_degree : i32) -> Result<(), Box<dyn Error>> {
+    fn resolve_unit(&self, max_degree : i32) -> Result<(), Box<dyn Error>> {
+        let unit_resolution_option = &self.resolution().borrow().unit_resolution;
+        if let Some(unit_resolution) = unit_resolution_option {
+            unit_resolution.borrow().resolve_through_degree(max_degree);
+        }
+        Ok(())
+    }
 
+    fn resolve(&self, max_degree : i32) -> Result<(), Box<dyn Error>> {
         if let Some(resolution) = &self.resolution {
             let data = json!(
                 {
@@ -235,7 +239,8 @@ impl ResolutionManager {
 
 struct SseqManager {
     sender : mpsc::Sender<Value>,
-    sseq : Option<Sseq>
+    sseq : Option<Sseq>,
+    unit_sseq : Option<Sseq>
 }
 
 impl SseqManager {
@@ -250,12 +255,14 @@ impl SseqManager {
         let mut manager = SseqManager {
              sender : sender,
              sseq : None,
+             unit_sseq : None,
         };
 
         for json in receiver {
             match json["command"].as_str() {
                 Some("resolving") => manager.resolving(json)?,
                 Some("complete") => manager.relay(json)?,
+                Some("queryTableResult") => manager.relay(json)?,
                 Some("add_differential") => manager.add_differential(json)?,
                 Some("addClass") => manager.add_class(json)?,
                 Some("addStructline") => manager.add_structline(json)?,
@@ -272,20 +279,33 @@ impl SseqManager {
 
         if self.sseq.is_none() {
             let sender = self.sender.clone();
-            self.sseq = Some(Sseq::new(p, min_degree, 0, Some(sender)));
+            self.sseq = Some(Sseq::new(p, "main".to_string(), min_degree, 0, Some(sender)));
+
+            let sender = self.sender.clone();
+            self.unit_sseq = Some(Sseq::new(p, "unit".to_string(), 0, 0, Some(sender)));
         }
 
         self.relay(json)
     }
 
-    fn add_differential(&mut self, json : Value) -> Result<(), Box<dyn Error>> {
+    fn get_sseq(&mut self, name : Option<&str>) -> Option<&mut Sseq> {
+        match name {
+            Some("main") => self.sseq.as_mut(),
+            Some("unit") => self.unit_sseq.as_mut(),
+            _ => { eprintln!("Unknown spectral sequence origin: {:?}", name); None }
+        }
+    }
+
+    fn add_differential(&mut self, mut json : Value) -> Result<(), Box<dyn Error>> {
         let x = json["x"].as_i64().unwrap() as i32;
         let y = json["y"].as_i64().unwrap() as i32;
         let r = json["r"].as_i64().unwrap() as i32;
-        let source : Vec<u32> = serde_json::from_str(&json["source"].to_string()).unwrap(); // Better way to do this?
-        let target : Vec<u32> = serde_json::from_str(&json["target"].to_string()).unwrap(); // Better way to do this?
+        let source : Vec<u32> = serde_json::from_value(json["source"].take()).unwrap(); // Better way to do this?
+        let target : Vec<u32> = serde_json::from_value(json["target"].take()).unwrap(); // Better way to do this?
 
-        if let Some(sseq) = &mut self.sseq {
+        let origin = json["origin"].as_str();
+
+        if let Some(sseq) = self.get_sseq(origin) {
             sseq.add_differential_propagate(r, x, y, &FpVector::from_vec(sseq.p, &source), &FpVector::from_vec(sseq.p, &target), 0);
         }
         Ok(())
@@ -295,17 +315,18 @@ impl SseqManager {
         let s = json["s"].as_i64().unwrap() as i32;
         let t = json["t"].as_i64().unwrap() as i32;
         let num = json["num"].as_u64().unwrap() as usize;
+        let origin = json["origin"].as_str();
 
         let x = t - s;
         let y = s;
 
-        if let Some(sseq) = &mut self.sseq {
+        if let Some(sseq) = self.get_sseq(origin) {
             sseq.set_class(x, y, num);
         }
         Ok(())
     }
 
-    fn add_structline(&mut self, json : Value) -> Result<(), Box<dyn Error>> {
+    fn add_structline(&mut self, mut json : Value) -> Result<(), Box<dyn Error>> {
         let mult_s = json["mult_s"].as_i64().unwrap() as i32;
         let mult_t = json["mult_t"].as_i64().unwrap() as i32;
         let mult_x = mult_t - mult_s;
@@ -316,17 +337,19 @@ impl SseqManager {
         let source_x = source_t - source_s;
         let source_y = source_s;
 
+        let mut product : Vec<Vec<u32>> = serde_json::from_value(json["products"].take()).unwrap();
+
         let name = json["name"].as_str().unwrap();
+
         // Left is a boolean telling us whether we multiply on the left or right. I don't
         // really know what this means with all the duals all around. By convention, compositions with
         // maps S^k -> S^l are multiplication on the left; compositions with self maps are
         // multiplication on the right.
         let left = json["left"].as_bool().unwrap();
 
+        let origin = json["origin"].as_str();
 
-        let mut product : Vec<Vec<u32>> = serde_json::from_str(json["products"].as_str().unwrap()).unwrap();
-
-        if let Some(sseq) = &mut self.sseq {
+        if let Some(sseq) = self.get_sseq(origin) {
             if (left && mult_s * source_t % 2 != 0) ||
                (!left && mult_t * source_s % 2 != 0) {
                 for a in 0 .. product.len() {
@@ -335,7 +358,7 @@ impl SseqManager {
                     }
                 }
             }
-            sseq.add_product(name, source_x, source_y, mult_x, mult_y, left, product);
+            sseq.add_product(&name, source_x, source_y, mult_x, mult_y, left, product);
         }
         Ok(())
     }
@@ -376,21 +399,21 @@ impl Handler for Server {
         let json : Value = serde_json::from_str(&msg).unwrap();
         println!("Received message:\n{}", serde_json::to_string_pretty(&json).unwrap());
 
-        let receiver = json["receiver"].as_str().unwrap();
-        match receiver {
-            "resolver" => {
+        let recipient = json["recipient"].as_str();
+        match recipient {
+            Some("resolver") => {
                 match self.res_sender.send(json) {
                     Ok(_) => (),
                     Err(e) => eprintln!("Failed to send message to ResolutionManager: {}", e)
                 }
             },
-            "sseq" => {
+            Some("sseq") => {
                 match self.sseq_sender.send(json) {
                     Ok(_) => (),
                     Err(e) => eprintln!("Failed to send message to ResolutionManager: {}", e)
                 }
             },
-            _ => eprintln!("Unknown target: {}", receiver)
+            _ => eprintln!("Unknown target: {:?}", recipient)
         }
         Ok(())
     }

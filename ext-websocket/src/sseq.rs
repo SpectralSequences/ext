@@ -120,6 +120,7 @@ struct ProductItem {
 
 pub struct Sseq {
     pub p : u32,
+    name : String, // The name is either "main" or "unit"
     min_x : i32,
     min_y : i32,
 
@@ -137,13 +138,14 @@ pub struct Sseq {
 }
 
 impl Sseq {
-    pub fn new(p : u32, min_x : i32, min_y : i32, sender : Option<mpsc::Sender<Value>>) -> Self {
+    pub fn new(p : u32, name : String, min_x : i32, min_y : i32, sender : Option<mpsc::Sender<Value>>) -> Self {
         let mut classes = BiVec::new(min_x - 1); // We have an extra column to the left so that differentials have something to hit.
         classes.push(BiVec::new(min_y));
         Self {
             p,
             min_x,
             min_y,
+            name,
             sender,
 
             page_list : vec![2],
@@ -164,12 +166,10 @@ impl Sseq {
             self.page_list.push(r);
             self.page_list.sort_unstable();
         }
-        if let Some(sender) = &self.sender {
-            sender.send(json!({
-                "command": "setPageList",
-                "page_list": self.page_list
-            })).unwrap();
-        }
+        self.send(json!({
+            "command": "setPageList",
+            "page_list": self.page_list
+        }));
     }
 
     /// This function should only be called when everything to the left and bottom of (x, y)
@@ -470,14 +470,12 @@ impl Sseq {
             }
         }
 
-        if let Some(sender) = &self.sender {
-            sender.send(json!({
-                "command": "setStructline",
-                "x": x,
-                "y": y,
-                "structlines": structlines
-            })).unwrap();
-        }
+        self.send(json!({
+            "command": "setStructline",
+            "x": x,
+            "y": y,
+            "structlines": structlines
+        }));
     }
 
     /// Compute the classes in next page assuming there is no differential coming out of the class
@@ -615,22 +613,20 @@ impl Sseq {
 
         self.page_classes[x][y] = classes;
 
-        if let Some(sender) = &self.sender {
-            sender.send(json!({
-                "command": "setClass",
+        self.send(json!({
+            "command": "setClass",
+            "x": x,
+            "y": y,
+            "classes": self.page_classes[x][y].iter().map(|x| &x.1).collect::<Vec<&Vec<FpVector>>>()
+        }));
+
+        if differentials.len() > 0 {
+            self.send(json!({
+                "command": "setDifferential",
                 "x": x,
                 "y": y,
-                "classes": self.page_classes[x][y].iter().map(|x| &x.1).collect::<Vec<&Vec<FpVector>>>()
-            })).unwrap();
-
-            if differentials.len() > 0 {
-                sender.send(json!({
-                    "command": "setDifferential",
-                    "x": x,
-                    "y": y,
-                    "differentials": differentials
-                })).unwrap();
-            }
+                "differentials": differentials
+            }));
         }
 
         self.compute_edges(x, y);
@@ -667,6 +663,14 @@ impl Sseq {
             &self.page_classes[x][y][self.page_classes[x][y].max_degree()]
         } else {
             &self.page_classes[x][y][r]
+        }
+    }
+
+    fn send(&self, mut json : Value) {
+        if let Some(sender) = &self.sender {
+            let map = json.as_object_mut().unwrap();
+            map.insert("recipient".to_string(), json!(self.name));
+            sender.send(json).unwrap();
         }
     }
 }

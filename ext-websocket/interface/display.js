@@ -41,7 +41,7 @@ class StructlinePanel extends Panel.Panel {
             });
         }
 
-//        this.addButton("Add", () => { window.unitDisplay.openModal(); }, { "tooltip": "Add product to display" });
+        this.addButton("Add", () => { window.unitDisplay.openModal(); }, { "tooltip": "Add product to display" });
     }
 }
 
@@ -62,7 +62,7 @@ export class MainDisplay extends SidebarDisplay {
         this.on("click", (node, e) => {
             let x = Math.round(this.xScale.invert(e.clientX));
             let y = Math.round(this.yScale.invert(e.clientY));
-            callbacks["queryTable"](x, y);
+            this.sseq.queryTable(x, y);
         });
 
         Mousetrap.bind('left',  this.previousPage);
@@ -99,8 +99,8 @@ export class UnitDisplay extends Display {
         this.callbacks = callbacks;
         this.tooltip = new Tooltip(this);
         this.on("mouseover", (node) => {
-            this.tooltip.setHTML(`(${node.c.x}, ${node.c.y})`);
-            this.tooltip.show(node.x, node.y);
+            this.tooltip.setHTML(`(${node.x}, ${node.y})`);
+            this.tooltip.show(node.canvas_x, node.canvas_y);
         });
 
         this.on("mouseout", () => {
@@ -113,19 +113,18 @@ export class UnitDisplay extends Display {
         });
 
         document.querySelector("#modal-ok").addEventListener("click", () => {
-            let c = this.selected.c;
-            callbacks["addProduct"](c.x, c.y, c.idx);
+            callbacks["addProduct"](this.selected.x, this.selected.y, this.selected.idx);
             this.closeModal();
         });
 
-        document.querySelector("#modal-more").addEventListener("click", callbacks["resolveUnitFurther"]);
+        document.querySelector("#modal-more").addEventListener("click", () => this.sseq.resolveFurther());
 
         this.on("click", this.__onClick.bind(this));
     }
 
     openModal() {
         this._unselect();
-        this.callbacks["resolveUnitFurther"](10);
+        this.sseq.resolveFurther(10);
         document.querySelector("#overlay").style.removeProperty("display");
         document.querySelector("#modal-ok").disabled = true;
         let dialog = document.querySelector("#modal-dialog");

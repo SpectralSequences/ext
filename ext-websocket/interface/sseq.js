@@ -1,20 +1,25 @@
 const OFFSET_SIZE = 0.3;
 
 export class ExtSseq extends EventEmitter {
-    constructor(moduleName, maxDegree) {
+    constructor(name, webSocket) {
         super();
 
-        this.name = moduleName;
-        this.maxDegree = maxDegree;
+        this.name = name;
+        this.webSocket = webSocket;
+
+        this.maxDegree = 0;
         this.initial_page_idx = 0;
         this.min_page_idx = 0;
-        this.class_scale = 0.5;
         this.classes = new StringifyingMap();
         this.structlines = new StringifyingMap();
         this.structlineTypes = new Set();
         this.differentials = new StringifyingMap();
         this.differentialColors = [undefined, undefined, "cyan", "red", "green"];
         this.page_list = [2];
+
+        this.class_scale = 1;
+        this.min_class_size = 20;
+        this.max_class_size = 60;
 
         // The largest x/y of the products we have. This is useful for figuring which structlines to draw.
         this.maxMultX = 0;
@@ -26,38 +31,16 @@ export class ExtSseq extends EventEmitter {
         this.defaultNode.fill = true;
         this.defaultNode.stroke = true;
         this.defaultNode.shape = Shapes.circle;
-        this.defaultNode.size = 6;
-
-        this.webSocket = new WebSocket(`ws://${window.location.host}/ws`);
-        this.webSocket.onmessage = (e) => {
-            let data = JSON.parse(e.data);
-//            try {
-                this["_" + data.command](data);
-//            } catch (err) {
-//                console.log("Unable to process message");
-//                console.log(data);
-//                console.log(`Error: ${err}`);
-//            }
-      };
-
-        this.webSocket.onopen = () => {
-            this.send({
-                receiver: "resolver",
-                command: "resolve",
-                algebra : "adem",
-                module : moduleName,
-                maxDegree : maxDegree
-            });
-        };
     }
 
     send(data) {
+        data.origin = this.name;
         this.webSocket.send(JSON.stringify(data));
     }
 
     addDifferential(r, source_x, source_y, source, target) {
         this.send({
-            receiver: "sseq",
+            recipient: "sseq",
             command: "add_differential",
             r: r,
             x: source_x,
@@ -67,18 +50,31 @@ export class ExtSseq extends EventEmitter {
         });
     }
 
-    resolveFurther() {
-        let newmax = parseInt(prompt("New maximum degree", this.maxDegree + 10).trim());
+    resolveFurther(newmax) {
+        if (newmax === undefined) {
+            newmax = parseInt(prompt("New maximum degree", this.maxDegree + 10).trim());
+        }
         if (newmax <= this.maxDegree) {
             return;
         }
-        this.webSocket.send(JSON.stringify({
-            receiver: "resolver",
+        this.maxDegree = newmax;
+        this.send({
+            recipient: "resolver",
             command: "resolve_further",
             maxDegree: newmax
-        }));
-
+        });
+        window.setUnitRange();
     }
+
+    queryTable(x, y) {
+        this.send({
+            recipient: "resolver",
+            command: "query_table",
+            s: y,
+            t: x + y
+        });
+    }
+
     _resolving(data) {
         this.minDegree = data.minDegree;
         this.maxDegree = data.maxDegree;
@@ -86,8 +82,6 @@ export class ExtSseq extends EventEmitter {
         this.yRange = [0, Math.ceil((this.maxDegree - this.minDegree)/2) + 1];
         this.initialxRange = [this.minDegree, this.maxDegree];
         this.initialyRange = [0, Math.ceil((this.maxDegree - this.minDegree)/2) + 1];
-
-        this.emit("initialized");
     }
 
     _setPageList(data) {
@@ -151,8 +145,6 @@ export class ExtSseq extends EventEmitter {
     }
 
     _setStructline(data) {
-        console.log("Setting structline: ")
-        console.log(data);
         let x = data.x;
         let y = data.y;
 
@@ -189,10 +181,6 @@ export class ExtSseq extends EventEmitter {
 
         this.structlines.set([x, y], structlines);
         this.emit("update");
-    }
-
-    _complete(data) {
-        this.emit("complete");
     }
 
     getDrawnElements(page, xmin, xmax, ymin, ymax) {
