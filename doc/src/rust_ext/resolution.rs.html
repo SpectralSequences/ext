@@ -788,9 +788,6 @@
 <span id="770">770</span>
 <span id="771">771</span>
 <span id="772">772</span>
-<span id="773">773</span>
-<span id="774">774</span>
-<span id="775">775</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::{<span class="ident">Rc</span>, <span class="ident">Weak</span>};
@@ -930,6 +927,10 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">homological_degree</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span> {
         <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">modules</span>[<span class="ident">homological_degree</span> <span class="kw">as</span> <span class="ident">usize</span>])
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_zero_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span> {
+        <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">zero_module</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_number_of_gens_in_bidegree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">homological_degree</span> : <span class="ident">u32</span>, <span class="ident">internal_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
@@ -1094,12 +1095,6 @@
         }
     }
 
-    <span class="comment">// pub fn set_empty(&amp;self, homological_degree : u32, degree : i32){</span>
-    <span class="comment">//     let current_differential = self.get_differential(homological_degree);</span>
-    <span class="comment">//     let source = current_differential.source;</span>
-    <span class="comment">//     let source_module_table = source.construct_table(degree);</span>
-    <span class="comment">// }</span>
-
     <span class="doccomment">/// Call our resolution $X$, and the chain complex to resolve $C$. This is a legitimate</span>
     <span class="doccomment">/// resolution if the map $f: X \to C$ induces an isomorphism on homology. This is the same as</span>
     <span class="doccomment">/// saying the cofiber is exact. The cofiber is given by the complex</span>
@@ -1261,17 +1256,15 @@
             <span class="ident">num_new_gens</span> <span class="op">+=</span> <span class="ident">matrix</span>.<span class="ident">extend_image</span>(<span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">num_new_gens</span>, <span class="ident">padded_target_cc_dimension</span>, <span class="ident">padded_target_cc_dimension</span> <span class="op">+</span> <span class="ident">target_res_dimension</span>, <span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="ident">old_kernel</span>).<span class="ident">len</span>();
         }
         <span class="ident">source</span>.<span class="ident">add_generators</span>(<span class="ident">degree</span>, <span class="ident">source_lock</span>, <span class="ident">source_module_table</span>, <span class="ident">num_new_gens</span>, <span class="prelude-val">None</span>);
-        <span class="ident">current_chain_map</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="ident">first_new_row</span>, <span class="number">0</span>, <span class="ident">num_new_gens</span>);
-        <span class="ident">current_differential</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">differential_lock</span>, <span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="ident">first_new_row</span>, <span class="ident">padded_target_cc_dimension</span>, <span class="ident">num_new_gens</span>);
+        <span class="ident">current_chain_map</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="ident">first_new_row</span>, <span class="number">0</span>);
+        <span class="ident">current_differential</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">differential_lock</span>, <span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="ident">first_new_row</span>, <span class="ident">padded_target_cc_dimension</span>);
 
         <span class="comment">// Record the quasi-inverses for future use.</span>
         <span class="comment">// The part of the matrix that contains interesting information is occupied_rows x (target_dimension + source_dimension + kernel_size).</span>
         <span class="kw">let</span> <span class="ident">image_rows</span> <span class="op">=</span> <span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">num_new_gens</span>;
-        <span class="comment">// println!(&quot;{}&quot;,matrix);</span>
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">first_new_row</span> .. <span class="ident">image_rows</span> {
             <span class="ident">matrix</span>[<span class="ident">i</span>].<span class="ident">set_entry</span>(<span class="ident">padded_target_dimension</span> <span class="op">+</span> <span class="ident">i</span>, <span class="number">1</span>);
         }
-        <span class="comment">// println!(&quot;{}&quot;,matrix);</span>
         <span class="ident">matrix</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">image_rows</span>, <span class="number">0</span>, <span class="ident">padded_target_dimension</span> <span class="op">+</span> <span class="ident">source_dimension</span> <span class="op">+</span> <span class="ident">num_new_gens</span>); 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_pivots</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>;<span class="ident">matrix</span>.<span class="ident">get_columns</span>()];
         <span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">new_pivots</span>);
@@ -1281,7 +1274,6 @@
             <span class="ident">padded_target_cc_dimension</span> <span class="op">+</span> <span class="ident">target_res_dimension</span>,
             <span class="ident">padded_target_dimension</span>
         );
-        <span class="comment">// assert!(res_qi)</span>
 
         <span class="ident">current_chain_map</span>.<span class="ident">set_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">degree</span>, <span class="ident">cm_qi</span>);
         <span class="ident">current_differential</span>.<span class="ident">set_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="ident">differential_lock</span>, <span class="ident">degree</span>, <span class="ident">res_qi</span>);
@@ -1392,8 +1384,7 @@
 
     <span class="doccomment">/// Target = result of the product</span>
     <span class="doccomment">/// Source = multiplicand</span>
-    <span class="kw">fn</span> <span class="ident">compute_product_step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elt</span> : <span class="kw-2">&amp;</span><span class="ident">Cocycle</span>, <span class="ident">target_s</span> : <span class="ident">u32</span>, <span class="ident">target_t</span> : <span class="ident">i32</span>)
-    {
+    <span class="kw">fn</span> <span class="ident">compute_product_step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elt</span> : <span class="kw-2">&amp;</span><span class="ident">Cocycle</span>, <span class="ident">target_s</span> : <span class="ident">u32</span>, <span class="ident">target_t</span> : <span class="ident">i32</span>) {
         <span class="kw">let</span> <span class="ident">source_s</span> <span class="op">=</span> <span class="ident">target_s</span> <span class="op">-</span> <span class="ident">elt</span>.<span class="ident">s</span>;
         <span class="kw">let</span> <span class="ident">source_t</span> <span class="op">=</span> <span class="ident">target_t</span> <span class="op">-</span> <span class="ident">elt</span>.<span class="ident">t</span>;
 
@@ -1536,6 +1527,10 @@
         <span class="self">self</span>.<span class="ident">get_complex</span>().<span class="ident">get_algebra</span>()
     }
 
+    <span class="kw">fn</span> <span class="ident">get_zero_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span> {
+        <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">zero_module</span>)
+    }
+
     <span class="kw">fn</span> <span class="ident">get_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">homological_degree</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">get_module</span>(<span class="ident">homological_degree</span>)
     }
@@ -1548,9 +1543,8 @@
         <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">homological_degree</span> <span class="kw">as</span> <span class="ident">usize</span>])
     }
 
-    <span class="comment">// TODO: implement this.</span>
     <span class="kw">fn</span> <span class="ident">compute_through_bidegree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hom_deg</span> : <span class="ident">u32</span>, <span class="ident">int_deg</span> : <span class="ident">i32</span>) {
-
+        <span class="self">self</span>.<span class="ident">resolve_through_bidegree</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>);
     }
 
     <span class="comment">// fn computed_through_bidegree_q(&amp;self, hom_deg : u32, int_deg : i32) -&gt; bool {</span>

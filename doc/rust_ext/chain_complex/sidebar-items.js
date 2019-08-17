@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ChainComplexConcentratedInDegreeZero",""]],"trait":[["ChainComplex",""]]});
+initSidebarItems({"enum":[["ChainComplexGrading",""]],"struct":[["ChainComplexConcentratedInDegreeZero",""]],"trait":[["ChainComplex",""],["CochainComplex",""]]});
