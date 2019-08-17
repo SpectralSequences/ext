@@ -61,15 +61,20 @@ impl Differential {
     }
 
     pub fn add(&mut self, source : &FpVector, target : Option<&FpVector>) {
-        for i in 0 .. self.source_dim {
-            self.matrix[self.source_dim].set_entry(i, source.get_entry(i));
-        }
-        for i in 0 .. self.target_dim {
-            match target {
-                Some(t) => self.matrix[self.source_dim].set_entry(i + self.source_dim, t.get_entry(i)),
-                None => self.matrix[self.source_dim].set_entry(i + self.source_dim, 0)
-            };
-        }
+        let source_dim = self.source_dim;
+        let target_dim = self.target_dim;
+        let last_row = &mut self.matrix[source_dim];
+        last_row.set_slice(0, source_dim);
+        last_row.add(source, 1);
+        last_row.clear_slice();
+
+        last_row.set_slice(source_dim, source_dim + target_dim);
+        match target {
+            Some(t) => last_row.shift_add(t, 1),
+            None => last_row.set_to_zero()
+        };
+        last_row.clear_slice();
+
         self.matrix.row_reduce(&mut self.column_to_pivots_row);
 
         // Check that the differentials are consistent with each other.
@@ -194,7 +199,7 @@ impl Sseq {
         }
     }
 
-    pub fn add_page(&mut self, r : i32) {
+    fn add_page(&mut self, r : i32) {
         if !self.page_list.contains(&r) {
             self.page_list.push(r);
             self.page_list.sort_unstable();
@@ -399,19 +404,9 @@ impl Sseq {
             self.add_permanent_class_propagate(x, y, class, product_index + 1);
         }
 
-        // We have to do this to avoid having an immutable borrow of self outside of the
-        // context
-        if self.products[product_index].differential.is_none() && self.products[product_index].matrices.len() > x && self.products[product_index].matrices[x].len() > y {
-            let product = &self.products[product_index];
-            let prod_x = product.x;
-            let prod_y = product.y;
-            if let Some(matrix) = &product.matrices[x][y] {
-                let mut prod_class = FpVector::new(self.p, self.classes[x + prod_x][y + prod_y]);
-                matrix.apply(&mut prod_class, 1, class);
-
-                if !prod_class.is_zero() {
-                    self.add_permanent_class_propagate(x + prod_x, y + prod_y, &prod_class, product_index);
-                }
+        if let Some((x_, y_, prod)) = self.multiply(x, y, class, &self.products[product_index]) {
+            if !prod.is_zero() {
+                self.add_permanent_class_propagate(x_, y_, &prod, product_index);
             }
         }
     }
@@ -487,7 +482,7 @@ impl Sseq {
     }
 
     /// Computes products whose source is at (x, y).
-    pub fn compute_edges(&self, x : i32, y : i32) {
+    fn compute_edges(&self, x : i32, y : i32) {
         if !self.class_defined(x, y) {
             return;
         }
@@ -651,7 +646,7 @@ impl Sseq {
         ((pivots, class_list), differentials)
     }
 
-    pub fn compute_classes(&mut self, x : i32, y : i32) {
+    fn compute_classes(&mut self, x : i32, y : i32) {
         if !self.class_defined(x, y) {
             return;
         }
