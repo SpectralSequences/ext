@@ -1,39 +1,6 @@
 import { MainDisplay, UnitDisplay } from "./display.js";
 import { ExtSseq } from "./sseq.js";
 
-// For timer
-let t0, t_last;
-let t_prev = 0;
-
-window.callbacks = {};
-callbacks.addProduct = (x, y, idx) => {
-    let name = prompt("Name for product");
-    webSocket.send(JSON.stringify({
-        recipient : "resolver",
-        command : "add_product",
-        s: y,
-        t: x + y,
-        idx: idx,
-        name: name
-    }));
-}
-
-callbacks.resolveUnitFurther = (newmax) => {
-    if (!newmax)
-        newmax = parseInt(prompt("New maximum degree", window.unitMaxDegree + 5).trim());
-    if (newmax <= unitMaxDegree) {
-        return;
-    }
-    window.unitMaxDegree = newmax;
-
-    webSocket.send(JSON.stringify({
-        command : "resolve_unit",
-        maxDegree : newmax
-    }));
-    unitSseq.xRange = [0, Math.max(unitMaxDegree, maxDegree)];
-    unitSseq.yRange = [0, Math.min(unitMaxDegree, Math.ceil(Math.max(unitMaxDegree, maxDegree)/2 + 1))];
-}
-
 let url = new URL(document.location);
 let params = {};
 for(let [k,v] of url.searchParams.entries()){
@@ -74,7 +41,7 @@ function openWebSocket(initialData, maxDegree) {
 
     webSocket.onmessage = function(e) {
         let data = JSON.parse(e.data);
-//        try {
+        try {
             switch (data.recipient) {
                 case "main":
                     window.mainSseq["_" + data.command](data);
@@ -85,11 +52,11 @@ function openWebSocket(initialData, maxDegree) {
                 default:
                     messageHandler[data.command](data);
             }
-//        } catch (err) {
-//            console.log("Unable to process message");
-//            console.log(data);
-//            console.log(`Error: ${err}`);
-//        }
+        } catch (err) {
+            console.log("Unable to process message");
+            console.log(data);
+            console.log(`Error: ${err}`);
+        }
     }
 }
 
@@ -116,8 +83,8 @@ messageHandler.resolving = (data) => {
     setUnitRange();
 
     if (!window.display) {
-        window.display = new MainDisplay("#main", mainSseq, callbacks);
-        window.unitDisplay = new UnitDisplay("#modal-body", unitSseq, callbacks);
+        window.display = new MainDisplay("#main", mainSseq);
+        window.unitDisplay = new UnitDisplay("#modal-body", unitSseq);
     }
 
     display.runningSign.style.removeProperty("display");

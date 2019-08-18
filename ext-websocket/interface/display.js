@@ -1,13 +1,18 @@
 
 const STATE_ADD_DIFFERENTIAL = 1;
+const STATE_QUERY_TABLE = 2;
  
 
 function rowToKaTeX(m) {
-    return Interface.renderMath("\\begin{bmatrix}" + m.join("&") + "\\end{bmatrix}");
+    return Interface.renderMath(rowToLaTeX(m));
 }
 
 function matrixToKaTeX(m) {
     return Interface.renderMath("\\begin{bmatrix}" + m.map(x => x.join("&")).join("\\\\") + "\\end{bmatrix}");
+}
+
+function rowToLaTeX(m) {
+    return "\\begin{bmatrix}" + m.join("&") + "\\end{bmatrix}";
 }
 
 class StructlinePanel extends Panel.Panel {
@@ -66,20 +71,25 @@ class ClassPanel extends Panel.Panel {
         this.container.style.removeProperty("display");
         this.container.className = "text-center";
         this.clear();
-//        while (this.list.firstChild)
-//            this.list.removeChild(this.list.firstChild);
 
         let x = this.display.selected.x;
         let y = this.display.selected.y;
+        let page = this.display.page;
         let sseq = this.display.sseq;
 
         this.newGroup();
-        let classes = sseq.getClasses(x, y, this.display.page);
+        let classes = sseq.getClasses(x, y, page);
 
         this.addHeader("Classes");
         this.addLine(classes.map(x => rowToKaTeX(x.data)).join("<br />"));
 
         this.addHeader("Differentials");
+        let trueDifferentials = sseq.trueDifferentials.get([x, y]);
+        if (trueDifferentials && trueDifferentials.length > page) {
+            for (let [source, target] of trueDifferentials[page]) {
+                this.addLine(Interface.renderMath(`d_${page}(${rowToLaTeX(source)}) = ${rowToLaTeX(target)}`));
+            }
+        }
         this.addButton("Add", () => this.display.state = STATE_ADD_DIFFERENTIAL, { shortcuts: ["d"]});
 
         this.addHeader("Permanent Classes");
@@ -89,12 +99,10 @@ class ClassPanel extends Panel.Panel {
         }
         this.addButton("Add", () => {
             this.display.sseq.addPermanentClassInteractive(this.display.selected);
-            this.show();
         }, { shortcuts: ["p"]});
 
-        this.newGroup();
         this.addHeader("Products");
-        let products = sseq.getProducts(x, y, this.display.page);
+        let products = sseq.getProducts(x, y, page);
         if (products) {
             for (let prod of products) {
                 this.addLine(`${Interface.renderMath(prod.name)}: ${matrixToKaTeX(prod.matrix)}`);
@@ -119,7 +127,7 @@ class ClassPanel extends Panel.Panel {
 }
 
 export class MainDisplay extends SidebarDisplay {
-    constructor(container, sseq, callbacks) {
+    constructor(container, sseq) {
         super(container, sseq);
 
         this.selected = null;
@@ -129,11 +137,6 @@ export class MainDisplay extends SidebarDisplay {
         this.on("mouseout", this._onMouseout.bind(this));
 
         this.on("click", this.__onClick.bind(this));
-//        this.on("click", (node, e) => {
-//            let x = Math.round(this.xScale.invert(e.clientX));
-//            let y = Math.round(this.yScale.invert(e.clientY));
-//            this.sseq.queryTable(x, y);
-//        });
 
         Mousetrap.bind('left',  this.previousPage);
         Mousetrap.bind('right', this.nextPage);
@@ -153,9 +156,11 @@ export class MainDisplay extends SidebarDisplay {
         this.runningSign.innerHTML = "Running...";
         this.sidebar.footer.addObject(this.runningSign);
 
+        this.sidebar.footer.addButton("Query table", () => this.state = STATE_QUERY_TABLE);
         this.sidebar.footer.addButton("Resolve further", this.sseq.resolveFurther.bind(this.sseq));
         this.sidebar.footer.addButton("Download SVG", () => this.downloadSVG("sseq.svg"));
-//        this.sidebar.footer.addButton("Save", () => this.sseq.download("sseq.json"));
+
+        sseq.on("update", this.sidebar.showPanel.bind(this.sidebar));
     }
 
     _onMouseover(node) {
@@ -164,6 +169,14 @@ export class MainDisplay extends SidebarDisplay {
     }
 
     __onClick(node, e) {
+        if (this.state == STATE_QUERY_TABLE) {
+            let x = Math.round(this.xScale.invert(e.clientX));
+            let y = Math.round(this.yScale.invert(e.clientY));
+            this.sseq.queryTable(x, y);
+            this.state = null;
+            return;
+        }
+
         if (!node) {
             this._unselect();
             return;
@@ -171,19 +184,21 @@ export class MainDisplay extends SidebarDisplay {
 
         switch (this.state) {
             case STATE_ADD_DIFFERENTIAL: 
-                this.sseq.addDifferentialInteractive(this.selected, node);
+                if (this.selected) {
+                    this.sseq.addDifferentialInteractive(this.selected, node);
+                    break;
+                }
+            default:
+                this._unselect();
+                this.selected = node;
+                let x = node.x;
+                let y = node.y;
+
+                for (let c of this.sseq.getClasses(x, y, this.page)) {
+                    c.highlight = true;
+                }
         }
 
-        this._unselect();
-        this.selected = node;
-        let x = node.x;
-        let y = node.y;
-
-        for (let c of this.sseq.getClasses(x, y, this.page)) {
-            c.highlight = true;
-        }
-
-        this.state = null;
         this.update();
 
         this.sidebar.showPanel(this.classPanel);
@@ -220,10 +235,9 @@ export class MainDisplay extends SidebarDisplay {
 }
 
 export class UnitDisplay extends Display {
-    constructor(container, sseq, callbacks) {
+    constructor(container, sseq) {
         super(container, sseq);
 
-        this.callbacks = callbacks;
         this.tooltip = new Tooltip(this);
         this.on("mouseover", (node) => {
             this.tooltip.setHTML(`(${node.x}, ${node.y})`);
@@ -240,7 +254,16 @@ export class UnitDisplay extends Display {
         });
 
         document.querySelector("#modal-ok").addEventListener("click", () => {
-            callbacks["addProduct"](this.selected.x, this.selected.y, this.selected.idx);
+            let name = prompt("Name for product");
+            webSocket.send(JSON.stringify({
+                recipient : "resolver",
+                command : "add_product",
+                s: this.selected.y,
+                t: this.selected.x + this.selected.y,
+                idx: this.selected.idx,
+                name: name
+            }));
+
             this.closeModal();
         });
 

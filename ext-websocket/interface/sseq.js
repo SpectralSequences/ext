@@ -9,13 +9,18 @@ const NODE_COLOR = {
 // Prompts for an array of length `length`
 function promptClass(text, error, length) {
     while (true) {
-        let response = prompt(text).trim();
+        let response = prompt(text);
         if (!response) {
             return null;
         }
-        let vec = JSON.parse(response);
-        if (Array.isArray(vec) && vec.length == length) {
-            return vec;
+        try {
+            let vec = JSON.parse(response.trim());
+            if (Array.isArray(vec) &&
+                vec.length == length &&
+                vec.reduce((b, x) => b && Number.isInteger(x), true)) {
+                return vec;
+            }
+        } catch(e) { // If we can't parse, try again
         }
         alert(error);
     }
@@ -23,11 +28,11 @@ function promptClass(text, error, length) {
 
 function promptInteger(text, error) {
     while (true) {
-        let response = prompt(text).trim();
+        let response = prompt(text);
         if (!response) {
             return;
         }
-        let c = parseInt(response);
+        let c = parseInt(response.trim());
         if (!isNaN(c)) {
             return c;
             break;
@@ -53,6 +58,7 @@ export class ExtSseq extends EventEmitter {
         this.structlineTypes = new Set();
         this.permanentClasses = new StringifyingMap();
         this.differentials = new StringifyingMap();
+        this.trueDifferentials = new StringifyingMap();
 
         this.differentialColors = [undefined, undefined, "cyan", "red", "green"];
         this.page_list = [2];
@@ -273,6 +279,8 @@ export class ExtSseq extends EventEmitter {
         }
 
         this.differentials.set([x, y], differentials);
+        data.true_differentials.splice(0, 0, undefined, undefined);
+        this.trueDifferentials.set([x, y], data.true_differentials);
         this.emit("update");
     }
 
@@ -283,12 +291,7 @@ export class ExtSseq extends EventEmitter {
         let structlines = [];
         let products = [];
         for (let mult of data.structlines) {
-            if (!this.structlineTypes.has(mult["name"])) {
-                // This sort-of defeats the purpose of using a Set, but we want
-                // to emit an event when we have a new structline
-                this.structlineTypes.add(mult["name"]);
-                this.emit("new-structline");
-            }
+            this.structlineTypes.add(mult["name"]);
 
             for (let [page, matrix] of mult["matrices"].entries()) {
                 page = page + 2;

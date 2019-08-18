@@ -89,19 +89,21 @@ impl Differential {
         let p = self.matrix.prime();
         let source_dim = self.source_dim;
         let target_dim = self.target_dim;
-        self.matrix.iter_mut().map(|d| {
-            let mut source = FpVector::new(p, source_dim);
-            let mut target = FpVector::new(p, target_dim);
+        self.matrix.iter_mut()
+            .filter(|d| !d.is_zero())
+            .map(|d| {
+                let mut source = FpVector::new(p, source_dim);
+                let mut target = FpVector::new(p, target_dim);
 
-            d.set_slice(0, source_dim);
-            source.add(&d, 1);
-            d.clear_slice();
+                d.set_slice(0, source_dim);
+                source.add(&d, 1);
+                d.clear_slice();
 
-            d.set_slice(source_dim, source_dim + target_dim);
-            target.shift_add(&d, 1);
-            d.clear_slice();
-            (source, target)
-        }).collect::<Vec<_>>()
+                d.set_slice(source_dim, source_dim + target_dim);
+                target.shift_add(&d, 1);
+                d.clear_slice();
+                (source, target)
+            }).collect::<Vec<_>>()
     }
     /// This evaluates the differential on `source`, adding the result to `target`. This assumes
     /// all unspecified differentials are zero. More precisely, it assumes every non-pivot column
@@ -199,52 +201,18 @@ impl Sseq {
         }
     }
 
+    /// Adds a page to the page list, which is the list of pages where something changes from the
+    /// previous page. This is mainly used by the `add_differential` function.
     fn add_page(&mut self, r : i32) {
         if !self.page_list.contains(&r) {
             self.page_list.push(r);
             self.page_list.sort_unstable();
-        }
-        self.send(json!({
-            "command": "setPageList",
-            "page_list": self.page_list
-        }));
-    }
 
-    /// This function should only be called when everything to the left and bottom of (x, y)
-    /// has been defined.
-    pub fn set_class(&mut self, x : i32, y : i32, num : usize) {
-        if x == self.min_x {
-            self.classes[self.min_x - 1].push(0);
+            self.send(json!({
+                "command": "setPageList",
+                "page_list": self.page_list
+            }));
         }
-        while x > self.classes.len() {
-            self.set_class(self.classes.len(), self.min_y - 1, 0);
-        }
-        if x == self.classes.len() {
-            self.classes.push(BiVec::new(self.min_y));
-            self.differentials.push(BiVec::new(self.min_y));
-            self.zeros.push(BiVec::new(self.min_y));
-            self.permanent_classes.push(BiVec::new(self.min_y));
-            self.page_classes.push(BiVec::new(self.min_y));
-        }
-
-        if y < self.min_y {
-            return; // This happens when we are padding as above
-        }
-
-        while y > self.classes[x].len() {
-            self.set_class(x, self.classes[x].len(), 0);
-        }
-
-        assert_eq!(self.classes[x].len(), y);
-        assert_eq!(self.permanent_classes[x].len(), y);
-        self.classes[x].push(num);
-        self.permanent_classes[x].push(Subspace::new(self.p, num + 1, num));
-        self.differentials[x].push(BiVec::new(MIN_PAGE));
-        self.zeros[x].push(BiVec::new(MIN_PAGE));
-        self.page_classes[x].push(BiVec::new(MIN_PAGE));
-
-        self.allocate_zeros_subspace(MIN_PAGE, x, y);
-        self.compute_classes(x, y);
     }
 
     /// Initializes `differentials[x][y][r]`. It sets the differentials of all known permament
@@ -271,71 +239,9 @@ impl Sseq {
         self.zeros[x][y].push(subspace);
     }
 
-    /// Add a differential starting at (x, y)
-    ///
-    /// Panics if the target of the differential is not yet defined
-    pub fn add_differential(&mut self, r : i32, x : i32, y : i32, source : &FpVector, target : &FpVector) {
-        assert_eq!(source.get_dimension(), self.classes[x][y], "length of source vector not equal to dimension of source");
-        assert_eq!(target.get_dimension(), self.classes[x - 1][y + r], "length of target vector not equal to dimension of target");
-
-        // We cannot use extend_with here because of borrowing rules.
-        if self.differentials[x][y].len() <= r {
-            for r_ in self.differentials[x][y].len() ..= r {
-                self.allocate_differential_matrix(r_, x, y);
-            }
-        }
-
-        self.differentials[x][y][r].add(source, Some(target));
-        for i in MIN_PAGE .. r {
-            self.differentials[x][y][i].add(source, None)
-        }
-
-        if self.zeros[x - 1][y + r].len() <= r + 1 {
-            for r_ in self.zeros[x - 1][y + r].len() ..= r + 1 {
-                self.allocate_zeros_subspace(r_, x - 1, y + r);
-            }
-        }
-
-        for i in r + 1 .. self.zeros[x - 1][y + r].len() {
-            self.zeros[x - 1][y + r][i].add_vector(target);
-        }
-        // add_permanent_class in turn sets the differentials on the targets of the differentials
-        // to 0.
-        self.add_permanent_class(x - 1, y + r, target);
-
-        self.add_page(r);
-        self.add_page(r + 1);
-
-        self.compute_classes(x, y);
-        self.compute_classes(x - 1, y + r);
-
-        // self.zeros[r] will be populated if there is a non-zero differential hit on a
-        // page <= r - 1. Check if these differentials now hit 0.
-        for r_ in r + 1 .. self.zeros[x - 1][y + r].len() - 1 {
-            self.compute_classes(x, y + r - r_);
-        }
-    }
-
-    /// This function recursively propagates differentials. If this function is called, it will add
-    /// the corresponding differential plus all products of index at least product_index. Here we
-    /// have to exercise a slight bit of care to ensure we don't set both $p_1 p_2 d$ and $p_2 p_1
-    /// d$ when $p_1$, $p_2$ are products and $d$ is the differential. Our strategy is that we
-    /// compute $p_2 p_1 d$ if and only if $p_1$ comes earlier in the list of products than $p_2$.
-    pub fn add_differential_propagate(&mut self, r : i32, x : i32, y : i32, source : &FpVector, target : &FpVector, product_index : usize) {
-        if product_index == self.products.len() - 1 {
-            self.add_differential(r, x, y, source, target);
-        } else if product_index < self.products.len() - 1 {
-            self.add_differential_propagate(r, x, y, source, target, product_index + 1);
-        }
-
-        let new_d = self.product_differential(r, x, y, source, target, &self.products[product_index]);
-
-        if let Some((new_x, new_y, new_source, new_target)) = new_d {
-            self.add_differential_propagate(r, new_x, new_y, &new_source, &new_target, product_index);
-        }
-    }
-
-
+    /// Given a class `class` at `(x, y)` and a Product object `product`, compute the product of
+    /// the class with the product. Returns the new coordinate of the product as well as the actual
+    /// product. The result is None if the product is not defined.
     fn multiply(&self, x : i32, y : i32, class : &FpVector, product: &Product) -> Option<(i32, i32, FpVector)> {
         if product.matrices.max_degree() < x {
             return None;
@@ -380,105 +286,6 @@ impl Sseq {
             }
         }
         None
-    }
-
-    pub fn add_permanent_class(&mut self, x : i32, y : i32, class : &FpVector) {
-        self.permanent_classes[x][y].add_vector(class);
-        if self.differentials.len() <= x {
-            return;
-        }
-        if self.differentials[x].len() <= y {
-            return;
-        }
-        for r in MIN_PAGE .. self.differentials[x][y].len() {
-            self.differentials[x][y][r].add(class, None);
-        }
-        self.send_class_data(x, y);
-    }
-
-    /// Same logic as add_differential_propagate
-    pub fn add_permanent_class_propagate(&mut self, x : i32, y : i32, class : &FpVector, product_index : usize) {
-        if product_index == self.products.len() - 1 {
-            self.add_permanent_class(x, y, class);
-        } else if product_index < self.products.len() - 1 {
-            self.add_permanent_class_propagate(x, y, class, product_index + 1);
-        }
-
-        if let Some((x_, y_, prod)) = self.multiply(x, y, class, &self.products[product_index]) {
-            if !prod.is_zero() {
-                self.add_permanent_class_propagate(x_, y_, &prod, product_index);
-            }
-        }
-    }
-
-    pub fn add_product(&mut self, name : &str, x : i32, y : i32, mult_x : i32, mult_y : i32, left : bool, matrix : Vec<Vec<u32>>) {
-        if !self.class_defined(x, y) {
-            return;
-        }
-        if !self.class_defined(x + mult_x, y + mult_y) {
-            return;
-        }
-
-        let idx : usize =
-            match self.product_name_to_index.get(name) {
-                Some(i) => *i,
-                None => {
-                    let product = Product {
-                        name : name.to_string(),
-                        x : mult_x,
-                        y : mult_y,
-                        left,
-                        differential : None,
-                        matrices : BiVec::new(self.min_x)
-                    };
-                    self.products.push(product);
-                    self.product_name_to_index.insert(name.to_string(), self.products.len() - 1);
-                    self.products.len() - 1
-                }
-            };
-        while x > self.products[idx].matrices.len() {
-            self.products[idx].matrices.push(BiVec::new(self.min_y));
-        }
-        if x == self.products[idx].matrices.len() {
-            self.products[idx].matrices.push(BiVec::new(self.min_y));
-        }
-        while y > self.products[idx].matrices[x].len() {
-            self.products[idx].matrices[x].push(None);
-        }
-
-        self.products[idx].matrices[x].push(Some(Matrix::from_vec(self.p, &matrix)));
-
-        // Now propagate differentials. We propagate differentials that *hit* us, because the
-        // target product is always set after the source product.
-
-        for r in self.get_differentials_hitting(x, y) {
-            let d = &mut self.differentials[x + 1][y - r][r];
-            for (source, target) in d.get_source_target_pairs() {
-                let new_d = self.product_differential(r, x + 1, y - r, &source, &target, &self.products[idx]);
-                if let Some((x_, y_, source_, target_)) = new_d {
-                    self.add_differential(r, x_, y_, &source_, &target_);
-                }
-            }
-        }
-
-        // Find a better way to do this. This is to circumevent borrow checker.
-        let classes = self.permanent_classes[x][y].get_basis().to_vec();
-        for class in classes {
-            if let Some((x_, y_, product)) = self.multiply(x, y, &class,  &self.products[idx]) {
-                self.add_permanent_class(x_, y_, &product);
-            }
-        }
-        self.compute_edges(x, y);
-    }
-
-    /// Get a list of r for which there is a d_r differential hitting (x, y)
-    fn get_differentials_hitting(&self, x : i32, y : i32) -> Vec<i32> {
-        let max_r = self.zeros[x][y].len() - 1; // If there is a d_r hitting us, then zeros will be populated up to r + 1
-
-        (MIN_PAGE .. max_r)
-            .filter(|&r| self.differentials[x + 1].max_degree() >= y - r
-                    && self.differentials[x + 1][y - r].max_degree() >= r)
-            .collect::<Vec<i32>>()
     }
 
     /// Computes products whose source is at (x, y).
@@ -691,11 +498,23 @@ impl Sseq {
 
         self.send_class_data(x, y);
 
+        let mut true_differentials = Vec::with_capacity(self.differentials[x][y].len() as usize);
+
+        for r in MIN_PAGE .. self.differentials[x][y].len() {
+            let d = &mut self.differentials[x][y][r];
+            let pairs = d.get_source_target_pairs();
+            true_differentials.push(pairs.into_iter()
+                .map(|(s, t)| (express_basis(s, Some(self.get_page_zeros(r, x, y)), &self.page_classes[x][y][r]),
+                               express_basis(t, Some(self.get_page_zeros(r, x - 1, y + r)), &self.page_classes[x - 1][y + r][r])))
+                .collect::<Vec<_>>())
+        }
+
         if differentials.len() > 0 {
             self.send(json!({
                 "command": "setDifferential",
                 "x": x,
                 "y": y,
+                "true_differentials": true_differentials,
                 "differentials": differentials
             }));
         }
@@ -734,6 +553,17 @@ impl Sseq {
         }));
     }
 
+    fn send(&self, mut json : Value) {
+        if let Some(sender) = &self.sender {
+            let map = json.as_object_mut().unwrap();
+            map.insert("recipient".to_string(), json!(self.name));
+            sender.send(json).unwrap();
+        }
+    }
+}
+
+// Wrapper functions
+impl Sseq {
     fn class_defined(&self, x : i32, y : i32) -> bool {
         if x < self.min_x || y < self.min_y {
             return false;
@@ -765,15 +595,210 @@ impl Sseq {
         }
     }
 
-    fn send(&self, mut json : Value) {
-        if let Some(sender) = &self.sender {
-            let map = json.as_object_mut().unwrap();
-            map.insert("recipient".to_string(), json!(self.name));
-            sender.send(json).unwrap();
-        }
+    /// Get a list of r for which there is a d_r differential hitting (x, y)
+    fn get_differentials_hitting(&self, x : i32, y : i32) -> Vec<i32> {
+        let max_r = self.zeros[x][y].len() - 1; // If there is a d_r hitting us, then zeros will be populated up to r + 1
+
+        (MIN_PAGE .. max_r)
+            .filter(|&r| self.differentials[x + 1].max_degree() >= y - r
+                    && self.differentials[x + 1][y - r].max_degree() >= r)
+            .collect::<Vec<i32>>()
     }
 }
+// Functions called by SseqManager
+impl Sseq {
+    /// This function should only be called when everything to the left and bottom of (x, y)
+    /// has been defined.
+    pub fn set_class(&mut self, x : i32, y : i32, num : usize) {
+        if x == self.min_x {
+            self.classes[self.min_x - 1].push(0);
+        }
+        while x > self.classes.len() {
+            self.set_class(self.classes.len(), self.min_y - 1, 0);
+        }
+        if x == self.classes.len() {
+            self.classes.push(BiVec::new(self.min_y));
+            self.differentials.push(BiVec::new(self.min_y));
+            self.zeros.push(BiVec::new(self.min_y));
+            self.permanent_classes.push(BiVec::new(self.min_y));
+            self.page_classes.push(BiVec::new(self.min_y));
+        }
 
+        if y < self.min_y {
+            return; // This happens when we are padding as above
+        }
+
+        while y > self.classes[x].len() {
+            self.set_class(x, self.classes[x].len(), 0);
+        }
+
+        assert_eq!(self.classes[x].len(), y);
+        assert_eq!(self.permanent_classes[x].len(), y);
+        self.classes[x].push(num);
+        self.permanent_classes[x].push(Subspace::new(self.p, num + 1, num));
+        self.differentials[x].push(BiVec::new(MIN_PAGE));
+        self.zeros[x].push(BiVec::new(MIN_PAGE));
+        self.page_classes[x].push(BiVec::new(MIN_PAGE));
+
+        self.allocate_zeros_subspace(MIN_PAGE, x, y);
+        self.compute_classes(x, y);
+    }
+
+    /// Add a differential starting at (x, y)
+    ///
+    /// Panics if the target of the differential is not yet defined
+    pub fn add_differential(&mut self, r : i32, x : i32, y : i32, source : &FpVector, target : &FpVector) {
+        assert_eq!(source.get_dimension(), self.classes[x][y], "length of source vector not equal to dimension of source");
+        assert_eq!(target.get_dimension(), self.classes[x - 1][y + r], "length of target vector not equal to dimension of target");
+
+        // We cannot use extend_with here because of borrowing rules.
+        if self.differentials[x][y].len() <= r {
+            for r_ in self.differentials[x][y].len() ..= r {
+                self.allocate_differential_matrix(r_, x, y);
+            }
+        }
+
+        self.differentials[x][y][r].add(source, Some(target));
+        for i in MIN_PAGE .. r {
+            self.differentials[x][y][i].add(source, None)
+        }
+
+        if self.zeros[x - 1][y + r].len() <= r + 1 {
+            for r_ in self.zeros[x - 1][y + r].len() ..= r + 1 {
+                self.allocate_zeros_subspace(r_, x - 1, y + r);
+            }
+        }
+
+        for i in r + 1 .. self.zeros[x - 1][y + r].len() {
+            self.zeros[x - 1][y + r][i].add_vector(target);
+        }
+        // add_permanent_class in turn sets the differentials on the targets of the differentials
+        // to 0.
+        self.add_permanent_class(x - 1, y + r, target);
+
+        self.add_page(r);
+        self.add_page(r + 1);
+
+        self.compute_classes(x, y);
+        self.compute_classes(x - 1, y + r);
+
+        // self.zeros[r] will be populated if there is a non-zero differential hit on a
+        // page <= r - 1. Check if these differentials now hit 0.
+        for r_ in r + 1 .. self.zeros[x - 1][y + r].len() - 1 {
+            self.compute_classes(x, y + r - r_);
+        }
+    }
+
+    /// This function recursively propagates differentials. If this function is called, it will add
+    /// the corresponding differential plus all products of index at least product_index. Here we
+    /// have to exercise a slight bit of care to ensure we don't set both $p_1 p_2 d$ and $p_2 p_1
+    /// d$ when $p_1$, $p_2$ are products and $d$ is the differential. Our strategy is that we
+    /// compute $p_2 p_1 d$ if and only if $p_1$ comes earlier in the list of products than $p_2$.
+    pub fn add_differential_propagate(&mut self, r : i32, x : i32, y : i32, source : &FpVector, target : &FpVector, product_index : usize) {
+        if product_index == self.products.len() - 1 {
+            self.add_differential(r, x, y, source, target);
+        } else if product_index < self.products.len() - 1 {
+            self.add_differential_propagate(r, x, y, source, target, product_index + 1);
+        }
+
+        let new_d = self.product_differential(r, x, y, source, target, &self.products[product_index]);
+
+        if let Some((new_x, new_y, new_source, new_target)) = new_d {
+            self.add_differential_propagate(r, new_x, new_y, &new_source, &new_target, product_index);
+        }
+    }
+
+
+    pub fn add_permanent_class(&mut self, x : i32, y : i32, class : &FpVector) {
+        self.permanent_classes[x][y].add_vector(class);
+        if self.differentials.len() <= x {
+            return;
+        }
+        if self.differentials[x].len() <= y {
+            return;
+        }
+        for r in MIN_PAGE .. self.differentials[x][y].len() {
+            self.differentials[x][y][r].add(class, None);
+        }
+        self.send_class_data(x, y);
+    }
+
+    /// Same logic as add_differential_propagate
+    pub fn add_permanent_class_propagate(&mut self, x : i32, y : i32, class : &FpVector, product_index : usize) {
+        if product_index == self.products.len() - 1 {
+            self.add_permanent_class(x, y, class);
+        } else if product_index < self.products.len() - 1 {
+            self.add_permanent_class_propagate(x, y, class, product_index + 1);
+        }
+
+        if let Some((x_, y_, prod)) = self.multiply(x, y, class, &self.products[product_index]) {
+            if !prod.is_zero() {
+                self.add_permanent_class_propagate(x_, y_, &prod, product_index);
+            }
+        }
+    }
+
+    pub fn add_product(&mut self, name : &str, x : i32, y : i32, mult_x : i32, mult_y : i32, left : bool, matrix : Vec<Vec<u32>>) {
+        if !self.class_defined(x, y) {
+            return;
+        }
+        if !self.class_defined(x + mult_x, y + mult_y) {
+            return;
+        }
+
+        let idx : usize =
+            match self.product_name_to_index.get(name) {
+                Some(i) => *i,
+                None => {
+                    let product = Product {
+                        name : name.to_string(),
+                        x : mult_x,
+                        y : mult_y,
+                        left,
+                        differential : None,
+                        matrices : BiVec::new(self.min_x)
+                    };
+                    self.products.push(product);
+                    self.product_name_to_index.insert(name.to_string(), self.products.len() - 1);
+                    self.products.len() - 1
+                }
+            };
+        while x > self.products[idx].matrices.len() {
+            self.products[idx].matrices.push(BiVec::new(self.min_y));
+        }
+        if x == self.products[idx].matrices.len() {
+            self.products[idx].matrices.push(BiVec::new(self.min_y));
+        }
+        while y > self.products[idx].matrices[x].len() {
+            self.products[idx].matrices[x].push(None);
+        }
+
+        self.products[idx].matrices[x].push(Some(Matrix::from_vec(self.p, &matrix)));
+
+        // Now propagate differentials. We propagate differentials that *hit* us, because the
+        // target product is always set after the source product.
+
+        for r in self.get_differentials_hitting(x, y) {
+            let d = &mut self.differentials[x + 1][y - r][r];
+            for (source, target) in d.get_source_target_pairs() {
+                let new_d = self.product_differential(r, x + 1, y - r, &source, &target, &self.products[idx]);
+                if let Some((x_, y_, source_, target_)) = new_d {
+                    self.add_differential(r, x_, y_, &source_, &target_);
+                }
+            }
+        }
+
+        // Find a better way to do this. This is to circumevent borrow checker.
+        let classes = self.permanent_classes[x][y].get_basis().to_vec();
+        for class in classes {
+            if let Some((x_, y_, product)) = self.multiply(x, y, &class,  &self.products[idx]) {
+                self.add_permanent_class(x_, y_, &product);
+            }
+        }
+        self.compute_edges(x, y);
+    }
+
+}
 #[cfg(test)]
 mod tests {
     use super::*;
