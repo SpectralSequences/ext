@@ -1328,6 +1328,12 @@
 <span id="1310">1310</span>
 <span id="1311">1311</span>
 <span id="1312">1312</span>
+<span id="1313">1313</span>
+<span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -1768,6 +1774,9 @@
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">get_offset</span>() <span class="op">&gt;=</span> <span class="ident">other</span>.<span class="ident">get_offset</span>());
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">get_dimension</span>() <span class="op">==</span> <span class="ident">other</span>.<span class="ident">get_dimension</span>(),
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;self.dim {} not equal to other.dim {}&quot;</span>, <span class="self">self</span>.<span class="ident">get_dimension</span>(), <span class="ident">other</span>.<span class="ident">get_dimension</span>()));
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">get_dimension</span>() <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">return</span>;
+        }
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">c</span> <span class="op">&lt;</span> <span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">offset_shift</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_offset</span>() <span class="op">-</span> <span class="ident">other</span>.<span class="ident">get_offset</span>();
@@ -1812,6 +1821,9 @@
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">get_offset</span>() <span class="op">&lt;=</span> <span class="ident">other</span>.<span class="ident">get_offset</span>());
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">get_dimension</span>() <span class="op">==</span> <span class="ident">other</span>.<span class="ident">get_dimension</span>(),
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;self.dim {} not equal to other.dim {}&quot;</span>, <span class="self">self</span>.<span class="ident">get_dimension</span>(), <span class="ident">other</span>.<span class="ident">get_dimension</span>()));
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">get_dimension</span>() <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">return</span>;
+        }
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">c</span> <span class="op">&lt;</span> <span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">offset_shift</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">get_offset</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">get_offset</span>();
