@@ -893,7 +893,7 @@
     <span class="kw">return</span> <span class="ident">c</span> <span class="op">%</span> <span class="ident">p</span>;
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_inadmissible_pairs</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">generic</span> : <span class="ident">bool</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">u32</span>)<span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inadmissible_pairs</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">generic</span> : <span class="ident">bool</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">u32</span>)<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">degree</span> <span class="op">=</span> <span class="ident">degree</span> <span class="kw">as</span> <span class="ident">u32</span>;
     <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">generic</span> { <span class="number">2</span><span class="kw-2">*</span><span class="ident">p</span><span class="op">-</span><span class="number">2</span> } <span class="kw">else</span> { <span class="number">1</span> };
     <span class="comment">// (i, b, j) means P^i P^j if b = 0, or P^i b P^j if b = 1.</span>
@@ -921,11 +921,11 @@
     <span class="kw">return</span> <span class="ident">inadmissible_pairs</span>;
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_tau_degrees</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">i32</span>] {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tau_degrees</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">i32</span>] {
     <span class="kw-2">&amp;</span><span class="ident">TAU_DEGREES</span>[<span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>]]
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_xi_degrees</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">i32</span>] {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">xi_degrees</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">i32</span>] {
     <span class="kw-2">&amp;</span><span class="ident">XI_DEGREES</span>[<span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>]]
 }
 

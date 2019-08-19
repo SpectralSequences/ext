@@ -210,12 +210,33 @@
 <span id="192">192</span>
 <span id="193">193</span>
 <span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Mutex</span>, <span class="ident">MutexGuard</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">once</span>::<span class="ident">OnceBiVec</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::<span class="ident">QuasiInverse</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>, <span class="ident">QuasiInverse</span>};
 <span class="comment">// use crate::block_structure::BlockStructure;</span>
 <span class="comment">// use crate::algebra::AlgebraAny;</span>
 <span class="comment">// use crate::field::Field;</span>
@@ -230,45 +251,52 @@
     <span class="ident">source</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>,
     <span class="ident">target</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>,
     <span class="ident">map</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">kernel</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span>,
+    <span class="ident">quasi_inverse</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">QuasiInverse</span><span class="op">&gt;</span>,    
     <span class="ident">max_computed_degree</span> : <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
-
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">FiniteDimensionalModuleT</span><span class="op">&gt;</span> <span class="ident">HomPullback</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">source</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>, <span class="ident">target</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>, <span class="ident">map</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">get_min_degree</span>();
+        <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">min_degree</span>();
         <span class="self">Self</span> {
             <span class="ident">source</span>,
             <span class="ident">target</span>,
             <span class="ident">map</span>,
-            <span class="ident">max_computed_degree</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">min_degree</span> <span class="op">-</span> <span class="number">1</span>)
+            <span class="ident">max_computed_degree</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">min_degree</span> <span class="op">-</span> <span class="number">1</span>),
+            <span class="ident">kernel</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
+            <span class="ident">quasi_inverse</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
         }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">FiniteDimensionalModuleT</span><span class="op">&gt;</span> <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">HomPullback</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">get_source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span> {
         <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">get_target</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">target</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span> {
         <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">get_min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
-        <span class="self">self</span>.<span class="ident">get_source</span>().<span class="ident">get_min_degree</span>()
+    <span class="kw">fn</span> <span class="ident">degree_shift</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
+        <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">degree_shift</span>()
+    }
+
+    <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
+        <span class="self">self</span>.<span class="ident">source</span>().<span class="ident">min_degree</span>()
     }
 
     <span class="kw">fn</span> <span class="ident">apply_to_basis_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">fn_degree</span> : <span class="ident">i32</span>, <span class="ident">fn_idx</span> : <span class="ident">usize</span>) {
         <span class="comment">// println!(&quot;fn_deg : {}, fn_idx : {}&quot;, fn_degree, fn_idx);</span>
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">target_module</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">target</span>();
-        <span class="kw">for</span> <span class="ident">out_deg</span> <span class="kw">in</span> <span class="ident">target_module</span>.<span class="ident">get_min_degree</span>() ..= <span class="ident">target_module</span>.<span class="ident">max_degree</span>() {
+        <span class="kw">for</span> <span class="ident">out_deg</span> <span class="kw">in</span> <span class="ident">target_module</span>.<span class="ident">min_degree</span>() ..= <span class="ident">target_module</span>.<span class="ident">max_degree</span>() {
             <span class="kw">let</span> <span class="ident">x_degree</span> <span class="op">=</span> <span class="ident">fn_degree</span> <span class="op">+</span> <span class="ident">out_deg</span>;
-            <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">get_source</span>().<span class="ident">get_number_of_gens_in_degree</span>(<span class="ident">x_degree</span>);
-            <span class="kw">let</span> <span class="ident">old_slice</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">get_slice</span>();
+            <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">source</span>().<span class="ident">number_of_gens_in_degree</span>(<span class="ident">x_degree</span>);
+            <span class="kw">let</span> <span class="ident">old_slice</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">slice</span>();
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
-                <span class="kw">let</span> <span class="ident">x_elt</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">get_output</span>(<span class="ident">x_degree</span>, <span class="ident">i</span>);
+                <span class="kw">let</span> <span class="ident">x_elt</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">output</span>(<span class="ident">x_degree</span>, <span class="ident">i</span>);
                 <span class="kw">let</span> (<span class="ident">block_start</span>, <span class="ident">block_size</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">block_structures</span>[<span class="ident">fn_degree</span>].<span class="ident">generator_to_block</span>(<span class="ident">x_degree</span>, <span class="ident">i</span>);
                 <span class="ident">result</span>.<span class="ident">set_slice</span>(<span class="ident">block_start</span>, <span class="ident">block_start</span> <span class="op">+</span> <span class="ident">block_size</span>);
                 <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">evaluate_basis_map_on_element</span>(<span class="ident">result</span>, <span class="ident">coeff</span>, <span class="ident">fn_degree</span>, <span class="ident">fn_idx</span>, <span class="ident">x_degree</span>, <span class="kw-2">&amp;</span><span class="ident">x_elt</span>);
@@ -277,20 +305,32 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">get_lock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">lock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">max_computed_degree</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">get_max_kernel_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
-        <span class="number">0</span>
+    <span class="kw">fn</span> <span class="ident">max_kernel_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
+        <span class="macro">unimplemented</span><span class="macro">!</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">set_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lock</span> : <span class="kw-2">&amp;</span><span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">kernel</span> : <span class="ident">QuasiInverse</span>){
-
+    <span class="kw">fn</span> <span class="ident">set_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lock</span> : <span class="kw-2">&amp;</span><span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">quasi_inverse</span> : <span class="ident">QuasiInverse</span>){
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&gt;=</span> <span class="self">self</span>.<span class="ident">min_degree</span>());
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">quasi_inverse</span>.<span class="ident">len</span>());
+        <span class="self">self</span>.<span class="ident">quasi_inverse</span>.<span class="ident">push</span>(<span class="ident">quasi_inverse</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">get_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">QuasiInverse</span><span class="op">&gt;</span> {
-        <span class="prelude-val">None</span>
+    <span class="kw">fn</span> <span class="ident">quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">QuasiInverse</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">quasi_inverse</span>[<span class="ident">degree</span>])
+    }
+
+    <span class="kw">fn</span> <span class="ident">set_kernel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lock</span> : <span class="kw-2">&amp;</span><span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">kernel</span> : <span class="ident">Subspace</span>) {
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&gt;=</span> <span class="self">self</span>.<span class="ident">min_degree</span>());
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">kernel</span>.<span class="ident">len</span>());
+        <span class="self">self</span>.<span class="ident">kernel</span>.<span class="ident">push</span>(<span class="ident">kernel</span>);
+    }
+
+    <span class="kw">fn</span> <span class="ident">kernel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Subspace</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">kernel</span>[<span class="ident">degree</span>])
     }
 }
 
@@ -320,10 +360,10 @@
         <span class="ident">F1</span>.<span class="ident">add_generators_immediate</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="prelude-val">None</span>);
         <span class="ident">F1</span>.<span class="ident">extend_by_zero</span>(<span class="number">20</span>);
         <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FreeModuleHomomorphism</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">F1</span>), <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">F0</span>), <span class="number">0</span>));
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">d</span>.<span class="ident">get_lock</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">d</span>.<span class="ident">lock</span>();
         
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> ..= <span class="number">1</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">1</span>, <span class="ident">F0</span>.<span class="ident">get_dimension</span>(<span class="ident">i</span>));
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">1</span>, <span class="ident">F0</span>.<span class="ident">dimension</span>(<span class="ident">i</span>));
             <span class="ident">d</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">i</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="number">0</span>, <span class="number">0</span>);
             <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+=</span> <span class="number">1</span>;
         }
@@ -385,18 +425,18 @@
         ];
 
         <span class="kw">let</span> <span class="ident">pb</span> <span class="op">=</span> <span class="ident">HomPullback</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">hom0</span>), <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">hom1</span>), <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">d</span>));
-        <span class="comment">// let mut result = FpVector::new(p, hom1.get_dimension(deg));</span>
+        <span class="comment">// let mut result = FpVector::new(p, hom1.dimension(deg));</span>
         <span class="comment">// pb.apply_to_basis_element(&amp;mut result, 1, deg, idx);</span>
         <span class="kw">for</span> <span class="ident">deg</span> <span class="kw">in</span> <span class="op">-</span><span class="number">4</span> .. <span class="number">3</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">hom1</span>.<span class="ident">get_dimension</span>(<span class="ident">deg</span>));
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">desired_result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">hom1</span>.<span class="ident">get_dimension</span>(<span class="ident">deg</span>));
-            <span class="comment">// println!(&quot;deg : {}, dim : {}&quot;, deg, hom0.get_dimension(deg));</span>
-            <span class="kw">for</span> <span class="ident">idx</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">hom0</span>.<span class="ident">get_dimension</span>(<span class="ident">deg</span>) {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">hom1</span>.<span class="ident">dimension</span>(<span class="ident">deg</span>));
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">desired_result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">hom1</span>.<span class="ident">dimension</span>(<span class="ident">deg</span>));
+            <span class="comment">// println!(&quot;deg : {}, dim : {}&quot;, deg, hom0.dimension(deg));</span>
+            <span class="kw">for</span> <span class="ident">idx</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">hom0</span>.<span class="ident">dimension</span>(<span class="ident">deg</span>) {
                 <span class="comment">// println!(&quot;deg = {}, idx = {}, f = {}&quot;, deg, idx, hom1.basis_element_to_string(deg, idx));</span>
                 <span class="ident">pb</span>.<span class="ident">apply_to_basis_element</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="number">1</span>, <span class="ident">deg</span>, <span class="ident">idx</span>);
                 <span class="comment">// println!(&quot;d^* {} = {}\n&quot;, hom1.basis_element_to_string(deg, idx), hom0.element_to_string(deg, &amp;result));</span>
                 <span class="kw">let</span> <span class="ident">desired_output</span> <span class="op">=</span> <span class="ident">outputs</span>[(<span class="ident">deg</span> <span class="op">+</span> <span class="number">4</span>) <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">idx</span>];
-                <span class="ident">desired_result</span>.<span class="ident">pack</span>(<span class="kw-2">&amp;</span><span class="ident">desired_output</span>[<span class="number">0</span>..<span class="ident">desired_result</span>.<span class="ident">get_dimension</span>()]);
+                <span class="ident">desired_result</span>.<span class="ident">pack</span>(<span class="kw-2">&amp;</span><span class="ident">desired_output</span>[<span class="number">0</span>..<span class="ident">desired_result</span>.<span class="ident">dimension</span>()]);
                 <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="ident">desired_result</span>);
                 <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>);
                 <span class="ident">result</span>.<span class="ident">set_to_zero</span>();

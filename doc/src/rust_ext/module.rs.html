@@ -248,64 +248,6 @@
 <span id="230">230</span>
 <span id="231">231</span>
 <span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
-<span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
-<span id="257">257</span>
-<span id="258">258</span>
-<span id="259">259</span>
-<span id="260">260</span>
-<span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
-<span id="264">264</span>
-<span id="265">265</span>
-<span id="266">266</span>
-<span id="267">267</span>
-<span id="268">268</span>
-<span id="269">269</span>
-<span id="270">270</span>
-<span id="271">271</span>
-<span id="272">272</span>
-<span id="273">273</span>
-<span id="274">274</span>
-<span id="275">275</span>
-<span id="276">276</span>
-<span id="277">277</span>
-<span id="278">278</span>
-<span id="279">279</span>
-<span id="280">280</span>
-<span id="281">281</span>
-<span id="282">282</span>
-<span id="283">283</span>
-<span id="284">284</span>
-<span id="285">285</span>
-<span id="286">286</span>
-<span id="287">287</span>
-<span id="288">288</span>
-<span id="289">289</span>
-<span id="290">290</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
@@ -318,21 +260,21 @@
 
 <span class="attribute">#[<span class="ident">enum_dispatch</span>(<span class="ident">FiniteModule</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Module</span> {
-    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span>;
-    <span class="kw">fn</span> <span class="ident">get_min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span>;
+    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span>;
+    <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span>;
     <span class="kw">fn</span> <span class="ident">compute_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) {}
-    <span class="kw">fn</span> <span class="ident">get_dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span>;
+    <span class="kw">fn</span> <span class="ident">dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span>;
     <span class="kw">fn</span> <span class="ident">act_on_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">op_degree</span> : <span class="ident">i32</span>, <span class="ident">op_index</span> : <span class="ident">usize</span>, <span class="ident">mod_degree</span> : <span class="ident">i32</span>, <span class="ident">mod_index</span> : <span class="ident">usize</span>);
     <span class="kw">fn</span> <span class="ident">basis_element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span>;
 
     <span class="kw">fn</span> <span class="ident">prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
-        <span class="self">self</span>.<span class="ident">get_algebra</span>().<span class="ident">prime</span>()
+        <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">prime</span>()
     }
 
     <span class="kw">fn</span> <span class="ident">act</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">op_degree</span> : <span class="ident">i32</span>, <span class="ident">op_index</span> : <span class="ident">usize</span>, <span class="ident">input_degree</span> : <span class="ident">i32</span>, <span class="ident">input</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>){
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">input</span>.<span class="ident">get_dimension</span>() <span class="op">==</span> <span class="self">self</span>.<span class="ident">get_dimension</span>(<span class="ident">input_degree</span>));
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_algebra</span>().<span class="ident">prime</span>();
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">input</span>.<span class="ident">dimension</span>() <span class="op">==</span> <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">input_degree</span>));
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">prime</span>();
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">input</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
             <span class="kw">if</span> <span class="ident">v</span> <span class="op">==</span> <span class="number">0</span> {
                 <span class="kw">continue</span>;
@@ -342,8 +284,8 @@
     }
 
     <span class="kw">fn</span> <span class="ident">act_by_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">op_degree</span> : <span class="ident">i32</span>, <span class="ident">op</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">input_degree</span> : <span class="ident">i32</span>, <span class="ident">input</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>){
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">input</span>.<span class="ident">get_dimension</span>(), <span class="self">self</span>.<span class="ident">get_dimension</span>(<span class="ident">input_degree</span>));
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_algebra</span>().<span class="ident">prime</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">input</span>.<span class="ident">dimension</span>(), <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">input_degree</span>));
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">prime</span>();
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">op</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
             <span class="kw">if</span> <span class="ident">v</span> <span class="op">==</span> <span class="number">0</span> {
                 <span class="kw">continue</span>;
@@ -354,7 +296,7 @@
 
     <span class="kw">fn</span> <span class="ident">generator_list_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;[&quot;</span>);
-        <span class="ident">result</span> <span class="op">+=</span> <span class="kw-2">&amp;</span>(<span class="number">0</span>..<span class="self">self</span>.<span class="ident">get_dimension</span>(<span class="ident">degree</span>))
+        <span class="ident">result</span> <span class="op">+=</span> <span class="kw-2">&amp;</span>(<span class="number">0</span>..<span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">degree</span>))
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">idx</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">basis_element_to_string</span>(<span class="ident">degree</span>, <span class="ident">idx</span>))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span>()
             .<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>);
@@ -395,7 +337,7 @@
 
 <span class="kw">impl</span> <span class="ident">ZeroModule</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Zero Module over {}&quot;</span>, <span class="ident">algebra</span>.<span class="ident">get_name</span>());
+        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Zero Module over {}&quot;</span>, <span class="ident">algebra</span>.<span class="ident">name</span>());
         <span class="ident">ZeroModule</span> {
             <span class="ident">algebra</span>,
             <span class="ident">name</span>
@@ -404,19 +346,19 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Module</span> <span class="kw">for</span> <span class="ident">ZeroModule</span> {
-    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
         <span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">algebra</span>)
     }
     
-    <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span>{
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span>{
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">get_dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
         <span class="number">0</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">get_min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
+    <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
         <span class="number">0</span>
     }
 
@@ -448,88 +390,30 @@
     }
 }
 
-<span class="comment">// #[enum_dispatch(Module)]</span>
-<span class="comment">// pub enum ModuleChoice&lt;L : Module, R : Module&gt; {</span>
-<span class="comment">//     IntroL(L),</span>
-<span class="comment">//     IntroR(R)</span>
-<span class="comment">// }</span>
-
-<span class="comment">// impl&lt;L : Module, R : Module&gt; Module for ModuleChoice&lt;L, R&gt; {</span>
-<span class="comment">//     fn get_algebra(&amp;self) -&gt; Rc&lt;AlgebraAny&gt; {</span>
-<span class="comment">//         match self {</span>
-<span class="comment">//             ModuleChoice::IntroL(l) =&gt; l.get_algebra(),</span>
-<span class="comment">//             ModuleChoice::IntroR(r) =&gt; r.get_algebra()</span>
-<span class="comment">//         }</span>
-<span class="comment">//     }</span>
-
-<span class="comment">//     fn get_name(&amp;self) -&gt; &amp;str {</span>
-<span class="comment">//         match self {</span>
-<span class="comment">//             ModuleChoice::IntroL(l) =&gt; l.get_name(),</span>
-<span class="comment">//             ModuleChoice::IntroR(r) =&gt; r.get_name()</span>
-<span class="comment">//         }</span>
-<span class="comment">//     }</span>
-
-<span class="comment">//     fn get_min_degree(&amp;self) -&gt; i32 {</span>
-<span class="comment">//         match self {</span>
-<span class="comment">//             ModuleChoice::IntroL(l) =&gt; l.get_min_degree(),</span>
-<span class="comment">//             ModuleChoice::IntroR(r) =&gt; r.get_min_degree()</span>
-<span class="comment">//         }</span>
-<span class="comment">//     }</span>
-
-<span class="comment">//     fn compute_basis(&amp;mut self, degree : i32) {</span>
-<span class="comment">//         match self {</span>
-<span class="comment">//             ModuleChoice::IntroL(l) =&gt; l.compute_basis(degree),</span>
-<span class="comment">//             ModuleChoice::IntroR(r) =&gt; r.compute_basis(degree)</span>
-<span class="comment">//         }</span>
-<span class="comment">//     }</span>
-
-<span class="comment">//     fn get_dimension(&amp;self, degree : i32) -&gt; usize {</span>
-<span class="comment">//         match self {</span>
-<span class="comment">//             ModuleChoice::IntroL(l) =&gt; l.get_dimension(degree),</span>
-<span class="comment">//             ModuleChoice::IntroR(r) =&gt; r.get_dimension(degree)</span>
-<span class="comment">//         }</span>
-<span class="comment">//     }</span>
-
-<span class="comment">//     fn act_on_basis(&amp;self, result : &amp;mut FpVector, coeff : u32, op_degree : i32, op_index : usize, mod_degree : i32, mod_index : usize){</span>
-<span class="comment">//         match self {</span>
-<span class="comment">//             ModuleChoice::IntroL(l) =&gt; l.act_on_basis(result, coeff, op_degree, op_index, mod_degree, mod_index),</span>
-<span class="comment">//             ModuleChoice::IntroR(r) =&gt; r.act_on_basis(result, coeff, op_degree, op_index, mod_degree, mod_index)</span>
-<span class="comment">//         }</span>
-<span class="comment">//     }</span>
-
-<span class="comment">//     fn basis_element_to_string(&amp;self, degree : i32, idx : usize) -&gt; String {</span>
-<span class="comment">//         match self {</span>
-<span class="comment">//             ModuleChoice::IntroL(l) =&gt; l.basis_element_to_string(degree, idx),</span>
-<span class="comment">//             ModuleChoice::IntroR(r) =&gt; r.basis_element_to_string(degree, idx)</span>
-<span class="comment">//         }</span>
-<span class="comment">//     }</span>
-<span class="comment">// }</span>
-
-
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">Module</span><span class="op">&gt;</span> {
     <span class="prelude-val">Some</span>(<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>),
     <span class="ident">Zero</span>(<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">ZeroModule</span><span class="op">&gt;</span>)
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">Module</span><span class="op">&gt;</span> <span class="ident">Module</span> <span class="kw">for</span> <span class="ident">OptionModule</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">get_algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> <span class="ident">l</span>.<span class="ident">get_algebra</span>(),
-            <span class="ident">OptionModule</span>::<span class="ident">Zero</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>.<span class="ident">get_algebra</span>()
+            <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> <span class="ident">l</span>.<span class="ident">algebra</span>(),
+            <span class="ident">OptionModule</span>::<span class="ident">Zero</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>.<span class="ident">algebra</span>()
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> <span class="ident">l</span>.<span class="ident">get_name</span>(),
-            <span class="ident">OptionModule</span>::<span class="ident">Zero</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>.<span class="ident">get_name</span>()
+            <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> <span class="ident">l</span>.<span class="ident">name</span>(),
+            <span class="ident">OptionModule</span>::<span class="ident">Zero</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>.<span class="ident">name</span>()
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">get_min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
+    <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> <span class="ident">l</span>.<span class="ident">get_min_degree</span>(),
-            <span class="ident">OptionModule</span>::<span class="ident">Zero</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>.<span class="ident">get_min_degree</span>()
+            <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> <span class="ident">l</span>.<span class="ident">min_degree</span>(),
+            <span class="ident">OptionModule</span>::<span class="ident">Zero</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>.<span class="ident">min_degree</span>()
         }
     }
 
@@ -540,10 +424,10 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">get_dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> <span class="ident">l</span>.<span class="ident">get_dimension</span>(<span class="ident">degree</span>),
-            <span class="ident">OptionModule</span>::<span class="ident">Zero</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>.<span class="ident">get_dimension</span>(<span class="ident">degree</span>)
+            <span class="ident">OptionModule</span>::<span class="prelude-val">Some</span>(<span class="ident">l</span>) <span class="op">=&gt;</span> <span class="ident">l</span>.<span class="ident">dimension</span>(<span class="ident">degree</span>),
+            <span class="ident">OptionModule</span>::<span class="ident">Zero</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>.<span class="ident">dimension</span>(<span class="ident">degree</span>)
         }
     }
 
