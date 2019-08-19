@@ -1071,18 +1071,15 @@
 <span id="1053">1053</span>
 <span id="1054">1054</span>
 <span id="1055">1055</span>
-<span id="1056">1056</span>
-<span id="1057">1057</span>
-<span id="1058">1058</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">matrix</span>::{<span class="ident">Subspace</span>, <span class="ident">Matrix</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">max</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>;
-<span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">Serialize</span>;
-<span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>;
+<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>};
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">actions</span>::<span class="kw-2">*</span>;
 
 <span class="kw">const</span> <span class="ident">MIN_PAGE</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="number">2</span>;
 
@@ -1111,7 +1108,7 @@
     <span class="ident">result</span>
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ClassState</span> {
     <span class="ident">Error</span>,
     <span class="ident">Done</span>,
@@ -1238,8 +1235,8 @@
     <span class="ident">matrices</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Matrix</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>)]</span>
-<span class="kw">struct</span> <span class="ident">ProductItem</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProductItem</span> {
     <span class="ident">name</span> : <span class="ident">String</span>,
     <span class="ident">mult_x</span> : <span class="ident">i32</span>,
     <span class="ident">mult_y</span> : <span class="ident">i32</span>,
@@ -1254,11 +1251,11 @@
 <span class="doccomment">///  * Whenever a product v . x is set, the target is already set.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Sseq</span> {
     <span class="kw">pub</span> <span class="ident">p</span> : <span class="ident">u32</span>,
-    <span class="ident">name</span> : <span class="ident">String</span>, <span class="comment">// The name is either &quot;main&quot; or &quot;unit&quot;</span>
+    <span class="ident">name</span> : <span class="ident">SseqChoice</span>,
     <span class="ident">min_x</span> : <span class="ident">i32</span>,
     <span class="ident">min_y</span> : <span class="ident">i32</span>,
 
-    <span class="ident">sender</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">mpsc</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">sender</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">mpsc</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;&gt;</span>,
     <span class="ident">page_list</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
     <span class="ident">product_name_to_index</span> : <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="ident">products</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Product</span><span class="op">&gt;</span>,
@@ -1270,7 +1267,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Sseq</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">name</span> : <span class="ident">String</span>, <span class="ident">min_x</span> : <span class="ident">i32</span>, <span class="ident">min_y</span> : <span class="ident">i32</span>, <span class="ident">sender</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">mpsc</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">name</span> : <span class="ident">SseqChoice</span>, <span class="ident">min_x</span> : <span class="ident">i32</span>, <span class="ident">min_y</span> : <span class="ident">i32</span>, <span class="ident">sender</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">mpsc</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">classes</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="ident">min_x</span> <span class="op">-</span> <span class="number">1</span>); <span class="comment">// We have an extra column to the left so that differentials have something to hit.</span>
         <span class="ident">classes</span>.<span class="ident">push</span>(<span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="ident">min_y</span>));
         <span class="self">Self</span> {
@@ -1298,10 +1295,11 @@
             <span class="self">self</span>.<span class="ident">page_list</span>.<span class="ident">push</span>(<span class="ident">r</span>);
             <span class="self">self</span>.<span class="ident">page_list</span>.<span class="ident">sort_unstable</span>();
 
-            <span class="self">self</span>.<span class="ident">send</span>(<span class="macro">json</span><span class="macro">!</span>({
-                <span class="string">&quot;command&quot;</span>: <span class="string">&quot;setPageList&quot;</span>,
-                <span class="string">&quot;page_list&quot;</span>: <span class="self">self</span>.<span class="ident">page_list</span>
-            }));
+            <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
+                 <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+                 <span class="ident">sseq</span> : <span class="self">self</span>.<span class="ident">name</span>,
+                 <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">SetPageList</span> { <span class="ident">page_list</span> : <span class="self">self</span>.<span class="ident">page_list</span>.<span class="ident">clone</span>() })
+            });
         }
     }
 
@@ -1515,12 +1513,11 @@
             }
         }
 
-        <span class="self">self</span>.<span class="ident">send</span>(<span class="macro">json</span><span class="macro">!</span>({
-            <span class="string">&quot;command&quot;</span>: <span class="string">&quot;setStructline&quot;</span>,
-            <span class="string">&quot;x&quot;</span>: <span class="ident">x</span>,
-            <span class="string">&quot;y&quot;</span>: <span class="ident">y</span>,
-            <span class="string">&quot;structlines&quot;</span>: <span class="ident">structlines</span>
-        }));
+        <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
+            <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">sseq</span> : <span class="self">self</span>.<span class="ident">name</span>,
+            <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">SetStructline</span> { <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">structlines</span> })
+        });
     }
 
     <span class="doccomment">/// Compute the classes in next page assuming there is no differential coming out of the class</span>
@@ -1673,13 +1670,11 @@
         }
 
         <span class="kw">if</span> <span class="ident">differentials</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="self">self</span>.<span class="ident">send</span>(<span class="macro">json</span><span class="macro">!</span>({
-                <span class="string">&quot;command&quot;</span>: <span class="string">&quot;setDifferential&quot;</span>,
-                <span class="string">&quot;x&quot;</span>: <span class="ident">x</span>,
-                <span class="string">&quot;y&quot;</span>: <span class="ident">y</span>,
-                <span class="string">&quot;true_differentials&quot;</span>: <span class="ident">true_differentials</span>,
-                <span class="string">&quot;differentials&quot;</span>: <span class="ident">differentials</span>
-            }));
+            <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
+                <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+                <span class="ident">sseq</span> : <span class="self">self</span>.<span class="ident">name</span>,
+                <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">SetDifferential</span> { <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">true_differentials</span>, <span class="ident">differentials</span> })
+            });
         }
 
         <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
@@ -1706,21 +1701,20 @@
             <span class="ident">state</span> <span class="op">=</span> <span class="ident">ClassState</span>::<span class="ident">InProgress</span>;
         }
 
-        <span class="self">self</span>.<span class="ident">send</span>(<span class="macro">json</span><span class="macro">!</span>({
-            <span class="string">&quot;command&quot;</span>: <span class="string">&quot;setClass&quot;</span>,
-            <span class="string">&quot;x&quot;</span>: <span class="ident">x</span>,
-            <span class="string">&quot;y&quot;</span>: <span class="ident">y</span>,
-            <span class="string">&quot;state&quot;</span>: <span class="ident">state</span>,
-            <span class="string">&quot;permanents&quot;</span>: <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">get_basis</span>(),
-            <span class="string">&quot;classes&quot;</span>: <span class="self">self</span>.<span class="ident">page_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="number">1</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>()
-        }));
+        <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
+            <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">sseq</span> : <span class="self">self</span>.<span class="ident">name</span>,
+            <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">SetClass</span> {
+                <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">state</span>,
+                <span class="ident">permanents</span> : <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">get_basis</span>().<span class="ident">to_vec</span>(),
+                <span class="ident">classes</span> : <span class="self">self</span>.<span class="ident">page_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="number">1</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>()
+            })
+        });
     }
 
-    <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">json</span> : <span class="ident">Value</span>) {
+    <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sender</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">sender</span> {
-            <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">json</span>.<span class="ident">as_object_mut</span>().<span class="ident">unwrap</span>();
-            <span class="ident">map</span>.<span class="ident">insert</span>(<span class="string">&quot;recipient&quot;</span>.<span class="ident">to_string</span>(), <span class="macro">json</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">name</span>));
-            <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">json</span>).<span class="ident">unwrap</span>();
+            <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>).<span class="ident">unwrap</span>();
         }
     }
 }
@@ -1935,10 +1929,10 @@
     }
 
     <span class="doccomment">/// Add a product to the list of products, but don&#39;t add any computed product</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product_empty</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">mult_x</span> : <span class="ident">i32</span>, <span class="ident">mult_y</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="ident">permanent</span>: <span class="ident">bool</span>) {
-        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>()) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product_type</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">mult_x</span> : <span class="ident">i32</span>, <span class="ident">mult_y</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="ident">permanent</span>: <span class="ident">bool</span>) {
+        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">contains_key</span>(<span class="ident">name</span>) {
             <span class="kw">let</span> <span class="ident">product</span> <span class="op">=</span> <span class="ident">Product</span> {
-                <span class="ident">name</span> : <span class="ident">name</span>.<span class="ident">to_string</span>(),
+                <span class="ident">name</span> : <span class="ident">name</span>.<span class="ident">clone</span>(),
                 <span class="ident">x</span> : <span class="ident">mult_x</span>,
                 <span class="ident">y</span> : <span class="ident">mult_y</span>,
                 <span class="ident">left</span>,
@@ -1947,13 +1941,13 @@
                 <span class="ident">matrices</span> : <span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">min_x</span>)
             };
             <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">push</span>(<span class="ident">product</span>);
-            <span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>);
+            <span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>);
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product_differential</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">source</span> : <span class="ident">String</span>, <span class="ident">target</span>: <span class="ident">String</span>) {
-        <span class="kw">let</span> <span class="ident">source_idx</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">target_idx</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">target</span>).<span class="ident">unwrap</span>();
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product_differential</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">target</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>) {
+        <span class="kw">let</span> <span class="ident">source_idx</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">get</span>(<span class="ident">source</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">target_idx</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">get</span>(<span class="ident">target</span>).<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">target_idx</span>].<span class="ident">y</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">source_idx</span>].<span class="ident">y</span>;
 
@@ -1961,7 +1955,7 @@
         <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">target_idx</span>].<span class="ident">differential</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="bool-val">false</span>, <span class="ident">source_idx</span>));
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">mult_x</span> : <span class="ident">i32</span>, <span class="ident">mult_y</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="ident">matrix</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">mult_x</span> : <span class="ident">i32</span>, <span class="ident">mult_y</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="ident">matrix</span> : <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>) {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">x</span>, <span class="ident">y</span>) {
             <span class="kw">return</span>;
         }
@@ -1974,7 +1968,7 @@
                 <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=&gt;</span> <span class="kw-2">*</span><span class="ident">i</span>,
                 <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
                     <span class="kw">let</span> <span class="ident">product</span> <span class="op">=</span> <span class="ident">Product</span> {
-                        <span class="ident">name</span> : <span class="ident">name</span>.<span class="ident">to_string</span>(),
+                        <span class="ident">name</span> : <span class="ident">name</span>.<span class="ident">clone</span>(),
                         <span class="ident">x</span> : <span class="ident">mult_x</span>,
                         <span class="ident">y</span> : <span class="ident">mult_y</span>,
                         <span class="ident">left</span>,
@@ -1983,7 +1977,7 @@
                         <span class="ident">matrices</span> : <span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">min_x</span>)
                     };
                     <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">push</span>(<span class="ident">product</span>);
-                    <span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>);
+                    <span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>);
                     <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>
                 }
             };
@@ -1997,7 +1991,7 @@
             <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">push</span>(<span class="prelude-val">None</span>);
         }
 
-        <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">push</span>(<span class="prelude-val">Some</span>(<span class="ident">Matrix</span>::<span class="ident">from_vec</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="ident">matrix</span>)));
+        <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">push</span>(<span class="prelude-val">Some</span>(<span class="ident">Matrix</span>::<span class="ident">from_vec</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">matrix</span>)));
 
         <span class="comment">// Now propagate differentials. We propagate differentials that *hit* us, because the</span>
         <span class="comment">// target product is always set after the source product.</span>
@@ -2043,7 +2037,7 @@
     <span class="kw">fn</span> <span class="ident">test_sseq_differential</span>() {
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">3</span>;
         <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::<span class="ident">initialize_limb_bit_index_table</span>(<span class="ident">p</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sseq</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">sseq</span>::<span class="ident">Sseq</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(), <span class="number">0</span>, <span class="number">0</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sseq</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">sseq</span>::<span class="ident">Sseq</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">SseqChoice</span>::<span class="ident">Main</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="prelude-val">None</span>);
         <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);
         <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>);
         <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>);
