@@ -231,7 +231,7 @@
         <span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pivots</span>);
         <span class="kw">let</span> <span class="ident">quasi_inverse</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">compute_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="ident">target_dimension</span>, <span class="ident">padded_target_dimension</span>);
         <span class="self">self</span>.<span class="ident">set_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">degree</span>, <span class="ident">quasi_inverse</span>);
-        <span class="kw">let</span> <span class="ident">kernel</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">compute_kernel</span>(<span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="ident">target_dimension</span>);
+        <span class="kw">let</span> <span class="ident">kernel</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">compute_kernel</span>(<span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="ident">padded_target_dimension</span>);
         <span class="self">self</span>.<span class="ident">set_kernel</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">degree</span>, <span class="ident">kernel</span>);
     }
     <span class="comment">// fn get_image_pivots(&amp;self, degree : i32) -&gt; Option&lt;&amp;Vec&lt;isize&gt;&gt; {</span>
