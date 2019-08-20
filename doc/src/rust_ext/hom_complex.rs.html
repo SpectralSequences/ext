@@ -133,7 +133,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_space</span>::<span class="ident">HomSpace</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_pullback</span>::<span class="ident">HomPullback</span>;
 
-<span class="kw">struct</span> <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FiniteDimensionalModuleT</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FiniteDimensionalModuleT</span><span class="op">&gt;</span> {
     <span class="ident">min_degree</span> : <span class="ident">i32</span>,
     <span class="ident">source</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>,
     <span class="ident">target</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>,
@@ -196,9 +196,9 @@
 
     <span class="kw">fn</span> <span class="ident">max_cohomology_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">homological_degree</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
         <span class="kw">let</span> <span class="ident">homological_degree</span> <span class="op">=</span> <span class="ident">homological_degree</span> <span class="kw">as</span> <span class="ident">usize</span>;
-        <span class="kw">if</span> <span class="ident">homological_degree</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">cohomology_basis</span>.<span class="ident">len</span>(){
+        <span class="kw">if</span> <span class="ident">homological_degree</span> <span class="op">&gt;=</span> <span class="self">self</span>.<span class="ident">cohomology_basis</span>.<span class="ident">len</span>(){
             <span class="kw">return</span> <span class="self">self</span>.<span class="ident">min_degree</span>() <span class="op">-</span> <span class="number">1</span>;
-        } 
+        }
         <span class="kw">return</span> <span class="self">self</span>.<span class="ident">cohomology_basis</span>[<span class="ident">homological_degree</span>].<span class="ident">len</span>();
     }
 

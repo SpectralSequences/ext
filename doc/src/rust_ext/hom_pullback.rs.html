@@ -288,7 +288,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">apply_to_basis_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">fn_degree</span> : <span class="ident">i32</span>, <span class="ident">fn_idx</span> : <span class="ident">usize</span>) {
-        <span class="comment">// println!(&quot;fn_deg : {}, fn_idx : {}&quot;, fn_degree, fn_idx);</span>
+        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;fn_deg : {}, fn_idx : {}&quot;</span>, <span class="ident">fn_degree</span>, <span class="ident">fn_idx</span>);
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">target_module</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">target</span>();
         <span class="kw">for</span> <span class="ident">out_deg</span> <span class="kw">in</span> <span class="ident">target_module</span>.<span class="ident">min_degree</span>() ..= <span class="ident">target_module</span>.<span class="ident">max_degree</span>() {
@@ -310,12 +310,12 @@
     }
 
     <span class="kw">fn</span> <span class="ident">max_kernel_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
-        <span class="macro">unimplemented</span><span class="macro">!</span>()
+        <span class="self">self</span>.<span class="ident">kernel</span>.<span class="ident">max_degree</span>()
     }
 
     <span class="kw">fn</span> <span class="ident">set_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lock</span> : <span class="kw-2">&amp;</span><span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">quasi_inverse</span> : <span class="ident">QuasiInverse</span>){
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&gt;=</span> <span class="self">self</span>.<span class="ident">min_degree</span>());
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">quasi_inverse</span>.<span class="ident">len</span>());
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">degree</span>, <span class="self">self</span>.<span class="ident">quasi_inverse</span>.<span class="ident">len</span>());
         <span class="self">self</span>.<span class="ident">quasi_inverse</span>.<span class="ident">push</span>(<span class="ident">quasi_inverse</span>);
     }
 
