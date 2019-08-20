@@ -1142,12 +1142,6 @@
 <span id="1124">1124</span>
 <span id="1125">1125</span>
 <span id="1126">1126</span>
-<span id="1127">1127</span>
-<span id="1128">1128</span>
-<span id="1129">1129</span>
-<span id="1130">1130</span>
-<span id="1131">1131</span>
-<span id="1132">1132</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">matrix</span>::{<span class="ident">Subspace</span>, <span class="ident">Matrix</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -2011,12 +2005,6 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_permanent_class</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">class</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) {
         <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">add_vector</span>(<span class="ident">class</span>);
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">differentials</span>.<span class="ident">len</span>() <span class="op">&lt;=</span> <span class="ident">x</span> {
-            <span class="kw">return</span>;
-        }
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>].<span class="ident">len</span>() <span class="op">&lt;=</span> <span class="ident">y</span> {
-            <span class="kw">return</span>;
-        }
         <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">MIN_PAGE</span> .. <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() {
             <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>].<span class="ident">add</span>(<span class="ident">class</span>, <span class="prelude-val">None</span>);
         }
@@ -2038,7 +2026,7 @@
             }
         }
 
-        <span class="self">self</span>.<span class="ident">send_class_data</span>(<span class="ident">x</span>, <span class="ident">y</span>);
+        <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>);
     }
 
     <span class="doccomment">/// Same logic as add_differential_propagate</span>
