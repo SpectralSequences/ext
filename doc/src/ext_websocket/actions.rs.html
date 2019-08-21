@@ -316,6 +316,7 @@
 <span id="298">298</span>
 <span id="299">299</span>
 <span id="300">300</span>
+<span id="301">301</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sseq</span>::{<span class="ident">Sseq</span>, <span class="ident">ProductItem</span>, <span class="ident">ClassState</span>, <span class="ident">INFINITY</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">module</span>::<span class="ident">FiniteModule</span>;
@@ -440,7 +441,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AddProductType</span> {
     <span class="kw">pub</span> <span class="ident">x</span> : <span class="ident">i32</span>,
     <span class="kw">pub</span> <span class="ident">y</span> : <span class="ident">i32</span>,
-    <span class="kw">pub</span> <span class="ident">idx</span> : <span class="ident">usize</span>,
+    <span class="kw">pub</span> <span class="ident">class</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">name</span> : <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">permanent</span> : <span class="ident">bool</span>
 }
@@ -454,7 +455,7 @@
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">y</span> <span class="kw">as</span> <span class="ident">u32</span>;
         <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">x</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">y</span>;
 
-        <span class="kw">if</span> <span class="ident">resolution</span>.<span class="ident">borrow_mut</span>().<span class="ident">add_product</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="self">self</span>.<span class="ident">idx</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>) {
+        <span class="kw">if</span> <span class="ident">resolution</span>.<span class="ident">borrow_mut</span>().<span class="ident">add_product</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="self">self</span>.<span class="ident">class</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>) {
             <span class="ident">resolution</span>.<span class="ident">borrow</span>().<span class="ident">catch_up_products</span>();
         }
     }
@@ -530,7 +531,8 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Resolving</span> {
     <span class="kw">pub</span> <span class="ident">p</span> : <span class="ident">u32</span>,
     <span class="kw">pub</span> <span class="ident">min_degree</span> : <span class="ident">i32</span>,
-    <span class="kw">pub</span> <span class="ident">max_degree</span> : <span class="ident">i32</span>
+    <span class="kw">pub</span> <span class="ident">max_degree</span> : <span class="ident">i32</span>,
+    <span class="kw">pub</span> <span class="ident">is_unit</span> : <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">Resolving</span> { }
@@ -563,7 +565,7 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Resolve</span> {
-    <span class="kw">pub</span> <span class="ident">max_degree</span> : <span class="ident">i32</span>,
+    <span class="kw">pub</span> <span class="ident">max_degree</span> : <span class="ident">i32</span>
 }
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">Resolve</span> { }
 
