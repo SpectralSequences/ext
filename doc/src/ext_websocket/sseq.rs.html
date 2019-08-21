@@ -1115,33 +1115,6 @@
 <span id="1097">1097</span>
 <span id="1098">1098</span>
 <span id="1099">1099</span>
-<span id="1100">1100</span>
-<span id="1101">1101</span>
-<span id="1102">1102</span>
-<span id="1103">1103</span>
-<span id="1104">1104</span>
-<span id="1105">1105</span>
-<span id="1106">1106</span>
-<span id="1107">1107</span>
-<span id="1108">1108</span>
-<span id="1109">1109</span>
-<span id="1110">1110</span>
-<span id="1111">1111</span>
-<span id="1112">1112</span>
-<span id="1113">1113</span>
-<span id="1114">1114</span>
-<span id="1115">1115</span>
-<span id="1116">1116</span>
-<span id="1117">1117</span>
-<span id="1118">1118</span>
-<span id="1119">1119</span>
-<span id="1120">1120</span>
-<span id="1121">1121</span>
-<span id="1122">1122</span>
-<span id="1123">1123</span>
-<span id="1124">1124</span>
-<span id="1125">1125</span>
-<span id="1126">1126</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">matrix</span>::{<span class="ident">Subspace</span>, <span class="ident">Matrix</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1153,6 +1126,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">actions</span>::<span class="kw-2">*</span>;
 
 <span class="kw">const</span> <span class="ident">MIN_PAGE</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="number">2</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INFINITY</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">i32</span>::<span class="ident">MAX</span>;
 
 <span class="doccomment">/// Given a vector `elt`, a subspace `zeros` of the total space (with a specified choice of</span>
 <span class="doccomment">/// complement) and a basis `basis` of a subspace of the complement, project `elt` to the complement and express</span>
@@ -1484,93 +1458,85 @@
         <span class="prelude-val">None</span>
     }
 
-    <span class="doccomment">/// Given a page `r` and coordinates `x`, `y`, a differerntial from `source` to `target`</span>
-    <span class="doccomment">/// starting at (x, y), and a product `product`, return the result of propagating the</span>
-    <span class="doccomment">/// differential along the product. If the product is not defined or the product with the</span>
-    <span class="doccomment">/// source is zero, this returns None. Otherwise, it returns `Some((new_x, new_y, new_source,</span>
-    <span class="doccomment">/// new_target))`, where `new_x/new_y` are the coordinates of the source of the new</span>
-    <span class="doccomment">/// differential.</span>
-    <span class="kw">fn</span> <span class="ident">product_differential</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">target</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">product</span> : <span class="kw-2">&amp;</span><span class="ident">Product</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">FpVector</span>, <span class="ident">FpVector</span>)<span class="op">&gt;</span>{
-        <span class="comment">// Handle non-zero product differential.</span>
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">product</span>.<span class="ident">permanent</span> {
+    <span class="doccomment">/// Apply the Leibniz rule to obtain new differentials. The differential we start with is a d_r</span>
+    <span class="doccomment">/// differential from (x, y) with source `s` and target `t`. If the target is None, then it</span>
+    <span class="doccomment">/// means `s` is *permanent*. In this case, r should be set to INFINITY. On the other hand, if</span>
+    <span class="doccomment">/// `t` is zero, it simply means d_r is zero.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The other object we multiply with is the product with index `si`. If `si` is permanent,</span>
+    <span class="doccomment">/// we simply multiply the differenial with `si`. If `si` is non-permanent but has a</span>
+    <span class="doccomment">/// differential starting *from* it, we apply Leibniz to that differential. If `si` is the</span>
+    <span class="doccomment">/// *target* of a product differential, we do nothing.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If `si` is permanent and `t` is None, then we mark s * si to be permanent as well.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// There is no good reason why `t` is a mutable borrow instead of an immutable borrow. It</span>
+    <span class="doccomment">/// would have been an immutable borrow if we can implicitly cast Option&lt;&amp;mut A&gt; to Option&lt;A&gt;,</span>
+    <span class="doccomment">/// but we can&#39;t.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Return</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// We return a pair `(r_, x_, y_, s_, t_)` which is the data of the new differential --- its</span>
+    <span class="doccomment">/// page, starting coordinate and source and target vectors. Again, if s * si is permanent,</span>
+    <span class="doccomment">/// then t_ is set to None. If there is not enough products computed to calculate the result,</span>
+    <span class="doccomment">/// or if s * si is zero, we return None.</span>
+    <span class="kw">fn</span> <span class="ident">leibniz</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">s</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">t</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span><span class="op">&gt;</span>, <span class="ident">si</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">FpVector</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">product</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">si</span>];
+        <span class="comment">// First compute s * si.</span>
+        <span class="kw">let</span> (<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">new_source</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">s</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
+
+        <span class="kw">if</span> <span class="ident">new_source</span>.<span class="ident">is_zero</span>() {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">new_x</span>, <span class="ident">new_y</span>, <span class="ident">prod_source</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">product</span>) {
-            <span class="kw">if</span> <span class="ident">prod_source</span>.<span class="ident">is_zero</span>() {
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
+        <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">permanent</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">t_</span>) <span class="op">=</span> <span class="ident">t</span> {
+                <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">new_target</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">t_</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
+                <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="ident">product</span>.<span class="ident">x</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span> {
+                    <span class="ident">new_target</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
+                }
+                <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">new_source</span>, <span class="prelude-val">Some</span>(<span class="ident">new_target</span>)));
+            } <span class="kw">else</span> {
+                <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">INFINITY</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">new_source</span>, <span class="prelude-val">None</span>));
             }
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">prod_target</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">target</span>, <span class="ident">product</span>) {
-                <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="ident">product</span>.<span class="ident">x</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">1</span> {
-                    <span class="ident">prod_target</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
+        }
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="bool-val">true</span>, <span class="ident">ti</span>)) <span class="op">=</span> <span class="ident">product</span>.<span class="ident">differential</span> {
+            <span class="kw">if</span> <span class="ident">r_</span> <span class="op">&lt;</span> <span class="ident">r</span> {
+                <span class="comment">// The original differential from s to t is useless.</span>
+                <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">new_target</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">s</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">ti</span>])<span class="question-mark">?</span>;
+                <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">si</span>].<span class="ident">left</span> <span class="op">&amp;&amp;</span> (<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span> {
+                    <span class="ident">new_target</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
+                }
+                <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">new_source</span>, <span class="prelude-val">Some</span>(<span class="ident">new_target</span>)));
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">r_</span> <span class="op">&gt;</span> <span class="ident">r</span> {
+                <span class="comment">// This is more-or-less the same as the permanent code, except we know t is not</span>
+                <span class="comment">// permanent (or else it would be handled by the previous case).</span>
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">t_</span>) <span class="op">=</span> <span class="ident">t</span> {
+                    <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">new_target</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">t_</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
+                    <span class="kw">if</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">si</span>].<span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">si</span>].<span class="ident">x</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span> {
+                        <span class="ident">new_target</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
+                    }
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">new_source</span>, <span class="prelude-val">Some</span>(<span class="ident">new_target</span>)));
+                }
+            } <span class="kw">else</span> {
+                <span class="comment">// This is the sum of the two above.</span>
+                <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">new_target</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">s</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">ti</span>])<span class="question-mark">?</span>;
+                <span class="kw">if</span> <span class="op">!</span><span class="ident">product</span>.<span class="ident">left</span> <span class="op">&amp;&amp;</span> (<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span> {
+                    <span class="ident">new_target</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
+                }
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">t_</span>) <span class="op">=</span> <span class="ident">t</span> {
+                    <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">tmp</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">t_</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
+                    <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">si</span>].<span class="ident">x</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span> {
+                        <span class="ident">tmp</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
+                    }
+                    <span class="ident">new_target</span>.<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="ident">tmp</span>, <span class="number">1</span>);
                 }
 
-                <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">new_x</span>, <span class="ident">new_y</span>, <span class="ident">prod_source</span>, <span class="ident">prod_target</span>));
+                <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">new_source</span>, <span class="prelude-val">Some</span>(<span class="ident">new_target</span>)));
             }
         }
         <span class="prelude-val">None</span>
-    }
-
-    <span class="doccomment">/// This function is called by add_product, and propagates products with differentials</span>
-    <span class="doccomment">/// accordingly. The input (x, y) is the coordinate of the point we want to take the product</span>
-    <span class="doccomment">/// with.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Observe that if we have a differential $d(a) = b$, then for any $z$, to compute $d(az)$, we</span>
-    <span class="doccomment">/// need to know the products $a d(z)$ and $bz$, and of course $az$ as well. We are able to</span>
-    <span class="doccomment">/// compute $d(az)$ if and only if we have computed all these three values. By our assumption,</span>
-    <span class="doccomment">/// $az$ is always computed before $a d(z)$. On the other hand, there are no guarantees on the</span>
-    <span class="doccomment">/// order in which different products come in.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Thus this function should be called whenever bz and a dz is calculated.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The return type is Option&lt;()&gt; so that we can use the question mark operator. In practice,</span>
-    <span class="doccomment">/// the return value will be None if the differential was not successfully calculated because</span>
-    <span class="doccomment">/// the products have not yet been defined.</span>
-    <span class="kw">fn</span> <span class="ident">attempt_propagate_product_differential</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">r</span>: <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">source_idx</span> : <span class="ident">usize</span>, <span class="ident">target_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">x</span>, <span class="ident">y</span>) {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
-        }
-
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">r</span> {
-            <span class="comment">// Work with the differentials</span>
-            <span class="kw">let</span> <span class="ident">pairs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>].<span class="ident">get_source_target_pairs</span>();
-            <span class="kw">for</span> (<span class="ident">s</span>, <span class="ident">t</span>) <span class="kw">in</span> <span class="ident">pairs</span> {
-                <span class="comment">// If this fails, its is because some multiplication isn&#39;t defined,</span>
-                <span class="comment">// in which case we should abort. Then it is also not defined for</span>
-                <span class="comment">// all other classes.</span>
-                <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">s</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">t</span>), <span class="ident">source_idx</span>, <span class="ident">target_idx</span>)<span class="question-mark">?</span>;
-            }
-        } <span class="kw">else</span> {
-            <span class="comment">// Propagate permanent cycles.</span>
-            <span class="kw">let</span> <span class="ident">classes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">basis</span>().<span class="ident">to_vec</span>();
-
-            <span class="kw">for</span> <span class="ident">class</span> <span class="kw">in</span> <span class="ident">classes</span> {
-                <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>, <span class="prelude-val">None</span>, <span class="ident">source_idx</span>, <span class="ident">target_idx</span>)<span class="question-mark">?</span>;
-            }
-        }
-        <span class="prelude-val">Some</span>(())
-    }
-
-    <span class="doccomment">/// Apply Leibniz&#39;s rule to the d_r differential starting at (x, y) from `s` to `t and</span>
-    <span class="doccomment">/// another d_r differential from `products[si]` to `products[ti]`. Set `t` to be None if</span>
-    <span class="doccomment">/// the differential is zero.</span>
-    <span class="kw">fn</span> <span class="ident">leibniz</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">s</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">t</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">FpVector</span><span class="op">&gt;</span>, <span class="ident">si</span> : <span class="ident">usize</span>, <span class="ident">ti</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> (<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">a_s</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">s</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">si</span>])<span class="question-mark">?</span>;
-        <span class="kw">if</span> <span class="ident">a_s</span>.<span class="ident">is_zero</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Some</span>(());
-        }
-
-        <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">bs</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">s</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">ti</span>])<span class="question-mark">?</span>;
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">t_</span>) <span class="op">=</span> <span class="ident">t</span> {
-            <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">at</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">t_</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">si</span>])<span class="question-mark">?</span>;
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">si</span>].<span class="ident">x</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span> {
-                <span class="ident">at</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
-            }
-            <span class="ident">bs</span>.<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="ident">at</span>, <span class="number">1</span>);
-        }
-        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">a_s</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">bs</span>);
-
-        <span class="prelude-val">Some</span>(())
     }
 
     <span class="doccomment">/// Computes products whose source is at (x, y).</span>
@@ -1954,24 +1920,11 @@
 
         <span class="self">self</span>.<span class="ident">add_zeros</span>(<span class="ident">r</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">target</span>);
         <span class="comment">// add_permanent_class in turn sets the differentials on the targets of the differentials</span>
-        <span class="comment">// to 0.</span>
+        <span class="comment">// to 0. add_differential_propagate will take care of propagating this.</span>
         <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">target</span>);
 
         <span class="self">self</span>.<span class="ident">add_page</span>(<span class="ident">r</span>);
         <span class="self">self</span>.<span class="ident">add_page</span>(<span class="ident">r</span> <span class="op">+</span> <span class="number">1</span>);
-
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">is_source</span>, <span class="ident">i_</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">differential</span> {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">is_source</span> {
-                    <span class="kw">continue</span>;
-                }
-                <span class="kw">if</span> <span class="ident">r_</span> <span class="op">==</span> <span class="ident">r</span> {
-                    <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r_</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="ident">target</span>), <span class="ident">i</span>, <span class="ident">i_</span>);
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">r_</span> <span class="op">&lt;</span> <span class="ident">r</span> {
-                    <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r_</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="prelude-val">None</span>, <span class="ident">i</span>, <span class="ident">i_</span>);
-                }
-            }
-        }
 
         <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>);
         <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>);
@@ -1988,62 +1941,31 @@
     <span class="doccomment">/// have to exercise a slight bit of care to ensure we don&#39;t set both $p_1 p_2 d$ and $p_2 p_1</span>
     <span class="doccomment">/// d$ when $p_1$, $p_2$ are products and $d$ is the differential. Our strategy is that we</span>
     <span class="doccomment">/// compute $p_2 p_1 d$ if and only if $p_1$ comes earlier in the list of products than $p_2$.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_differential_propagate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">target</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">product_index</span> : <span class="ident">usize</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_differential_propagate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">target</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>, <span class="ident">product_index</span> : <span class="ident">usize</span>) {
         <span class="kw">if</span> <span class="ident">product_index</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> {
-            <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target</span>);
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">target_</span>) <span class="op">=</span> <span class="ident">target</span>.<span class="ident">as_mut</span>() {
+                <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target_</span>);
+            } <span class="kw">else</span> {
+                <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>);
+            }
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">product_index</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> {
             <span class="self">self</span>.<span class="ident">add_differential_propagate</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target</span>, <span class="ident">product_index</span> <span class="op">+</span> <span class="number">1</span>);
         }
 
-        <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">product_differential</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">product_index</span>]);
+        <span class="comment">// Separate this to new line to make code easier to read.</span>
+        <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target</span>.<span class="ident">as_mut</span>(), <span class="ident">product_index</span>);
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">new_x</span>, <span class="ident">new_y</span>, <span class="ident">new_source</span>, <span class="kw-2">mut</span> <span class="ident">new_target</span>)) <span class="op">=</span> <span class="ident">new_d</span> {
-            <span class="self">self</span>.<span class="ident">add_differential_propagate</span>(<span class="ident">r</span>, <span class="ident">new_x</span>, <span class="ident">new_y</span>, <span class="kw-2">&amp;</span><span class="ident">new_source</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">new_target</span>, <span class="ident">product_index</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="kw-2">mut</span> <span class="ident">target_</span>)) <span class="op">=</span> <span class="ident">new_d</span> {
+            <span class="self">self</span>.<span class="ident">add_differential_propagate</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>, <span class="ident">product_index</span>);
         }
     }
-
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_permanent_class</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">class</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) {
         <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">add_vector</span>(<span class="ident">class</span>);
         <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">MIN_PAGE</span> .. <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() {
             <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>].<span class="ident">add</span>(<span class="ident">class</span>, <span class="prelude-val">None</span>);
         }
-
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="ident">is_source</span>, <span class="ident">i_</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">differential</span> {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">is_source</span> {
-                    <span class="kw">continue</span>;
-                }
-
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">a</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">class</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>]) {
-                    <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">is_zero</span>() {
-                        <span class="kw">continue</span>;
-                    }
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">b</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">class</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i_</span>]) {
-                        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>);
-                    }
-                }
-            }
-        }
-
         <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>);
-    }
-
-    <span class="doccomment">/// Same logic as add_differential_propagate</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_permanent_class_propagate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">class</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">product_index</span> : <span class="ident">usize</span>) {
-        <span class="kw">if</span> <span class="ident">product_index</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> {
-            <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">class</span>);
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">product_index</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> {
-            <span class="self">self</span>.<span class="ident">add_permanent_class_propagate</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">class</span>, <span class="ident">product_index</span> <span class="op">+</span> <span class="number">1</span>);
-        }
-
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">product_index</span>].<span class="ident">permanent</span> {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">prod</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">class</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">product_index</span>]) {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">prod</span>.<span class="ident">is_zero</span>() {
-                    <span class="self">self</span>.<span class="ident">add_permanent_class_propagate</span>(<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">prod</span>, <span class="ident">product_index</span>);
-                }
-            }
-        }
     }
 
     <span class="doccomment">/// Add a product to the list of products, but don&#39;t add any computed product</span>
@@ -2054,11 +1976,7 @@
             <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">user</span> <span class="op">=</span> <span class="bool-val">true</span>;
             <span class="kw">if</span> <span class="ident">permanent</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">permanent</span> {
                 <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">permanent</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_x</span> .. <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">matrices</span>.<span class="ident">len</span>() {
-                    <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_y</span> .. <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
-                        <span class="self">self</span>.<span class="ident">propagate_along_permanent_product</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">i</span>);
-                    }
-                }
+                <span class="self">self</span>.<span class="ident">repropagate_product</span>(<span class="ident">i</span>);
             }
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">product</span> <span class="op">=</span> <span class="ident">Product</span> {
@@ -2085,10 +2003,30 @@
         <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">source_idx</span>].<span class="ident">differential</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="bool-val">true</span>, <span class="ident">target_idx</span>));
         <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">target_idx</span>].<span class="ident">differential</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="bool-val">false</span>, <span class="ident">source_idx</span>));
 
-        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_x</span> .. <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">source_idx</span>].<span class="ident">matrices</span>.<span class="ident">len</span>() {
-            <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_y</span> .. <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">source_idx</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
-                <span class="comment">// This is safe to call if the other product is not defined.</span>
-                <span class="self">self</span>.<span class="ident">attempt_propagate_product_differential</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source_idx</span>, <span class="ident">target_idx</span>);
+        <span class="self">self</span>.<span class="ident">repropagate_product</span>(<span class="ident">source_idx</span>);
+    }
+
+    <span class="kw">fn</span> <span class="ident">repropagate_product</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) {
+        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_x</span> .. <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>.<span class="ident">len</span>() {
+            <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_y</span> .. <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
+                <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">MIN_PAGE</span> .. <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() {
+                    <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>];
+                    <span class="kw">for</span> (<span class="ident">source</span>, <span class="kw-2">mut</span> <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>() {
+                        <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>), <span class="ident">idx</span>);
+                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
+                            <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
+                        }
+                    }
+                }
+
+                <span class="comment">// Find a better way to do this. This is to circumevent borrow checker.</span>
+                <span class="kw">let</span> <span class="ident">classes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">basis</span>().<span class="ident">to_vec</span>();
+                <span class="kw">for</span> <span class="ident">class</span> <span class="kw">in</span> <span class="ident">classes</span> {
+                    <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">INFINITY</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>, <span class="prelude-val">None</span>, <span class="ident">idx</span>);
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
+                        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
+                    }
+                }
             }
         }
     }
@@ -2132,31 +2070,37 @@
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">y</span>, <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">len</span>());
         <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">push</span>(<span class="prelude-val">Some</span>(<span class="ident">Matrix</span>::<span class="ident">from_vec</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">matrix</span>)));
-        <span class="self">self</span>.<span class="ident">propagate_along_permanent_product</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">idx</span>);
 
-        <span class="comment">// Now propagate differentials in products. See documentation of</span>
-        <span class="comment">// attempt_propagate_product_differential for details.</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="ident">is_source</span>, <span class="ident">other_idx</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">differential</span> {
-            <span class="kw">if</span> <span class="ident">is_source</span> {
-                <span class="self">self</span>.<span class="ident">attempt_propagate_product_differential</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>, <span class="ident">idx</span>, <span class="ident">other_idx</span>);
-            } <span class="kw">else</span> {
-                <span class="self">self</span>.<span class="ident">attempt_propagate_product_differential</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">other_idx</span>, <span class="ident">idx</span>);
+        <span class="comment">// We propagate all differentials that *hit* us, because of the order in which products</span>
+        <span class="comment">// are added. The only exception is if this product is the target of a product</span>
+        <span class="comment">// differential on page r, in which case we propagate the d_r differential *starting* at</span>
+        <span class="comment">// (x, y).</span>
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">differential</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">differential</span>.<span class="ident">unwrap</span>().<span class="number">1</span> {
+            <span class="kw">let</span> (<span class="ident">r</span>, <span class="kw">_</span> , <span class="ident">si</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">differential</span>.<span class="ident">unwrap</span>();
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">r</span> {
+                <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>];
+                <span class="kw">for</span> (<span class="ident">source</span>, <span class="kw-2">mut</span> <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>() {
+                    <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>), <span class="ident">si</span>);
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
+                        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
+                    }
+                }
             }
-        }
 
-        <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
-    }
-
-    <span class="kw">fn</span> <span class="ident">propagate_along_permanent_product</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) {
-        <span class="comment">// Now propagate differentials. We propagate differentials that *hit* us, because the</span>
-        <span class="comment">// target product is always set after the source product.</span>
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">permanent</span> {
+            <span class="kw">let</span> <span class="ident">classes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">basis</span>().<span class="ident">to_vec</span>();
+            <span class="kw">for</span> <span class="ident">class</span> <span class="kw">in</span> <span class="ident">classes</span> {
+                <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">INFINITY</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>, <span class="prelude-val">None</span>, <span class="ident">si</span>);
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
+                    <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
+                }
+            }
+        } <span class="kw">else</span> {
             <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">get_differentials_hitting</span>(<span class="ident">x</span>, <span class="ident">y</span>) {
                 <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>][<span class="ident">r</span>];
-                <span class="kw">for</span> (<span class="ident">source</span>, <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>() {
-                    <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">product_differential</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="kw-2">&amp;</span><span class="ident">target</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>]);
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="kw-2">mut</span> <span class="ident">target_</span>)) <span class="op">=</span> <span class="ident">new_d</span> {
-                        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
+                <span class="kw">for</span> (<span class="ident">source</span>, <span class="kw-2">mut</span> <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>() {
+                    <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>), <span class="ident">idx</span>);
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
+                        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
                     }
                 }
             }
@@ -2164,11 +2108,13 @@
             <span class="comment">// Find a better way to do this. This is to circumevent borrow checker.</span>
             <span class="kw">let</span> <span class="ident">classes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">basis</span>().<span class="ident">to_vec</span>();
             <span class="kw">for</span> <span class="ident">class</span> <span class="kw">in</span> <span class="ident">classes</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">product</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>,  <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>]) {
-                    <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">product</span>);
+                <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">INFINITY</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>, <span class="prelude-val">None</span>, <span class="ident">idx</span>);
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
+                    <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
                 }
             }
         }
+        <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
     }
 }
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
