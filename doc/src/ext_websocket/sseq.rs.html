@@ -1120,6 +1120,33 @@
 <span id="1102">1102</span>
 <span id="1103">1103</span>
 <span id="1104">1104</span>
+<span id="1105">1105</span>
+<span id="1106">1106</span>
+<span id="1107">1107</span>
+<span id="1108">1108</span>
+<span id="1109">1109</span>
+<span id="1110">1110</span>
+<span id="1111">1111</span>
+<span id="1112">1112</span>
+<span id="1113">1113</span>
+<span id="1114">1114</span>
+<span id="1115">1115</span>
+<span id="1116">1116</span>
+<span id="1117">1117</span>
+<span id="1118">1118</span>
+<span id="1119">1119</span>
+<span id="1120">1120</span>
+<span id="1121">1121</span>
+<span id="1122">1122</span>
+<span id="1123">1123</span>
+<span id="1124">1124</span>
+<span id="1125">1125</span>
+<span id="1126">1126</span>
+<span id="1127">1127</span>
+<span id="1128">1128</span>
+<span id="1129">1129</span>
+<span id="1130">1130</span>
+<span id="1131">1131</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">matrix</span>::{<span class="ident">Subspace</span>, <span class="ident">Matrix</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1139,7 +1166,7 @@
 <span class="doccomment">/// span of `basis`. The result is returned as a list of coefficients.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// If `zeros` is none, then the initial projection is not performed.</span>
-<span class="kw">fn</span> <span class="ident">express_basis</span>(<span class="kw-2">mut</span> <span class="ident">elt</span> : <span class="ident">FpVector</span>, <span class="ident">zeros</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Subspace</span><span class="op">&gt;</span>, <span class="ident">basis</span> : <span class="kw-2">&amp;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>)) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>{
+<span class="kw">fn</span> <span class="ident">express_basis</span>(<span class="kw-2">mut</span> <span class="ident">elt</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">zeros</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Subspace</span><span class="op">&gt;</span>, <span class="ident">basis</span> : <span class="kw-2">&amp;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>)) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>{
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">z</span>) <span class="op">=</span> <span class="ident">zeros</span> {
         <span class="ident">z</span>.<span class="ident">reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">elt</span>);
     }
@@ -1361,7 +1388,7 @@
     <span class="doccomment">/// This clears out all the user actions. This is intended to be used when we undo, where</span>
     <span class="doccomment">/// we clear out all actions then redo the existing actions. Hence we avoid re-allocating</span>
     <span class="doccomment">/// as much as possible because we are likely to need the space anyway</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
         <span class="kw">for</span> <span class="ident">prod</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">products</span> {
             <span class="kw">if</span> <span class="ident">prod</span>.<span class="ident">user</span> {
                 <span class="ident">prod</span>.<span class="ident">permanent</span> <span class="op">=</span> <span class="bool-val">false</span>;
@@ -1384,9 +1411,16 @@
             }
         }
 
+        <span class="kw">if</span> <span class="ident">refresh</span> {
+            <span class="self">self</span>.<span class="ident">refresh_all</span>();
+        }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">refresh_all</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
             <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
-                <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>);
+                <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">false</span>);
+                <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
             }
         }
     }
@@ -1400,6 +1434,7 @@
 
             <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
                  <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+                 <span class="ident">refresh</span> : <span class="bool-val">true</span>,
                  <span class="ident">sseq</span> : <span class="self">self</span>.<span class="ident">name</span>,
                  <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">SetPageList</span> { <span class="ident">page_list</span> : <span class="self">self</span>.<span class="ident">page_list</span>.<span class="ident">clone</span>() })
             });
@@ -1587,10 +1622,11 @@
                     <span class="kw">let</span> <span class="ident">target_zeros</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_page_zeros</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">y</span>);
 
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">source_classes</span>.<span class="number">1</span>.<span class="ident">len</span>());
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">target_dim</span>);
                     <span class="kw">for</span> <span class="ident">vec</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">source_classes</span>.<span class="number">1</span> {
-                        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">target_dim</span>);
                         <span class="ident">matrix</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>, <span class="number">1</span>, <span class="ident">vec</span>);
-                        <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">express_basis</span>(<span class="ident">target</span>, <span class="prelude-val">Some</span>(<span class="ident">target_zeros</span>), <span class="ident">target_classes</span>));
+                        <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">express_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>, <span class="prelude-val">Some</span>(<span class="ident">target_zeros</span>), <span class="ident">target_classes</span>));
+                        <span class="ident">target</span>.<span class="ident">set_to_zero</span>();
                     }
                     <span class="ident">matrices</span>.<span class="ident">push</span>(<span class="ident">result</span>);
                 }
@@ -1610,6 +1646,7 @@
 
         <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
             <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">refresh</span> : <span class="bool-val">true</span>,
             <span class="ident">sseq</span> : <span class="self">self</span>.<span class="ident">name</span>,
             <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">SetStructline</span> { <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">structlines</span> })
         });
@@ -1664,8 +1701,8 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">differentials</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">source_dim</span>);
 
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dvec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">target_dim</span>);
         <span class="kw">for</span> <span class="ident">vec</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">old_classes</span>.<span class="number">1</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dvec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">target_dim</span>);
             <span class="ident">d</span>.<span class="ident">evaluate</span>(<span class="ident">vec</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dvec</span>);
             <span class="ident">target_zeros</span>.<span class="ident">reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dvec</span>);
 
@@ -1680,7 +1717,8 @@
             <span class="ident">result</span>.<span class="ident">clear_slice</span>();
 
             <span class="ident">vectors</span>.<span class="ident">push</span>(<span class="ident">result</span>);
-            <span class="ident">differentials</span>.<span class="ident">push</span>(<span class="ident">express_basis</span>(<span class="ident">dvec</span>, <span class="prelude-val">None</span>, <span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>)));
+            <span class="ident">differentials</span>.<span class="ident">push</span>(<span class="ident">express_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dvec</span>, <span class="prelude-val">None</span>, <span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>)));
+            <span class="ident">dvec</span>.<span class="ident">set_to_zero</span>();
         }
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">vectors</span>);
@@ -1708,7 +1746,11 @@
         ((<span class="ident">pivots</span>, <span class="ident">class_list</span>), <span class="ident">differentials</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">compute_classes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>) {
+    <span class="doccomment">/// # Arguments</span>
+    <span class="doccomment">///  * `refresh_edge` - Whether to automatically call compute_edges after computing class. This should</span>
+    <span class="doccomment">///  almost always be yes, unless we are re-computing everything, in which case this</span>
+    <span class="doccomment">///  will result in many duplicate calls of compute_edge.</span>
+    <span class="kw">fn</span> <span class="ident">compute_classes</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">refresh_edge</span> : <span class="ident">bool</span>) {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">x</span>, <span class="ident">y</span>) {
             <span class="kw">return</span>;
         }
@@ -1759,22 +1801,25 @@
             <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>];
             <span class="kw">let</span> <span class="ident">pairs</span> <span class="op">=</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>();
             <span class="ident">true_differentials</span>.<span class="ident">push</span>(<span class="ident">pairs</span>.<span class="ident">into_iter</span>()
-                .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">s</span>, <span class="ident">t</span>)<span class="op">|</span> (<span class="ident">express_basis</span>(<span class="ident">s</span>, <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">get_page_zeros</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>)), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>)),
-                               <span class="ident">express_basis</span>(<span class="ident">t</span>, <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">get_page_zeros</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>)), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>))))
+                .<span class="ident">map</span>(<span class="op">|</span>(<span class="kw-2">mut</span> <span class="ident">s</span>, <span class="kw-2">mut</span> <span class="ident">t</span>)<span class="op">|</span> (<span class="ident">express_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>, <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">get_page_zeros</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>)), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>)),
+                               <span class="ident">express_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>, <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">get_page_zeros</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>)), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>))))
                 .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>())
         }
 
         <span class="kw">if</span> <span class="ident">differentials</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
                 <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+                <span class="ident">refresh</span> : <span class="bool-val">true</span>,
                 <span class="ident">sseq</span> : <span class="self">self</span>.<span class="ident">name</span>,
                 <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">SetDifferential</span> { <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">true_differentials</span>, <span class="ident">differentials</span> })
             });
         }
 
-        <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
-        <span class="kw">for</span> <span class="ident">prod</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span> {
-            <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span> <span class="op">-</span> <span class="ident">prod</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">prod</span>.<span class="ident">y</span>);
+        <span class="kw">if</span> <span class="ident">refresh_edge</span> {
+            <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
+            <span class="kw">for</span> <span class="ident">prod</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span> {
+                <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span> <span class="op">-</span> <span class="ident">prod</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">prod</span>.<span class="ident">y</span>);
+            }
         }
     }
 
@@ -1798,6 +1843,7 @@
 
         <span class="self">self</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
             <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+            <span class="ident">refresh</span> : <span class="bool-val">true</span>,
             <span class="ident">sseq</span> : <span class="self">self</span>.<span class="ident">name</span>,
             <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">SetClass</span> {
                 <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">state</span>,
@@ -1860,12 +1906,12 @@
 <span class="kw">impl</span> <span class="ident">Sseq</span> {
     <span class="doccomment">/// This function should only be called when everything to the left and bottom of (x, y)</span>
     <span class="doccomment">/// has been defined.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_class</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">num</span> : <span class="ident">usize</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_class</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">num</span> : <span class="ident">usize</span>, <span class="ident">refresh</span>: <span class="ident">bool</span>) {
         <span class="kw">if</span> <span class="ident">x</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">min_x</span> {
             <span class="self">self</span>.<span class="ident">classes</span>[<span class="self">self</span>.<span class="ident">min_x</span> <span class="op">-</span> <span class="number">1</span>].<span class="ident">push</span>(<span class="number">0</span>);
         }
         <span class="kw">while</span> <span class="ident">x</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
-            <span class="self">self</span>.<span class="ident">set_class</span>(<span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>(), <span class="self">self</span>.<span class="ident">min_y</span> <span class="op">-</span> <span class="number">1</span>, <span class="number">0</span>);
+            <span class="self">self</span>.<span class="ident">set_class</span>(<span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>(), <span class="self">self</span>.<span class="ident">min_y</span> <span class="op">-</span> <span class="number">1</span>, <span class="number">0</span>, <span class="ident">refresh</span>);
         }
         <span class="kw">if</span> <span class="ident">x</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
             <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">push</span>(<span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">min_y</span>));
@@ -1880,7 +1926,7 @@
         }
 
         <span class="kw">while</span> <span class="ident">y</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
-            <span class="self">self</span>.<span class="ident">set_class</span>(<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>(), <span class="number">0</span>);
+            <span class="self">self</span>.<span class="ident">set_class</span>(<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>(), <span class="number">0</span>, <span class="ident">refresh</span>);
         }
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>(), <span class="ident">y</span>);
@@ -1892,14 +1938,16 @@
         <span class="self">self</span>.<span class="ident">page_classes</span>[<span class="ident">x</span>].<span class="ident">push</span>(<span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="ident">MIN_PAGE</span>));
 
         <span class="self">self</span>.<span class="ident">allocate_zeros_subspace</span>(<span class="ident">MIN_PAGE</span>, <span class="ident">x</span>, <span class="ident">y</span>);
-        <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>);
+        <span class="kw">if</span> <span class="ident">refresh</span> {
+            <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">true</span>);
+        }
     }
 
     <span class="doccomment">/// Add a differential starting at (x, y). This mutates the target by reducing it via</span>
     <span class="doccomment">/// `self.zeros[x - 1][y + r][r]`</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if the target of the differential is not yet defined</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_differential</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">target</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_differential</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">target</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">source</span>.<span class="ident">dimension</span>(), <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>][<span class="ident">y</span>], <span class="string">&quot;length of source vector not equal to dimension of source&quot;</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">target</span>.<span class="ident">dimension</span>(), <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>], <span class="string">&quot;length of target vector not equal to dimension of target&quot;</span>);
 
@@ -1926,18 +1974,20 @@
         <span class="self">self</span>.<span class="ident">add_zeros</span>(<span class="ident">r</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">target</span>);
         <span class="comment">// add_permanent_class in turn sets the differentials on the targets of the differentials</span>
         <span class="comment">// to 0. add_differential_propagate will take care of propagating this.</span>
-        <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">target</span>);
+        <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">target</span>, <span class="ident">refresh</span>);
 
         <span class="self">self</span>.<span class="ident">add_page</span>(<span class="ident">r</span>);
         <span class="self">self</span>.<span class="ident">add_page</span>(<span class="ident">r</span> <span class="op">+</span> <span class="number">1</span>);
 
-        <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>);
-        <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>);
+        <span class="kw">if</span> <span class="ident">refresh</span> {
+            <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="bool-val">true</span>);
+            <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">true</span>);
 
-        <span class="comment">// self.zeros[r] will be populated if there is a non-zero differential hit on a</span>
-        <span class="comment">// page &lt;= r - 1. Check if these differentials now hit 0.</span>
-        <span class="kw">for</span> <span class="ident">r_</span> <span class="kw">in</span> <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span> .. <span class="self">self</span>.<span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>].<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> {
-            <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">r_</span>);
+            <span class="comment">// self.zeros[r] will be populated if there is a non-zero differential hit on a</span>
+            <span class="comment">// page &lt;= r - 1. Check if these differentials now hit 0.</span>
+            <span class="kw">for</span> <span class="ident">r_</span> <span class="kw">in</span> <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span> .. <span class="self">self</span>.<span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>].<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> {
+                <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">r_</span>, <span class="bool-val">true</span>);
+            }
         }
     }
 
@@ -1946,41 +1996,43 @@
     <span class="doccomment">/// have to exercise a slight bit of care to ensure we don&#39;t set both $p_1 p_2 d$ and $p_2 p_1</span>
     <span class="doccomment">/// d$ when $p_1$, $p_2$ are products and $d$ is the differential. Our strategy is that we</span>
     <span class="doccomment">/// compute $p_2 p_1 d$ if and only if $p_1$ comes earlier in the list of products than $p_2$.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_differential_propagate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">target</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>, <span class="ident">product_index</span> : <span class="ident">usize</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_differential_propagate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">target</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>, <span class="ident">product_index</span> : <span class="ident">usize</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
         <span class="kw">if</span> <span class="ident">product_index</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> {
             <span class="kw">match</span> <span class="ident">target</span>.<span class="ident">as_mut</span>() {
-                <span class="prelude-val">Some</span>(<span class="ident">target_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target_</span>),
-                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>)
-            }
+                <span class="prelude-val">Some</span>(<span class="ident">target_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target_</span>, <span class="ident">refresh</span>),
+                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">refresh</span>)
+            };
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">product_index</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> {
-            <span class="self">self</span>.<span class="ident">add_differential_propagate</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target</span>, <span class="ident">product_index</span> <span class="op">+</span> <span class="number">1</span>);
+            <span class="self">self</span>.<span class="ident">add_differential_propagate</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target</span>, <span class="ident">product_index</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">refresh</span>);
         }
 
         <span class="comment">// Separate this to new line to make code easier to read.</span>
         <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">source</span>, <span class="ident">target</span>.<span class="ident">as_mut</span>(), <span class="ident">product_index</span>);
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="kw-2">mut</span> <span class="ident">target_</span>)) <span class="op">=</span> <span class="ident">new_d</span> {
-            <span class="self">self</span>.<span class="ident">add_differential_propagate</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>, <span class="ident">product_index</span>);
+            <span class="self">self</span>.<span class="ident">add_differential_propagate</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>, <span class="ident">product_index</span>, <span class="ident">refresh</span>);
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_permanent_class</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">class</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_permanent_class</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">class</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
         <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">add_vector</span>(<span class="ident">class</span>);
         <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">MIN_PAGE</span> .. <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() {
             <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>].<span class="ident">add</span>(<span class="ident">class</span>, <span class="prelude-val">None</span>);
         }
-        <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>);
+        <span class="kw">if</span> <span class="ident">refresh</span> {
+            <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">true</span>);
+        }
     }
 
     <span class="doccomment">/// Add a product to the list of products, but don&#39;t add any computed product</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product_type</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">mult_x</span> : <span class="ident">i32</span>, <span class="ident">mult_y</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="ident">permanent</span>: <span class="ident">bool</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product_type</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">mult_x</span> : <span class="ident">i32</span>, <span class="ident">mult_y</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="ident">permanent</span>: <span class="ident">bool</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">get</span>(<span class="ident">name</span>);
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>) <span class="op">=</span> <span class="ident">idx</span> {
             <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">user</span> <span class="op">=</span> <span class="bool-val">true</span>;
             <span class="kw">if</span> <span class="ident">permanent</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">permanent</span> {
                 <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">i</span>].<span class="ident">permanent</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                <span class="self">self</span>.<span class="ident">repropagate_product</span>(<span class="ident">i</span>);
+                <span class="self">self</span>.<span class="ident">repropagate_product</span>(<span class="ident">i</span>, <span class="ident">refresh</span>);
             }
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">product</span> <span class="op">=</span> <span class="ident">Product</span> {
@@ -1998,7 +2050,7 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product_differential</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">target</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product_differential</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">target</span>: <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
         <span class="kw">let</span> <span class="ident">source_idx</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">get</span>(<span class="ident">source</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">target_idx</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">product_name_to_index</span>.<span class="ident">get</span>(<span class="ident">target</span>).<span class="ident">unwrap</span>();
 
@@ -2007,10 +2059,10 @@
         <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">source_idx</span>].<span class="ident">differential</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="bool-val">true</span>, <span class="ident">target_idx</span>));
         <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">target_idx</span>].<span class="ident">differential</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">r</span>, <span class="bool-val">false</span>, <span class="ident">source_idx</span>));
 
-        <span class="self">self</span>.<span class="ident">repropagate_product</span>(<span class="ident">source_idx</span>);
+        <span class="self">self</span>.<span class="ident">repropagate_product</span>(<span class="ident">source_idx</span>, <span class="ident">refresh</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">repropagate_product</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) {
+    <span class="kw">fn</span> <span class="ident">repropagate_product</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">idx</span> : <span class="ident">usize</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
         <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_x</span> .. <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>.<span class="ident">len</span>() {
             <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_y</span> .. <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
                 <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">MIN_PAGE</span> .. <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() {
@@ -2018,7 +2070,7 @@
                     <span class="kw">for</span> (<span class="ident">source</span>, <span class="kw-2">mut</span> <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>() {
                         <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>), <span class="ident">idx</span>);
                         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
-                            <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
+                            <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>, <span class="ident">refresh</span>);
                         }
                     }
                 }
@@ -2029,8 +2081,8 @@
                     <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">INFINITY</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>, <span class="prelude-val">None</span>, <span class="ident">idx</span>);
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="ident">t_</span>)) <span class="op">=</span> <span class="ident">new_d</span> {
                         <span class="kw">match</span> <span class="ident">t_</span> {
-                            <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>),
-                            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>)
+                            <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>, <span class="ident">refresh</span>),
+                            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="ident">refresh</span>)
                         };
                     }
                 }
@@ -2038,7 +2090,7 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">mult_x</span> : <span class="ident">i32</span>, <span class="ident">mult_y</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="ident">matrix</span> : <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_product</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">String</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">mult_x</span> : <span class="ident">i32</span>, <span class="ident">mult_y</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="ident">matrix</span> : <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">x</span>, <span class="ident">y</span>) {
             <span class="kw">return</span>;
         }
@@ -2089,7 +2141,7 @@
                 <span class="kw">for</span> (<span class="ident">source</span>, <span class="kw-2">mut</span> <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>() {
                     <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>), <span class="ident">si</span>);
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
-                        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
+                        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>, <span class="ident">refresh</span>);
                     }
                 }
             }
@@ -2098,7 +2150,7 @@
             <span class="kw">for</span> <span class="ident">class</span> <span class="kw">in</span> <span class="ident">classes</span> {
                 <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">INFINITY</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>, <span class="prelude-val">None</span>, <span class="ident">si</span>);
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
-                    <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
+                    <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>, <span class="ident">refresh</span>);
                 }
             }
         } <span class="kw">else</span> {
@@ -2107,7 +2159,7 @@
                 <span class="kw">for</span> (<span class="ident">source</span>, <span class="kw-2">mut</span> <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>() {
                     <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>), <span class="ident">idx</span>);
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
-                        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
+                        <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>, <span class="ident">refresh</span>);
                     }
                 }
             }
@@ -2118,13 +2170,15 @@
                 <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">INFINITY</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="kw-2">&amp;</span><span class="ident">class</span>, <span class="prelude-val">None</span>, <span class="ident">idx</span>);
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="ident">t_</span>)) <span class="op">=</span> <span class="ident">new_d</span> {
                     <span class="kw">match</span> <span class="ident">t_</span> {
-                        <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>),
-                        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>)
+                        <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>, <span class="ident">refresh</span>),
+                        <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="ident">refresh</span>)
                     };
                 }
             }
         }
-        <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
+        <span class="kw">if</span> <span class="ident">refresh</span> {
+            <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
+        }
     }
 }
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
@@ -2136,20 +2190,20 @@
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">3</span>;
         <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::<span class="ident">initialize_limb_bit_index_table</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sseq</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">sseq</span>::<span class="ident">Sseq</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">SseqChoice</span>::<span class="ident">Main</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="prelude-val">None</span>);
-        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);
-        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>);
-        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>);
-        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);
-        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>);
-        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">0</span>, <span class="number">3</span>, <span class="number">1</span>);
+        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="bool-val">true</span>);
+        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="bool-val">true</span>);
+        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="bool-val">true</span>);
+        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="bool-val">true</span>);
+        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="bool-val">true</span>);
+        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="number">0</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="bool-val">true</span>);
 
         <span class="ident">sseq</span>.<span class="ident">add_differential</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">0</span>,
                               <span class="kw-2">&amp;</span><span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>, <span class="number">1</span>]),
-                              <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>]));
+                              <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>]), <span class="bool-val">true</span>);
 
         <span class="ident">sseq</span>.<span class="ident">add_differential</span>(<span class="number">3</span>, <span class="number">1</span>, <span class="number">0</span>,
                               <span class="kw-2">&amp;</span><span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>, <span class="number">0</span>]),
-                              <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]));
+                              <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]), <span class="bool-val">true</span>);
 
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">sseq</span>.<span class="ident">page_classes</span>[<span class="number">1</span>][<span class="number">0</span>].<span class="ident">max_degree</span>(), <span class="number">4</span>);
@@ -2187,7 +2241,7 @@
 
         <span class="ident">sseq</span>.<span class="ident">add_differential</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>,
                               <span class="kw-2">&amp;</span><span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>, <span class="number">0</span>]),
-                              <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]));
+                              <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]), <span class="bool-val">true</span>);
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">sseq</span>.<span class="ident">page_classes</span>[<span class="number">1</span>][<span class="number">0</span>].<span class="ident">max_degree</span>(), <span class="number">4</span>);
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">sseq</span>.<span class="ident">page_classes</span>[<span class="number">1</span>][<span class="number">0</span>][<span class="number">2</span>].<span class="number">1</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>, <span class="number">0</span>]),
