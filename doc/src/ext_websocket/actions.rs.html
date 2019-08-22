@@ -332,6 +332,24 @@
 <span id="314">314</span>
 <span id="315">315</span>
 <span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sseq</span>::{<span class="ident">Sseq</span>, <span class="ident">ProductItem</span>, <span class="ident">ClassState</span>, <span class="ident">INFINITY</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">module</span>::<span class="ident">FiniteModule</span>;
@@ -377,6 +395,7 @@
     <span class="ident">AddProductType</span>,
     <span class="ident">AddPermanentClass</span>,
     <span class="ident">AddDifferential</span>,
+    <span class="ident">SetClassName</span>,
     <span class="ident">Clear</span>,
     <span class="ident">RefreshAll</span>,
 
@@ -450,24 +469,6 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Clear</span> {}
-<span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">Clear</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
-        <span class="ident">sseq</span>.<span class="ident">clear</span>(<span class="ident">refresh</span>);
-    }
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RefreshAll</span> {}
-<span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">RefreshAll</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
-        <span class="kw">if</span> <span class="ident">refresh</span> {
-            <span class="ident">sseq</span>.<span class="ident">refresh_all</span>();
-        }
-    }
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AddProductType</span> {
     <span class="kw">pub</span> <span class="ident">x</span> : <span class="ident">i32</span>,
     <span class="kw">pub</span> <span class="ident">y</span> : <span class="ident">i32</span>,
@@ -507,6 +508,39 @@
             <span class="number">0</span>, <span class="ident">refresh</span>);
     }
 }
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SetClassName</span> {
+    <span class="kw">pub</span> <span class="ident">x</span> : <span class="ident">i32</span>,
+    <span class="kw">pub</span> <span class="ident">y</span> : <span class="ident">i32</span>,
+    <span class="kw">pub</span> <span class="ident">idx</span> : <span class="ident">usize</span>,
+    <span class="kw">pub</span> <span class="ident">name</span> : <span class="ident">String</span>
+}
+
+<span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">SetClassName</span> {
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
+        <span class="ident">sseq</span>.<span class="ident">set_class_name</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>, <span class="self">self</span>.<span class="ident">idx</span>, <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">refresh</span>);
+    }
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Clear</span> {}
+<span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">Clear</span> {
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
+        <span class="ident">sseq</span>.<span class="ident">clear</span>(<span class="ident">refresh</span>);
+    }
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RefreshAll</span> {}
+<span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">RefreshAll</span> {
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
+        <span class="kw">if</span> <span class="ident">refresh</span> {
+            <span class="ident">sseq</span>.<span class="ident">refresh_all</span>();
+        }
+    }
+}
+
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AddClass</span> {
@@ -630,7 +664,9 @@
     <span class="kw">pub</span> <span class="ident">y</span> : <span class="ident">i32</span>,
     <span class="kw">pub</span> <span class="ident">state</span> : <span class="ident">ClassState</span>,
     <span class="kw">pub</span> <span class="ident">permanents</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">classes</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span>
+    <span class="kw">pub</span> <span class="ident">classes</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">decompositions</span> : <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">FpVector</span>, <span class="ident">String</span>, <span class="ident">i32</span>, <span class="ident">i32</span>)<span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">class_names</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>
 }
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">SetClass</span> { }
 
