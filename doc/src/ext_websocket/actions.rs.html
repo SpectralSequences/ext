@@ -350,6 +350,18 @@
 <span id="332">332</span>
 <span id="333">333</span>
 <span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sseq</span>::{<span class="ident">Sseq</span>, <span class="ident">ProductItem</span>, <span class="ident">ClassState</span>, <span class="ident">INFINITY</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">module</span>::<span class="ident">FiniteModule</span>;
@@ -361,14 +373,10 @@
 <span class="kw">use</span> <span class="ident">enum_dispatch</span>::<span class="ident">enum_dispatch</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>};
 
-<span class="kw">fn</span> <span class="ident">true_</span>() <span class="op">-&gt;</span> <span class="ident">bool</span> { <span class="bool-val">true</span> }
-
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Message</span> {
     <span class="kw">pub</span> <span class="ident">recipients</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Recipient</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>,
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;true_&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">refresh</span> : <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">action</span>: <span class="ident">Action</span>
 }
 
@@ -397,7 +405,7 @@
     <span class="ident">AddDifferential</span>,
     <span class="ident">SetClassName</span>,
     <span class="ident">Clear</span>,
-    <span class="ident">RefreshAll</span>,
+    <span class="ident">BlockRefresh</span>,
 
     <span class="comment">// Resolver -&gt; Sseq</span>
     <span class="ident">AddProduct</span>,
@@ -440,7 +448,7 @@
 <span class="attribute">#[<span class="ident">enum_dispatch</span>(<span class="ident">Action</span>)]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ActionT</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
         <span class="macro">unimplemented</span><span class="macro">!</span>();
     }
     <span class="kw">fn</span> <span class="ident">act_resolution</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">resolution</span> : <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>) {
@@ -459,12 +467,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">AddDifferential</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
         <span class="ident">sseq</span>.<span class="ident">add_differential_propagate</span>(
             <span class="self">self</span>.<span class="ident">r</span>, <span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>,
             <span class="kw-2">&amp;</span><span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">sseq</span>.<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>),
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="prelude-val">Some</span>(<span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">sseq</span>.<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target</span>)),
-            <span class="number">0</span>, <span class="ident">refresh</span>);
+            <span class="number">0</span>);
     }
 }
 
@@ -478,8 +486,8 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">AddProductType</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
-        <span class="ident">sseq</span>.<span class="ident">add_product_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>, <span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>, <span class="bool-val">true</span>, <span class="self">self</span>.<span class="ident">permanent</span>, <span class="ident">refresh</span>);
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
+        <span class="ident">sseq</span>.<span class="ident">add_product_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>, <span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>, <span class="bool-val">true</span>, <span class="self">self</span>.<span class="ident">permanent</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">act_resolution</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">resolution</span> : <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>) {
@@ -500,12 +508,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">AddPermanentClass</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
         <span class="ident">sseq</span>.<span class="ident">add_differential_propagate</span>(
             <span class="ident">INFINITY</span>, <span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>,
             <span class="kw-2">&amp;</span><span class="ident">FpVector</span>::<span class="ident">from_vec</span>(<span class="ident">sseq</span>.<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">class</span>),
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="prelude-val">None</span>,
-            <span class="number">0</span>, <span class="ident">refresh</span>);
+            <span class="number">0</span>);
     }
 }
 
@@ -518,29 +526,45 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">SetClassName</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
-        <span class="ident">sseq</span>.<span class="ident">set_class_name</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>, <span class="self">self</span>.<span class="ident">idx</span>, <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">refresh</span>);
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
+        <span class="ident">sseq</span>.<span class="ident">set_class_name</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>, <span class="self">self</span>.<span class="ident">idx</span>, <span class="self">self</span>.<span class="ident">name</span>.<span class="ident">clone</span>());
     }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Clear</span> {}
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">Clear</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
-        <span class="ident">sseq</span>.<span class="ident">clear</span>(<span class="ident">refresh</span>);
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
+        <span class="ident">sseq</span>.<span class="ident">clear</span>();
     }
 }
 
+<span class="doccomment">/// This blocks the sseq object from recomputing classes and edges. This is useful when performing</span>
+<span class="doccomment">/// a large number of operations in a row, e.g. when loading files or undoing. </span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// When loading a new file, this is both sent to the SseqManager and the ResolutionManager. All</span>
+<span class="doccomment">/// the ResolutionManager does is forward this request to the SseqManager. This is important, since</span>
+<span class="doccomment">/// these two messages go in different queues. If we only send it to the Sseq, then refresh will be</span>
+<span class="doccomment">/// unblocked once the Sseq is done processing the queries, which is too early, since we are still</span>
+<span class="doccomment">/// resolving and a lot of AddProduct messages are being sent out. By adding a message to the</span>
+<span class="doccomment">/// ResolutionManger&#39;s queue, the refreshing will be unblocked only after the resolving is done</span>
+<span class="doccomment">/// resolving.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RefreshAll</span> {}
-<span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">RefreshAll</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
-        <span class="kw">if</span> <span class="ident">refresh</span> {
-            <span class="ident">sseq</span>.<span class="ident">refresh_all</span>();
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BlockRefresh</span> {
+    <span class="ident">block</span> : <span class="ident">bool</span>
+}
+<span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">BlockRefresh</span> {
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">block</span> {
+            <span class="ident">sseq</span>.<span class="ident">block_refresh</span> <span class="op">+=</span> <span class="number">1</span>;
+        } <span class="kw">else</span> {
+            <span class="ident">sseq</span>.<span class="ident">block_refresh</span> <span class="op">-=</span> <span class="number">1</span>;
+            <span class="kw">if</span> <span class="ident">sseq</span>.<span class="ident">block_refresh</span> <span class="op">==</span> <span class="number">0</span> {
+                <span class="ident">sseq</span>.<span class="ident">refresh_all</span>();
+            }
         }
     }
 }
-
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AddClass</span> {
@@ -550,8 +574,8 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">AddClass</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
-        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>, <span class="self">self</span>.<span class="ident">num</span>, <span class="ident">refresh</span>);
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
+        <span class="ident">sseq</span>.<span class="ident">set_class</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="self">self</span>.<span class="ident">y</span>, <span class="self">self</span>.<span class="ident">num</span>);
     }
 }
 
@@ -567,8 +591,8 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">AddProduct</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
-        <span class="ident">sseq</span>.<span class="ident">add_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>, <span class="self">self</span>.<span class="ident">source_x</span>, <span class="self">self</span>.<span class="ident">source_y</span>, <span class="self">self</span>.<span class="ident">mult_x</span>, <span class="self">self</span>.<span class="ident">mult_y</span>, <span class="self">self</span>.<span class="ident">left</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">product</span>, <span class="ident">refresh</span>);
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
+        <span class="ident">sseq</span>.<span class="ident">add_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>, <span class="self">self</span>.<span class="ident">source_x</span>, <span class="self">self</span>.<span class="ident">source_y</span>, <span class="self">self</span>.<span class="ident">mult_x</span>, <span class="self">self</span>.<span class="ident">mult_y</span>, <span class="self">self</span>.<span class="ident">left</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">product</span>);
     }
 }
 
@@ -579,10 +603,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ActionT</span> <span class="kw">for</span> <span class="ident">AddProductDifferential</span> {
-    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>, <span class="ident">refresh</span> : <span class="ident">bool</span>) {
-        <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">act_sseq</span>(<span class="ident">sseq</span>, <span class="ident">refresh</span>);
-        <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">act_sseq</span>(<span class="ident">sseq</span>, <span class="ident">refresh</span>);
-        <span class="ident">sseq</span>.<span class="ident">add_product_differential</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>.<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target</span>.<span class="ident">name</span>, <span class="ident">refresh</span>);
+    <span class="kw">fn</span> <span class="ident">act_sseq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">sseq</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span>) {
+        <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">act_sseq</span>(<span class="ident">sseq</span>);
+        <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">act_sseq</span>(<span class="ident">sseq</span>);
+        <span class="ident">sseq</span>.<span class="ident">add_product_differential</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>.<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target</span>.<span class="ident">name</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">act_resolution</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">resolution</span> : <span class="kw-2">&amp;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>) {
