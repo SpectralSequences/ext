@@ -1200,6 +1200,10 @@
 <span id="1182">1182</span>
 <span id="1183">1183</span>
 <span id="1184">1184</span>
+<span id="1185">1185</span>
+<span id="1186">1186</span>
+<span id="1187">1187</span>
+<span id="1188">1188</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">matrix</span>::{<span class="ident">Subspace</span>, <span class="ident">Matrix</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1482,6 +1486,10 @@
         <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
             <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
                 <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">false</span>);
+            }
+        }
+        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
+            <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
                 <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
             }
         }
@@ -1539,24 +1547,24 @@
 
     <span class="doccomment">/// Given a class `class` at `(x, y)` and a Product object `product`, compute the product of</span>
     <span class="doccomment">/// the class with the product. Returns the new coordinate of the product as well as the actual</span>
-    <span class="doccomment">/// product. The result is None if the product is not defined.</span>
+    <span class="doccomment">/// product. The result is None if the product is not yet computed.</span>
     <span class="kw">fn</span> <span class="ident">multiply</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">class</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">product</span>: <span class="kw-2">&amp;</span><span class="ident">Product</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">i32</span>, <span class="ident">FpVector</span>)<span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">matrices</span>.<span class="ident">max_degree</span>() <span class="op">&lt;</span> <span class="ident">x</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
-        }
-        <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">max_degree</span>() <span class="op">&lt;</span> <span class="ident">y</span> {
+        <span class="kw">let</span> <span class="ident">prod_x</span> <span class="op">=</span> <span class="ident">product</span>.<span class="ident">x</span>;
+        <span class="kw">let</span> <span class="ident">prod_y</span> <span class="op">=</span> <span class="ident">product</span>.<span class="ident">y</span>;
+        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">x</span> <span class="op">+</span> <span class="ident">prod_x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">prod_y</span>) {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">matrix</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">product</span>.<span class="ident">matrices</span>[<span class="ident">x</span>][<span class="ident">y</span>] {
-            <span class="kw">let</span> <span class="ident">prod_x</span> <span class="op">=</span> <span class="ident">product</span>.<span class="ident">x</span>;
-            <span class="kw">let</span> <span class="ident">prod_y</span> <span class="op">=</span> <span class="ident">product</span>.<span class="ident">y</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prod</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span> <span class="op">+</span> <span class="ident">prod_x</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">prod_y</span>]);
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prod</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span> <span class="op">+</span> <span class="ident">prod_x</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">prod_y</span>]);
-            <span class="ident">matrix</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">prod</span>, <span class="number">1</span>, <span class="ident">class</span>);
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>][<span class="ident">y</span>] <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">x</span> <span class="op">+</span> <span class="ident">prod_x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">prod_y</span>, <span class="ident">prod</span>));
         }
-        <span class="prelude-val">None</span>
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">matrix</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">product</span>.<span class="ident">matrices</span>.<span class="ident">get</span>(<span class="ident">x</span>)<span class="question-mark">?</span>.<span class="ident">get</span>(<span class="ident">y</span>)<span class="question-mark">?</span> {
+            <span class="ident">matrix</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">prod</span>, <span class="number">1</span>, <span class="ident">class</span>);
+        }
+        <span class="prelude-val">Some</span>((<span class="ident">x</span> <span class="op">+</span> <span class="ident">prod_x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">prod_y</span>, <span class="ident">prod</span>))
     }
 
     <span class="doccomment">/// Apply the Leibniz rule to obtain new differentials. The differential we start with is a d_r</span>
@@ -1651,12 +1659,12 @@
             <span class="kw">return</span>;
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">global_max_page</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">page_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>();
-        <span class="kw">for</span> <span class="ident">mult</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span> {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">x</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">y</span>) {
-                <span class="ident">global_max_page</span> <span class="op">=</span> <span class="ident">max</span>(<span class="ident">global_max_page</span>, <span class="self">self</span>.<span class="ident">page_classes</span>[<span class="ident">x</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">x</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">y</span>].<span class="ident">len</span>());
-            }
-        }
+<span class="comment">//        let mut global_max_page = self.page_classes[x][y].len();</span>
+<span class="comment">//        for mult in &amp;self.products {</span>
+<span class="comment">//            if self.class_defined(x + mult.x, y + mult.y) {</span>
+<span class="comment">//                global_max_page = max(global_max_page, self.page_classes[x + mult.x][y + mult.y].len());</span>
+<span class="comment">//            }</span>
+<span class="comment">//        }</span>
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">structlines</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProductItem</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>());
         <span class="kw">for</span> <span class="ident">mult</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span> {
@@ -1678,9 +1686,6 @@
                 <span class="comment">// Compute the ones where something changes.</span>
                 <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">MIN_PAGE</span> <span class="op">+</span> <span class="number">1</span> .. <span class="ident">max_page</span> {
                     <span class="kw">let</span> <span class="ident">source_classes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
-                    <span class="kw">if</span> <span class="ident">source_classes</span>.<span class="number">1</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
-                        <span class="kw">break</span>;
-                    }
                     <span class="kw">let</span> <span class="ident">target_classes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">y</span>);
                     <span class="kw">let</span> <span class="ident">target_zeros</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_page_zeros</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">y</span>);
 
@@ -1692,11 +1697,15 @@
                         <span class="ident">target</span>.<span class="ident">set_to_zero</span>();
                     }
                     <span class="ident">matrices</span>.<span class="ident">push</span>(<span class="ident">result</span>);
+
+                    <span class="kw">if</span> <span class="ident">source_classes</span>.<span class="number">1</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
+                        <span class="kw">break</span>;
+                    }
                 }
-                <span class="kw">while</span> <span class="ident">matrices</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="ident">global_max_page</span> {
-                    <span class="ident">matrices</span>.<span class="ident">push</span>(<span class="ident">matrices</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">clone</span>());
-                }
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">matrices</span>.<span class="ident">len</span>(), <span class="ident">global_max_page</span>);
+<span class="comment">//                while matrices.len() &lt; global_max_page {</span>
+<span class="comment">//                    matrices.push(matrices.last().unwrap().clone());</span>
+<span class="comment">//                }</span>
+<span class="comment">//                assert_eq!(matrices.len(), global_max_page);</span>
 
                 <span class="ident">structlines</span>.<span class="ident">push</span>(<span class="ident">ProductItem</span> {
                     <span class="ident">name</span> : <span class="ident">mult</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
@@ -2238,9 +2247,8 @@
         <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">matrices</span>[<span class="ident">x</span>].<span class="ident">push</span>(<span class="prelude-val">Some</span>(<span class="ident">Matrix</span>::<span class="ident">from_vec</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">matrix</span>)));
 
         <span class="comment">// We propagate all differentials that *hit* us, because of the order in which products</span>
-        <span class="comment">// are added. The only exception is if this product is the target of a product</span>
-        <span class="comment">// differential on page r, in which case we propagate the d_r differential *starting* at</span>
-        <span class="comment">// (x, y).</span>
+        <span class="comment">// are added. The exception is if this product is the target of a product</span>
+        <span class="comment">// differential on page r, we propagate the d_r differential *starting* at (x, y).</span>
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">differential</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">differential</span>.<span class="ident">unwrap</span>().<span class="number">1</span> {
             <span class="kw">let</span> (<span class="ident">r</span>, <span class="kw">_</span> , <span class="ident">si</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">products</span>[<span class="ident">idx</span>].<span class="ident">differential</span>.<span class="ident">unwrap</span>();
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">r</span> {

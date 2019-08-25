@@ -1347,6 +1347,12 @@
 <span id="1329">1329</span>
 <span id="1330">1330</span>
 <span id="1331">1331</span>
+<span id="1332">1332</span>
+<span id="1333">1333</span>
+<span id="1334">1334</span>
+<span id="1335">1335</span>
+<span id="1336">1336</span>
+<span id="1337">1337</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -1753,6 +1759,9 @@
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">offset</span>() <span class="op">==</span> <span class="ident">other</span>.<span class="ident">offset</span>());
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">dimension</span>() <span class="op">==</span> <span class="ident">other</span>.<span class="ident">dimension</span>(),
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;self.dim {} not equal to other.dim {}&quot;</span>, <span class="self">self</span>.<span class="ident">dimension</span>(), <span class="ident">other</span>.<span class="ident">dimension</span>()));
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">dimension</span>() <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">return</span>;
+        }
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">c</span> <span class="op">&lt;</span> <span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">min_target_limb</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">min_limb</span>();
@@ -1884,6 +1893,9 @@
         <span class="kw">let</span> <span class="ident">min_limb</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">min_limb</span>();
         <span class="kw">let</span> <span class="ident">max_limb</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">max_limb</span>();
         <span class="kw">let</span> <span class="ident">number_of_limbs</span> <span class="op">=</span> <span class="ident">max_limb</span> <span class="op">-</span> <span class="ident">min_limb</span>;
+        <span class="kw">if</span> <span class="ident">number_of_limbs</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">return</span>;
+        }
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">number_of_limbs</span><span class="op">-</span><span class="number">1</span> {
             <span class="kw">let</span> <span class="ident">limbs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">limbs_mut</span>();
             <span class="ident">limbs</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">min_limb</span>] <span class="op">*=</span> <span class="ident">c</span>;

@@ -843,28 +843,6 @@
 <span id="825">825</span>
 <span id="826">826</span>
 <span id="827">827</span>
-<span id="828">828</span>
-<span id="829">829</span>
-<span id="830">830</span>
-<span id="831">831</span>
-<span id="832">832</span>
-<span id="833">833</span>
-<span id="834">834</span>
-<span id="835">835</span>
-<span id="836">836</span>
-<span id="837">837</span>
-<span id="838">838</span>
-<span id="839">839</span>
-<span id="840">840</span>
-<span id="841">841</span>
-<span id="842">842</span>
-<span id="843">843</span>
-<span id="844">844</span>
-<span id="845">845</span>
-<span id="846">846</span>
-<span id="847">847</span>
-<span id="848">848</span>
-<span id="849">849</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::{<span class="ident">Rc</span>, <span class="ident">Weak</span>};
@@ -1361,9 +1339,6 @@
         <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">module</span>(<span class="ident">target_s</span>);
 
         <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">number_of_gens_in_degree</span>(<span class="ident">target_t</span>);
-        <span class="kw">if</span> <span class="ident">target_dim</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="kw">return</span>;
-        }
 
         <span class="kw">for</span> (<span class="ident">op_name</span>, <span class="ident">op_degree</span>, <span class="ident">op_index</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">filtration_one_products</span> {
             <span class="kw">let</span> <span class="ident">source_t</span> <span class="op">=</span> <span class="ident">target_t</span> <span class="op">-</span> <span class="kw-2">*</span><span class="ident">op_degree</span>;
@@ -1371,9 +1346,6 @@
                 <span class="kw">continue</span>;
             }
             <span class="kw">let</span> <span class="ident">source_dim</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">number_of_gens_in_degree</span>(<span class="ident">source_t</span>);
-            <span class="kw">if</span> <span class="ident">source_dim</span> <span class="op">==</span> <span class="number">0</span> {
-                <span class="kw">continue</span>;
-            }
 
             <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">differential</span>(<span class="ident">target_s</span>);
 
@@ -1492,14 +1464,6 @@
 
         <span class="kw">let</span> <span class="ident">source_dim</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">number_of_gens_in_bidegree</span>(<span class="ident">source_s</span>, <span class="ident">source_t</span>);
         <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">number_of_gens_in_bidegree</span>(<span class="ident">target_s</span>, <span class="ident">target_t</span>);
-
-        <span class="kw">if</span> <span class="ident">source_dim</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="kw">return</span>;
-        }
-
-        <span class="kw">if</span> <span class="ident">target_dim</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="kw">return</span>;
-        }
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">products</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">source_dim</span>);
         <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">source_dim</span> {
@@ -1625,14 +1589,6 @@
 
             <span class="kw">let</span> <span class="ident">source_dim</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">number_of_gens_in_degree</span>(<span class="ident">source_t</span>);
             <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">number_of_gens_in_degree</span>(<span class="ident">target_t</span>);
-
-            <span class="kw">if</span> <span class="ident">source_dim</span> <span class="op">==</span> <span class="number">0</span> {
-                <span class="kw">continue</span>;
-            }
-
-            <span class="kw">if</span> <span class="ident">target_dim</span> <span class="op">==</span> <span class="number">0</span> {
-                <span class="kw">continue</span>;
-            }
 
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">products</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">target_dim</span>); <span class="ident">source_dim</span>];
 
