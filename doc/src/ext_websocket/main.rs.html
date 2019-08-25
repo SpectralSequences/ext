@@ -500,6 +500,8 @@
 <span id="482">482</span>
 <span id="483">483</span>
 <span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">ws</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rust_ext</span>;
@@ -527,12 +529,14 @@
 <span class="kw">use</span> <span class="ident">ws</span>::<span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">WsResult</span>;
 
 <span class="doccomment">/// List of files that our webserver will serve to the user</span>
-<span class="kw">const</span> <span class="ident">FILE_LIST</span> : [(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]); <span class="number">9</span>] <span class="op">=</span> [
+<span class="kw">const</span> <span class="ident">FILE_LIST</span> : [(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]); <span class="number">11</span>] <span class="op">=</span> [
     (<span class="string">&quot;/&quot;</span>, <span class="string">&quot;index.html&quot;</span>, <span class="string">b&quot;text/html&quot;</span>),
     (<span class="string">&quot;/index.html&quot;</span>, <span class="string">&quot;index.html&quot;</span>, <span class="string">b&quot;text/html&quot;</span>),
     (<span class="string">&quot;/index.js&quot;</span>, <span class="string">&quot;index.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
+    (<span class="string">&quot;/mousetrap.min.js&quot;</span>, <span class="string">&quot;mousetrap.min.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/display.js&quot;</span>, <span class="string">&quot;display.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/utils.js&quot;</span>, <span class="string">&quot;utils.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
+    (<span class="string">&quot;/tooltip.js&quot;</span>, <span class="string">&quot;tooltip.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/panels.js&quot;</span>, <span class="string">&quot;panels.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/sseq.js&quot;</span>, <span class="string">&quot;sseq.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/index.css&quot;</span>, <span class="string">&quot;index.css&quot;</span>, <span class="string">b&quot;text/css&quot;</span>),
