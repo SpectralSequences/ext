@@ -1199,11 +1199,6 @@
 <span id="1181">1181</span>
 <span id="1182">1182</span>
 <span id="1183">1183</span>
-<span id="1184">1184</span>
-<span id="1185">1185</span>
-<span id="1186">1186</span>
-<span id="1187">1187</span>
-<span id="1188">1188</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">matrix</span>::{<span class="ident">Subspace</span>, <span class="ident">Matrix</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1486,10 +1481,6 @@
         <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
             <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
                 <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">false</span>);
-            }
-        }
-        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
-            <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
                 <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
             }
         }
@@ -1659,12 +1650,12 @@
             <span class="kw">return</span>;
         }
 
-<span class="comment">//        let mut global_max_page = self.page_classes[x][y].len();</span>
-<span class="comment">//        for mult in &amp;self.products {</span>
-<span class="comment">//            if self.class_defined(x + mult.x, y + mult.y) {</span>
-<span class="comment">//                global_max_page = max(global_max_page, self.page_classes[x + mult.x][y + mult.y].len());</span>
-<span class="comment">//            }</span>
-<span class="comment">//        }</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">global_max_page</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">page_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>();
+        <span class="kw">for</span> <span class="ident">mult</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span> {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">x</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">y</span>) {
+                <span class="ident">global_max_page</span> <span class="op">=</span> <span class="ident">max</span>(<span class="ident">global_max_page</span>, <span class="self">self</span>.<span class="ident">page_classes</span>[<span class="ident">x</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">x</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">y</span>].<span class="ident">len</span>());
+            }
+        }
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">structlines</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProductItem</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">products</span>.<span class="ident">len</span>());
         <span class="kw">for</span> <span class="ident">mult</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">products</span> {
@@ -1686,6 +1677,9 @@
                 <span class="comment">// Compute the ones where something changes.</span>
                 <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">MIN_PAGE</span> <span class="op">+</span> <span class="number">1</span> .. <span class="ident">max_page</span> {
                     <span class="kw">let</span> <span class="ident">source_classes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+                    <span class="kw">if</span> <span class="ident">source_classes</span>.<span class="number">1</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
+                        <span class="kw">break</span>;
+                    }
                     <span class="kw">let</span> <span class="ident">target_classes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_page_classes</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">y</span>);
                     <span class="kw">let</span> <span class="ident">target_zeros</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_page_zeros</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">mult</span>.<span class="ident">y</span>);
 
@@ -1697,15 +1691,11 @@
                         <span class="ident">target</span>.<span class="ident">set_to_zero</span>();
                     }
                     <span class="ident">matrices</span>.<span class="ident">push</span>(<span class="ident">result</span>);
-
-                    <span class="kw">if</span> <span class="ident">source_classes</span>.<span class="number">1</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
-                        <span class="kw">break</span>;
-                    }
                 }
-<span class="comment">//                while matrices.len() &lt; global_max_page {</span>
-<span class="comment">//                    matrices.push(matrices.last().unwrap().clone());</span>
-<span class="comment">//                }</span>
-<span class="comment">//                assert_eq!(matrices.len(), global_max_page);</span>
+                <span class="kw">while</span> <span class="ident">matrices</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="ident">global_max_page</span> {
+                    <span class="ident">matrices</span>.<span class="ident">push</span>(<span class="ident">matrices</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">clone</span>());
+                }
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">matrices</span>.<span class="ident">len</span>(), <span class="ident">global_max_page</span>);
 
                 <span class="ident">structlines</span>.<span class="ident">push</span>(<span class="ident">ProductItem</span> {
                     <span class="ident">name</span> : <span class="ident">mult</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
