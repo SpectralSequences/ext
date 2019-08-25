@@ -502,11 +502,56 @@
 <span id="484">484</span>
 <span id="485">485</span>
 <span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">ws</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rust_ext</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">bivec</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_json</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">chrono</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">textwrap</span>;
 
 <span class="kw">mod</span> <span class="ident">sseq</span>;
 <span class="kw">mod</span> <span class="ident">actions</span>;
@@ -524,9 +569,12 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
+<span class="kw">use</span> <span class="ident">chrono</span>::<span class="ident">Local</span>;
 
 <span class="kw">use</span> <span class="ident">ws</span>::{<span class="ident">listen</span>, <span class="ident">Handler</span>, <span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">Sender</span>};
 <span class="kw">use</span> <span class="ident">ws</span>::<span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">WsResult</span>;
+
+<span class="kw">use</span> <span class="ident">textwrap</span>::<span class="ident">Wrapper</span>;
 
 <span class="doccomment">/// List of files that our webserver will serve to the user</span>
 <span class="kw">const</span> <span class="ident">FILE_LIST</span> : [(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]); <span class="number">11</span>] <span class="op">=</span> [
@@ -541,6 +589,16 @@
     (<span class="string">&quot;/sseq.js&quot;</span>, <span class="string">&quot;sseq.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/index.css&quot;</span>, <span class="string">&quot;index.css&quot;</span>, <span class="string">b&quot;text/css&quot;</span>),
     (<span class="string">&quot;/bundle.js&quot;</span>, <span class="string">&quot;bundle.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>)];
+
+<span class="kw">fn</span> <span class="ident">ms_to_string</span>(<span class="ident">time</span> : <span class="ident">i64</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="kw">if</span> <span class="ident">time</span> <span class="op">&lt;</span> <span class="number">1000</span> {
+        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}ms&quot;</span>, <span class="ident">time</span>)
+    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">time</span> <span class="op">&lt;</span> <span class="number">10000</span> {
+        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}.{}s&quot;</span>, <span class="ident">time</span> <span class="op">/</span> <span class="number">1000</span>, <span class="ident">time</span> <span class="op">%</span> <span class="number">1000</span>)
+    } <span class="kw">else</span> {
+        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}s&quot;</span>, <span class="ident">time</span> <span class="op">/</span> <span class="number">1000</span>)
+    }
+}
 
 <span class="doccomment">/// ResolutionManager is a struct that manipulates an AlgebraicObjectsBundle. At the moment, it</span>
 <span class="doccomment">/// only understands the &quot;resolve&quot; command which causes it to resolve a module and report back the</span>
@@ -574,7 +632,13 @@
              <span class="ident">is_unit</span> : <span class="bool-val">false</span>,
         };
 
+        <span class="kw">let</span> <span class="ident">wrapper</span> <span class="op">=</span> <span class="ident">Wrapper</span>::<span class="ident">with_termwidth</span>()
+            .<span class="ident">subsequent_indent</span>(<span class="string">&quot;                    &quot;</span>);
+
         <span class="kw">for</span> <span class="ident">msg</span> <span class="kw">in</span> <span class="ident">receiver</span> {
+            <span class="kw">let</span> <span class="ident">action_string</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">msg</span>);
+            <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
+            <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} ResolutionManager: Processing {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">action_string</span>)));
             <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
                 <span class="ident">Action</span>::<span class="ident">Construct</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="ident">manager</span>.<span class="ident">construct</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
                 <span class="ident">Action</span>::<span class="ident">ConstructJson</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="ident">manager</span>.<span class="ident">construct_json</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
@@ -599,6 +663,9 @@
                     }
                 }
             }
+            <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
+            <span class="kw">let</span> <span class="ident">time_diff</span> <span class="op">=</span> (<span class="ident">end</span> <span class="op">-</span> <span class="ident">start</span>).<span class="ident">num_milliseconds</span>();
+            <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} ResolutionManager: Completed in {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">ms_to_string</span>(<span class="ident">time_diff</span>))));
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -796,7 +863,21 @@
              <span class="ident">unit_sseq</span> : <span class="prelude-val">None</span>
         };
 
+        <span class="kw">let</span> <span class="ident">wrapper</span> <span class="op">=</span> <span class="ident">Wrapper</span>::<span class="ident">with_termwidth</span>()
+            .<span class="ident">subsequent_indent</span>(<span class="string">&quot;                    &quot;</span>);
+
         <span class="kw">for</span> <span class="ident">msg</span> <span class="kw">in</span> <span class="ident">receiver</span> {
+            <span class="kw">let</span> <span class="ident">time</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
+                <span class="ident">Action</span>::<span class="ident">AddClass</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+                <span class="ident">Action</span>::<span class="ident">AddProduct</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>
+            };
+            <span class="kw">let</span> <span class="ident">action_string</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">msg</span>);
+            <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
+            <span class="kw">if</span> <span class="ident">time</span> {
+                <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} SseqManager: Processing {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">action_string</span>)));
+            }
+
             <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
                 <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">manager</span>.<span class="ident">resolving</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
                 <span class="ident">Action</span>::<span class="ident">Complete</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">manager</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
@@ -806,6 +887,11 @@
                         <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_sseq</span>(<span class="ident">sseq</span>);
                     }
                 }
+            }
+            <span class="kw">if</span> <span class="ident">time</span> {
+                <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
+                <span class="kw">let</span> <span class="ident">time_diff</span> <span class="op">=</span> (<span class="ident">end</span> <span class="op">-</span> <span class="ident">start</span>).<span class="ident">num_milliseconds</span>();
+                <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} SseqManager: Completed in {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">ms_to_string</span>(<span class="ident">time_diff</span>))));
             }
         }
         <span class="prelude-val">Ok</span>(())
