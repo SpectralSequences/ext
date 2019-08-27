@@ -545,6 +545,11 @@
 <span id="527">527</span>
 <span id="528">528</span>
 <span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">ws</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rust_ext</span>;
@@ -666,6 +671,11 @@
             <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
             <span class="kw">let</span> <span class="ident">time_diff</span> <span class="op">=</span> (<span class="ident">end</span> <span class="op">-</span> <span class="ident">start</span>).<span class="ident">num_milliseconds</span>();
             <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} ResolutionManager: Completed in {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">ms_to_string</span>(<span class="ident">time_diff</span>))));
+            <span class="ident">manager</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
+                <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+                <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>::<span class="ident">Main</span>, <span class="comment">// Doesn&#39;t matter</span>
+                <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">Complete</span> {})
+            })<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -747,13 +757,6 @@
             }
         };
 
-
-        <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">Message</span> {
-            <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
-            <span class="ident">sseq</span>,
-            <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">Complete</span> {})
-        };
-        <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -867,14 +870,16 @@
             .<span class="ident">subsequent_indent</span>(<span class="string">&quot;                    &quot;</span>);
 
         <span class="kw">for</span> <span class="ident">msg</span> <span class="kw">in</span> <span class="ident">receiver</span> {
-            <span class="kw">let</span> <span class="ident">time</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
+            <span class="kw">let</span> <span class="ident">user</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
                 <span class="ident">Action</span>::<span class="ident">AddClass</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
                 <span class="ident">Action</span>::<span class="ident">AddProduct</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+                <span class="ident">Action</span>::<span class="ident">Complete</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+                <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
                 <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>
             };
             <span class="kw">let</span> <span class="ident">action_string</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">msg</span>);
             <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
-            <span class="kw">if</span> <span class="ident">time</span> {
+            <span class="kw">if</span> <span class="ident">user</span> {
                 <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} SseqManager: Processing {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">action_string</span>)));
             }
 
@@ -888,10 +893,15 @@
                     }
                 }
             }
-            <span class="kw">if</span> <span class="ident">time</span> {
+            <span class="kw">if</span> <span class="ident">user</span> {
                 <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
                 <span class="kw">let</span> <span class="ident">time_diff</span> <span class="op">=</span> (<span class="ident">end</span> <span class="op">-</span> <span class="ident">start</span>).<span class="ident">num_milliseconds</span>();
                 <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} SseqManager: Completed in {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">ms_to_string</span>(<span class="ident">time_diff</span>))));
+                <span class="ident">manager</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
+                    <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+                    <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>::<span class="ident">Main</span>, <span class="comment">// Doesn&#39;t matter</span>
+                    <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">Complete</span> {})
+                })<span class="question-mark">?</span>;
             }
         }
         <span class="prelude-val">Ok</span>(())
