@@ -554,10 +554,51 @@
 <span id="536">536</span>
 <span id="537">537</span>
 <span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rust_ext</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">bivec</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">serde_json</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">threadpool</span>;
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>)]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">wasm_bindgen</span>;
 
 <span class="kw">mod</span> <span class="ident">sseq</span>;
 <span class="kw">mod</span> <span class="ident">actions</span>;
@@ -570,35 +611,53 @@
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">resolution</span>::{<span class="ident">ModuleResolution</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplex</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fs</span>, <span class="ident">thread</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">ws</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">chrono</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">textwrap</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fs</span>, <span class="ident">thread</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">use</span> <span class="ident">chrono</span>::<span class="ident">Local</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">mpsc</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">use</span> <span class="ident">ws</span>::{<span class="ident">Handler</span>, <span class="ident">Request</span>, <span class="ident">Response</span>, <span class="ident">Sender</span> <span class="kw">as</span> <span class="ident">WsSender</span>, <span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">WsResult</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">use</span> <span class="ident">textwrap</span>::<span class="ident">Wrapper</span>;
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>)]</span>
+<span class="kw">type</span> <span class="ident">Sender</span> <span class="op">=</span> <span class="ident">wasm_bindings</span>::<span class="ident">Sender</span>;
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">type</span> <span class="ident">Sender</span> <span class="op">=</span> <span class="ident">mpsc</span>::<span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">type</span> <span class="ident">Receiver</span> <span class="op">=</span> <span class="ident">mpsc</span>::<span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span>;
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">wasm_bindings</span>;
+
 <span class="doccomment">/// List of files that our webserver will serve to the user</span>
-<span class="kw">const</span> <span class="ident">FILE_LIST</span> : [(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]); <span class="number">12</span>] <span class="op">=</span> [
+<span class="kw">const</span> <span class="ident">FILE_LIST</span> : [(<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]); <span class="number">14</span>] <span class="op">=</span> [
     (<span class="string">&quot;/&quot;</span>, <span class="string">&quot;index.html&quot;</span>, <span class="string">b&quot;text/html&quot;</span>),
     (<span class="string">&quot;/index.html&quot;</span>, <span class="string">&quot;index.html&quot;</span>, <span class="string">b&quot;text/html&quot;</span>),
     (<span class="string">&quot;/index.js&quot;</span>, <span class="string">&quot;index.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/mousetrap.min.js&quot;</span>, <span class="string">&quot;mousetrap.min.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/canvas2svg.js&quot;</span>, <span class="string">&quot;canvas2svg.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/display.js&quot;</span>, <span class="string">&quot;display.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
+    (<span class="string">&quot;/pako.js&quot;</span>, <span class="string">&quot;pako.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/utils.js&quot;</span>, <span class="string">&quot;utils.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/tooltip.js&quot;</span>, <span class="string">&quot;tooltip.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/panels.js&quot;</span>, <span class="string">&quot;panels.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/sseq.js&quot;</span>, <span class="string">&quot;sseq.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>),
     (<span class="string">&quot;/index.css&quot;</span>, <span class="string">&quot;index.css&quot;</span>, <span class="string">b&quot;text/css&quot;</span>),
+    (<span class="string">&quot;/common.css&quot;</span>, <span class="string">&quot;common.css&quot;</span>, <span class="string">b&quot;text/css&quot;</span>),
     (<span class="string">&quot;/bundle.js&quot;</span>, <span class="string">&quot;bundle.js&quot;</span>, <span class="string">b&quot;text/javascript&quot;</span>)];
 
 <span class="kw">fn</span> <span class="ident">ms_to_string</span>(<span class="ident">time</span> : <span class="ident">i64</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
@@ -621,7 +680,7 @@
 <span class="doccomment">/// However, not everything interesting can be found inside the struct itself. Instead, some</span>
 <span class="doccomment">/// variables are simply local to the function `ResolutionManager::new`. What goes into the struct</span>
 <span class="doccomment">/// and what stays a local variable is simply a matter of convenience.</span>
-<span class="kw">struct</span> <span class="ident">ResolutionManager</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ResolutionManager</span> {
     <span class="ident">sender</span> : <span class="ident">Sender</span>,
     <span class="ident">is_unit</span> : <span class="ident">bool</span>,
     <span class="ident">resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>
@@ -636,6 +695,7 @@
     <span class="doccomment">/// # Arguments</span>
     <span class="doccomment">///  * `receiver` - The `eceiver` object to listen commands from.</span>
     <span class="doccomment">///  * `sender` - The `ender` object to send messages to.</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">receiver</span> : <span class="ident">Receiver</span>, <span class="ident">sender</span> : <span class="ident">Sender</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">manager</span> <span class="op">=</span> <span class="ident">ResolutionManager</span> {
              <span class="ident">sender</span> : <span class="ident">sender</span>,
@@ -647,10 +707,13 @@
             .<span class="ident">subsequent_indent</span>(<span class="string">&quot;                    &quot;</span>);
 
         <span class="kw">for</span> <span class="ident">msg</span> <span class="kw">in</span> <span class="ident">receiver</span> {
-            <span class="kw">let</span> <span class="ident">action_string</span>;
-            <span class="kw">let</span> <span class="ident">start</span>;
-            <span class="ident">action_string</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">msg</span>);
-            <span class="ident">start</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
+            <span class="comment">// If the message is BlockRefresh, SseqManager is responsible for marking</span>
+            <span class="comment">// it as complete.</span>
+            <span class="kw">let</span> <span class="ident">isblock</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> { <span class="ident">Action</span>::<span class="ident">BlockRefresh</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">true</span>, <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span> };
+            <span class="kw">let</span> <span class="ident">target_sseq</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">sseq</span>;
+
+            <span class="kw">let</span> <span class="ident">action_string</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">msg</span>);
+            <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
             <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} ResolutionManager: Processing {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">action_string</span>)));
 
             <span class="ident">manager</span>.<span class="ident">process_message</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>;
@@ -658,16 +721,18 @@
             <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
             <span class="kw">let</span> <span class="ident">time_diff</span> <span class="op">=</span> (<span class="ident">end</span> <span class="op">-</span> <span class="ident">start</span>).<span class="ident">num_milliseconds</span>();
             <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} ResolutionManager: Completed in {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">ms_to_string</span>(<span class="ident">time_diff</span>))));
-            <span class="ident">manager</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
-                <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
-                <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>::<span class="ident">Main</span>, <span class="comment">// Doesn&#39;t matter</span>
-                <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">Complete</span> {})
-            })<span class="question-mark">?</span>;
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">isblock</span> {
+                <span class="ident">manager</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
+                    <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
+                    <span class="ident">sseq</span> : <span class="ident">target_sseq</span>,
+                    <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">Complete</span> {})
+                })<span class="question-mark">?</span>;
+            }
         }
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">process_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">process_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
         <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
             <span class="ident">Action</span>::<span class="ident">Construct</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">construct</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
             <span class="ident">Action</span>::<span class="ident">ConstructJson</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">construct_json</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
@@ -874,6 +939,7 @@
     <span class="doccomment">/// # Arguments</span>
     <span class="doccomment">///  * `receiver` - The `Receiver` object to listen commands from.</span>
     <span class="doccomment">///  * `sender` - The `Sender` object to send messages to.</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">receiver</span> : <span class="ident">Receiver</span>, <span class="ident">sender</span> : <span class="ident">Sender</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">manager</span> <span class="op">=</span> <span class="ident">SseqManager</span> {
              <span class="ident">sender</span> : <span class="ident">sender</span>,
@@ -892,10 +958,9 @@
                 <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
                 <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>
             };
-            <span class="kw">let</span> <span class="ident">action_string</span>;
-            <span class="kw">let</span> <span class="ident">start</span>;
-            <span class="ident">action_string</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">msg</span>);
-            <span class="ident">start</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
+            <span class="kw">let</span> <span class="ident">action_string</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">msg</span>);
+            <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Local</span>::<span class="ident">now</span>();
+            <span class="kw">let</span> <span class="ident">target_sseq</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">sseq</span>;
             <span class="kw">if</span> <span class="ident">user</span> {
                 <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} SseqManager: Processing {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">action_string</span>)));
             }
@@ -908,7 +973,7 @@
                 <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}\n&quot;</span>, <span class="ident">wrapper</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} SseqManager: Completed in {}&quot;</span>, <span class="ident">start</span>.<span class="ident">format</span>(<span class="string">&quot;%F %T&quot;</span>), <span class="ident">ms_to_string</span>(<span class="ident">time_diff</span>))));
                 <span class="ident">manager</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
                     <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
-                    <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>::<span class="ident">Main</span>, <span class="comment">// Doesn&#39;t matter</span>
+                    <span class="ident">sseq</span> : <span class="ident">target_sseq</span>,
                     <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">Complete</span> {})
                 })<span class="question-mark">?</span>;
             }
@@ -916,7 +981,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">process_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">process_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
         <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
             <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">resolving</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
             <span class="ident">Action</span>::<span class="ident">Complete</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
@@ -963,11 +1028,13 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// We also spawn a separate thread waiting for messages from ResolutionManager, and then relay it</span>
 <span class="doccomment">/// to the WebSocket, again, we do this because we don&#39;t want anything to be blocking.</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Manager</span> {
     <span class="ident">sseq_sender</span> : <span class="ident">Sender</span>,
     <span class="ident">res_sender</span> : <span class="ident">Sender</span>
 }
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">impl</span> <span class="ident">Manager</span> {
     <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">f</span> : <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span> <span class="kw">where</span> <span class="ident">T</span> : <span class="ident">Fn</span>(<span class="ident">String</span>) <span class="op">-&gt;</span> () <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
     {
@@ -1038,11 +1105,13 @@
 <span class="doccomment">/// request, it is either looking for some static files, as specified in `FILE_LIST`, or it is</span>
 <span class="doccomment">/// WebSocket message. If it is the former, we return the file. If it is the latter, we parse it</span>
 <span class="doccomment">/// into a string and pass it on to Manager.</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Server</span> {
     <span class="ident">manager</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Manager</span><span class="op">&gt;</span>,
     <span class="ident">out</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WsSender</span><span class="op">&gt;</span>
 }
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">impl</span> <span class="ident">Handler</span> <span class="kw">for</span> <span class="ident">Server</span> {
     <span class="kw">fn</span> <span class="ident">on_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">req</span>: <span class="kw-2">&amp;</span><span class="ident">Request</span>) <span class="op">-&gt;</span> <span class="ident">WsResult</span><span class="op">&lt;</span>(<span class="ident">Response</span>)<span class="op">&gt;</span> {
          <span class="kw">match</span> <span class="ident">req</span>.<span class="ident">resource</span>() {
@@ -1065,6 +1134,7 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">target_arch</span> <span class="op">=</span> <span class="string">&quot;wasm32&quot;</span>))]</span>
 <span class="kw">impl</span> <span class="ident">Server</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">out</span> : <span class="ident">WsSender</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="ident">Server</span> {
