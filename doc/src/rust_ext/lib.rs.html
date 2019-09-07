@@ -284,7 +284,6 @@
 <span id="266">266</span>
 <span id="267">267</span>
 <span id="268">268</span>
-<span id="269">269</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -351,8 +350,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_complex</span>::<span class="ident">HomComplex</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 
@@ -365,10 +363,10 @@
 
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">Module</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">algebra</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">module</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">chain_complex</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">CCDZ</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">resolution</span> : <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">module</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">chain_complex</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CCDZ</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">resolution</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
@@ -380,9 +378,9 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_from_json</span>(<span class="kw-2">mut</span> <span class="ident">json</span> : <span class="ident">Value</span>, <span class="ident">algebra_name</span> : <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">construct_algebra_from_json</span>(<span class="kw-2">&amp;</span><span class="ident">json</span>, <span class="ident">algebra_name</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from_json</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>)<span class="question-mark">?</span>);
-    <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
+    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from_json</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>)<span class="question-mark">?</span>);
+    <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
+    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
 
     <span class="kw">let</span> <span class="ident">products_value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>[<span class="string">&quot;products&quot;</span>];
     <span class="kw">if</span> <span class="op">!</span><span class="ident">products_value</span>.<span class="ident">is_null</span>() {
@@ -393,7 +391,7 @@
             <span class="kw">let</span> <span class="ident">class</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_value</span>(<span class="ident">prod</span>[<span class="string">&quot;class&quot;</span>].<span class="ident">take</span>()).<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">prod</span>[<span class="string">&quot;name&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
 
-            <span class="ident">resolution</span>.<span class="ident">borrow_mut</span>().<span class="ident">add_product</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">class</span>, <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>());
+            <span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">add_product</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">class</span>, <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>());
         }
     }
 
@@ -418,7 +416,7 @@
                     <span class="ident">map_data</span>[<span class="ident">r</span>].<span class="ident">set_entry</span>(<span class="ident">c</span>, <span class="ident">json_map_data</span>[<span class="ident">r</span>][<span class="ident">c</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>);
                 }
             }
-            <span class="ident">resolution</span>.<span class="ident">borrow_mut</span>().<span class="ident">add_self_map</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">map_data</span>);
+            <span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">add_self_map</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">map_data</span>);
         }
     }
 
@@ -429,7 +427,7 @@
         <span class="ident">resolution</span>
     })
 }
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_algebra_from_json</span>(<span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="ident">Value</span>, <span class="kw-2">mut</span> <span class="ident">algebra_name</span> : <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_algebra_from_json</span>(<span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="ident">Value</span>, <span class="kw-2">mut</span> <span class="ident">algebra_name</span> : <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;p&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
     <span class="kw">let</span> <span class="ident">algebra_list</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;algebra&quot;</span>].<span class="ident">as_array</span>();
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">list</span>) <span class="op">=</span> <span class="ident">algebra_list</span> {
@@ -463,7 +461,7 @@
         }
         <span class="kw">_</span> <span class="op">=&gt;</span> { <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">InvalidAlgebraError</span> { <span class="ident">name</span> : <span class="ident">algebra_name</span> })); }
     };
-    <span class="prelude-val">Ok</span>(<span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">algebra</span>))
+    <span class="prelude-val">Ok</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">algebra</span>))
 }
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_define_module</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="ident">cli_module_loaders</span>::<span class="ident">interactive_module_define</span>()
@@ -471,9 +469,9 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_resolve</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct</span>(<span class="ident">config</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">borrow</span>();
+    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
     <span class="ident">res</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">config</span>.<span class="ident">max_degree</span>);
-    <span class="comment">// let hom = HomComplex::new(Rc::clone(&amp;res), Rc::clone(&amp;bundle.module));</span>
+    <span class="comment">// let hom = HomComplex::new(Arc::clone(&amp;res), Arc::clone(&amp;bundle.module));</span>
     <span class="comment">// hom.compute_cohomology_through_bidegree(res.max_computed_homological_degree(), res.max_computed_degree());</span>
     <span class="prelude-val">Ok</span>(<span class="ident">res</span>.<span class="ident">graded_dimension_string</span>())
 }
@@ -492,10 +490,10 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">json</span> : <span class="ident">Value</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="kw-2">&amp;</span><span class="ident">contents</span>).<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;p&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
     <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">20</span>;
-    <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>)));
-    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">FDModule</span>::<span class="ident">from_json</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>));
-    <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Rc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
+    <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>)));
+    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FDModule</span>::<span class="ident">from_json</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>));
+    <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
+    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
     <span class="ident">resolution</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">max_degree</span>);
     <span class="kw">let</span> <span class="ident">hom</span> <span class="op">=</span> <span class="ident">HomComplex</span>::<span class="ident">new</span>(<span class="ident">resolution</span>, <span class="ident">module</span>);
     <span class="ident">hom</span>.<span class="ident">compute_cohomology_through_bidegree</span>(<span class="ident">max_degree</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">max_degree</span>);
