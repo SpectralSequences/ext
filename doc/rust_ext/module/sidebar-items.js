@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["FiniteModule",""],["OptionModule",""]],"struct":[["ModuleFailedRelationError",""],["UnknownModuleTypeError",""],["ZeroModule",""]],"trait":[["Module",""]]});
+initSidebarItems({"enum":[["FiniteModule",""],["OptionModule",""]],"mod":[["finite_dimensional_module",""],["finitely_presented_module",""],["free_module",""]],"struct":[["FDModule",""],["FPModule",""],["FreeModule",""],["FreeModuleTableEntry",""],["ModuleFailedRelationError",""],["UnknownModuleTypeError",""],["ZeroModule",""]],"trait":[["FDModuleT",""],["Module",""]]});

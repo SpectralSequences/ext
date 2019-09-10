@@ -891,8 +891,6 @@
 <span id="873">873</span>
 <span id="874">874</span>
 <span id="875">875</span>
-<span id="876">876</span>
-<span id="877">877</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Weak</span>, <span class="ident">RwLock</span>, <span class="ident">Mutex</span>};
@@ -904,10 +902,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">OptionModule</span>, <span class="ident">FiniteModule</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module</span>::<span class="ident">FreeModule</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">OptionModule</span>, <span class="ident">FiniteModule</span>, <span class="ident">FDModule</span>, <span class="ident">FreeModule</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModule</span> <span class="kw">as</span> <span class="ident">FDModule</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module_homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">ZeroHomomorphism</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module_homomorphism</span>::<span class="ident">FreeModuleHomomorphism</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplex</span>;

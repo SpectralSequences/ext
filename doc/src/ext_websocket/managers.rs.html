@@ -335,20 +335,6 @@
 <span id="317">317</span>
 <span id="318">318</span>
 <span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">actions</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sseq</span>::<span class="ident">Sseq</span>;
@@ -399,30 +385,35 @@
         <span class="kw">let</span> <span class="ident">isblock</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> { <span class="ident">Action</span>::<span class="ident">BlockRefresh</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">true</span>, <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span> };
         <span class="kw">let</span> <span class="ident">target_sseq</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">sseq</span>;
 
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ret</span> <span class="op">=</span> <span class="prelude-val">None</span>;
         <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
             <span class="ident">Action</span>::<span class="ident">Construct</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">construct</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
             <span class="ident">Action</span>::<span class="ident">ConstructJson</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">construct_json</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
             <span class="ident">Action</span>::<span class="ident">Resolve</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">resolve</span>(<span class="ident">a</span>, <span class="ident">msg</span>.<span class="ident">sseq</span>)<span class="question-mark">?</span>,
             <span class="ident">Action</span>::<span class="ident">BlockRefresh</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
-            <span class="ident">Action</span>::<span class="ident">QueryTable</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">query_table</span>(<span class="ident">a</span>, <span class="ident">msg</span>.<span class="ident">sseq</span>)<span class="question-mark">?</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> {
                 <span class="comment">// Find a better way to make this work.</span>
                 <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">sseq</span> {
                     <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> {
                         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">resolution</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span> {
-                            <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_resolution</span>(<span class="ident">resolution</span>)
+                            <span class="ident">ret</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_resolution</span>(<span class="ident">resolution</span>);
                         }
                     },
                     <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> {
                         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">main_resolution</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span> {
                             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">resolution</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">main_resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">unit_resolution</span> {
-                                <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_resolution</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>());
+                                <span class="ident">ret</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_resolution</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>());
                             }
                         }
                     }
                 }
             }
         };
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">m</span>) <span class="op">=</span> <span class="ident">ret</span> {
+            <span class="ident">m</span>.<span class="ident">sseq</span> <span class="op">=</span> <span class="ident">target_sseq</span>;
+            <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">m</span>)<span class="question-mark">?</span>;
+        }
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">isblock</span> {
             <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">Message</span> {
@@ -511,28 +502,6 @@
             }
         };
 
-        <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="kw">fn</span> <span class="ident">query_table</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">action</span> : <span class="ident">QueryTable</span>, <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=</span> <span class="ident">sseq</span> {
-            <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">read</span>().<span class="ident">unwrap</span>();
-
-            <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">action</span>.<span class="ident">s</span>;
-            <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">action</span>.<span class="ident">t</span>;
-
-            <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">module</span>(<span class="ident">s</span>);
-            <span class="kw">if</span> <span class="ident">t</span> <span class="op">&lt;</span> <span class="ident">module</span>.<span class="ident">min_degree</span>() {
-                <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
-            }
-            <span class="kw">let</span> <span class="ident">string</span> <span class="op">=</span> <span class="ident">module</span>.<span class="ident">generator_list_string</span>(<span class="ident">t</span>);
-            <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">Message</span> {
-                <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
-                <span class="ident">sseq</span> : <span class="ident">sseq</span>,
-                <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">QueryTableResult</span> { <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">string</span> })
-            };
-            <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>;
-        }
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -628,6 +597,8 @@
             <span class="ident">Action</span>::<span class="ident">AddClass</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
             <span class="ident">Action</span>::<span class="ident">AddProduct</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
             <span class="ident">Action</span>::<span class="ident">Complete</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">Action</span>::<span class="ident">QueryTableResult</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">Action</span>::<span class="ident">QueryCocycleStringResult</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
             <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>
         }
@@ -641,6 +612,7 @@
             <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">resolving</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
             <span class="ident">Action</span>::<span class="ident">Complete</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
             <span class="ident">Action</span>::<span class="ident">QueryTableResult</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
+            <span class="ident">Action</span>::<span class="ident">QueryCocycleStringResult</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sseq</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_sseq</span>(<span class="ident">msg</span>.<span class="ident">sseq</span>) {
                     <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_sseq</span>(<span class="ident">sseq</span>);

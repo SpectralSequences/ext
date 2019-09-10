@@ -255,12 +255,6 @@
 <span id="237">237</span>
 <span id="238">238</span>
 <span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -279,10 +273,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">steenrod_evaluator</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">module</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">module_homomorphism</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">finite_dimensional_module</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">free_module</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">free_module_homomorphism</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">finitely_presented_module</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">chain_complex</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hom_space</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hom_pullback</span>;
@@ -299,7 +290,6 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::<span class="ident">FpVectorT</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">CochainComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplexConcentratedInDegreeZero</span> <span class="kw">as</span> <span class="ident">CCDZ</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModule</span> <span class="kw">as</span> <span class="ident">FDModule</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution</span>::{<span class="ident">Resolution</span>, <span class="ident">ModuleResolution</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_complex</span>::<span class="ident">HomComplex</span>;
 
@@ -433,6 +423,7 @@
 
 <span class="comment">//use crate::fp_vector::FpVectorT;</span>
 <span class="comment">// use crate::resolution_homomorphism::ResolutionHomomorphism;</span>
+<span class="comment">//use crate::module::FDModule;</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unreachable_code</span>)]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_mut</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_test</span>() {    
@@ -440,22 +431,19 @@
     <span class="comment">// S_3</span>
     <span class="comment">// let contents = r#&quot;{&quot;type&quot; : &quot;finite dimensional module&quot;,&quot;name&quot;: &quot;$S_3$&quot;, &quot;file_name&quot;: &quot;S_3&quot;, &quot;p&quot;: 3, &quot;generic&quot;: true, &quot;gens&quot;: {&quot;x0&quot;: 0}, &quot;sq_actions&quot;: [], &quot;adem_actions&quot;: [], &quot;milnor_actions&quot;: []}&quot;#;</span>
     <span class="comment">// C2:</span>
-    <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;type&quot; : &quot;finite dimensional module&quot;, &quot;name&quot;: &quot;$C(2)$&quot;, &quot;file_name&quot;: &quot;C2&quot;, &quot;p&quot;: 2, &quot;generic&quot;: false, &quot;gens&quot;: {&quot;x0&quot;: 0, &quot;x1&quot;: 1}, &quot;sq_actions&quot;: [{&quot;op&quot;: 1, &quot;input&quot;: &quot;x0&quot;, &quot;output&quot;: [{&quot;gen&quot;: &quot;x1&quot;, &quot;coeff&quot;: 1}]}], &quot;adem_actions&quot;: [{&quot;op&quot;: [1], &quot;input&quot;: &quot;x0&quot;, &quot;output&quot;: [{&quot;gen&quot;: &quot;x1&quot;, &quot;coeff&quot;: 1}]}], &quot;milnor_actions&quot;: [{&quot;op&quot;: [1], &quot;input&quot;: &quot;x0&quot;, &quot;output&quot;: [{&quot;gen&quot;: &quot;x1&quot;, &quot;coeff&quot;: 1}]}]}&quot;#</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">json</span> : <span class="ident">Value</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="kw-2">&amp;</span><span class="ident">contents</span>).<span class="ident">unwrap</span>();
-    <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;p&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
-    <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">20</span>;
-    <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>)));
-    <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FDModule</span>::<span class="ident">from_json</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>));
-    <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">CCDZ</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
-    <span class="ident">resolution</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">max_degree</span>);
-    <span class="kw">let</span> <span class="ident">hom</span> <span class="op">=</span> <span class="ident">HomComplex</span>::<span class="ident">new</span>(<span class="ident">resolution</span>, <span class="ident">module</span>);
-    <span class="ident">hom</span>.<span class="ident">compute_cohomology_through_bidegree</span>(<span class="ident">max_degree</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">max_degree</span>);
-    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">hom</span>.<span class="ident">graded_dimension_string</span>());
-    
+<span class="comment">//    let contents = r#&quot;{&quot;type&quot; : &quot;finite dimensional module&quot;, &quot;name&quot;: &quot;$C(2)$&quot;, &quot;file_name&quot;: &quot;C2&quot;, &quot;p&quot;: 2, &quot;generic&quot;: false, &quot;gens&quot;: {&quot;x0&quot;: 0, &quot;x1&quot;: 1}, &quot;sq_actions&quot;: [{&quot;op&quot;: 1, &quot;input&quot;: &quot;x0&quot;, &quot;output&quot;: [{&quot;gen&quot;: &quot;x1&quot;, &quot;coeff&quot;: 1}]}], &quot;adem_actions&quot;: [{&quot;op&quot;: [1], &quot;input&quot;: &quot;x0&quot;, &quot;output&quot;: [{&quot;gen&quot;: &quot;x1&quot;, &quot;coeff&quot;: 1}]}], &quot;milnor_actions&quot;: [{&quot;op&quot;: [1], &quot;input&quot;: &quot;x0&quot;, &quot;output&quot;: [{&quot;gen&quot;: &quot;x1&quot;, &quot;coeff&quot;: 1}]}]}&quot;#;</span>
+<span class="comment">//    let mut json : Value = serde_json::from_str(&amp;contents).unwrap();</span>
+<span class="comment">//    let p = json[&quot;p&quot;].as_u64().unwrap() as u32;</span>
+<span class="comment">//    let max_degree = 20;</span>
+<span class="comment">//    let algebra = Arc::new(AlgebraAny::from(AdemAlgebra::new(p, p != 2, false)));</span>
+<span class="comment">//    let module = Arc::new(FDModule::from_json(Arc::clone(&amp;algebra), &amp;mut json));</span>
+<span class="comment">//    let chain_complex = Arc::new(CCDZ::new(Arc::clone(&amp;module)));</span>
+<span class="comment">//    let resolution = Arc::new(Resolution::new(Arc::clone(&amp;chain_complex), None, None));</span>
+<span class="comment">//    resolution.resolve_through_degree(max_degree);</span>
+<span class="comment">//    let hom = HomComplex::new(resolution, module);</span>
+<span class="comment">//    hom.compute_cohomology_through_bidegree(max_degree as u32, max_degree);</span>
+<span class="comment">//    println!(&quot;{}&quot;, hom.graded_dimension_string());</span>
 }
-
-
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_module_from_file</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="prelude-val">None</span>;

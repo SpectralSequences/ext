@@ -117,23 +117,19 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">AlgebraAny</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">Module</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module</span>::<span class="ident">FreeModule</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModuleT</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FreeModule</span>, <span class="ident">FDModuleT</span>};
 <span class="comment">// use crate::module_homomorphism::ModuleHomomorphism;</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module_homomorphism</span>::<span class="ident">FreeModuleHomomorphism</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">CochainComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_space</span>::<span class="ident">HomSpace</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_pullback</span>::<span class="ident">HomPullback</span>;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FiniteDimensionalModuleT</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FDModuleT</span><span class="op">&gt;</span> {
     <span class="ident">min_degree</span> : <span class="ident">i32</span>,
     <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>,
     <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>,
@@ -143,7 +139,7 @@
     <span class="ident">cohomology_basis</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FiniteDimensionalModuleT</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FDModuleT</span><span class="op">&gt;</span>
     <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span>, <span class="ident">N</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>, <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">min_degree</span>() <span class="op">-</span> <span class="ident">target</span>.<span class="ident">max_degree</span>();
@@ -160,7 +156,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FiniteDimensionalModuleT</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FDModuleT</span><span class="op">&gt;</span>
     <span class="ident">CochainComplex</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>, <span class="ident">HomPullback</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span>, <span class="ident">N</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">zero_module</span>.<span class="ident">algebra</span>()
@@ -222,5 +218,6 @@
             <span class="self">self</span>.<span class="ident">differentials</span>.<span class="ident">push</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">HomPullback</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">modules</span>[<span class="ident">i</span>]), <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">modules</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>]), <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">differential</span>(<span class="ident">i</span>))));
         }
     }
-}</pre></div>
+}
+</pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "rust_ext";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

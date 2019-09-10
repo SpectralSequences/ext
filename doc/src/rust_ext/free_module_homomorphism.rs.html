@@ -245,7 +245,6 @@
 <span id="227">227</span>
 <span id="228">228</span>
 <span id="229">229</span>
-<span id="230">230</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Mutex</span>, <span class="ident">MutexGuard</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -253,9 +252,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">once</span>::<span class="ident">OnceBiVec</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>, <span class="ident">QuasiInverse</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">Module</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FreeModule</span>, <span class="ident">FreeModuleTableEntry</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module_homomorphism</span>::<span class="ident">ModuleHomomorphism</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module</span>::{<span class="ident">FreeModule</span>, <span class="ident">FreeModuleTableEntry</span>};
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">Module</span><span class="op">&gt;</span> {
     <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span>,
