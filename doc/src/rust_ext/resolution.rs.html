@@ -1400,14 +1400,14 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_s</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
 
-        <span class="comment">// We want the computed area to always be a square.</span>
+        <span class="comment">// We want the computed area to always be a rectangle.</span>
         <span class="ident">max_t</span> <span class="op">=</span> <span class="ident">max</span>(<span class="ident">max_t</span>, <span class="kw-2">*</span><span class="ident">next_t</span> <span class="op">-</span> <span class="number">1</span>);
         <span class="kw">if</span> <span class="ident">max_s</span> <span class="op">&lt;</span> <span class="kw-2">*</span><span class="ident">next_s</span> {
             <span class="ident">max_s</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">next_s</span> <span class="op">-</span> <span class="number">1</span>;
         }
 
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">extend_through_degree</span>(<span class="kw-2">*</span><span class="ident">next_s</span>, <span class="ident">max_s</span>, <span class="kw-2">*</span><span class="ident">next_t</span>, <span class="ident">max_t</span>);
-        <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">compute_basis</span>(<span class="ident">max_t</span>);
+        <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">compute_basis</span>(<span class="ident">max_t</span> <span class="op">-</span> <span class="ident">min_degree</span>);
 
         <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="ident">min_degree</span> ..= <span class="ident">max_t</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">unit_res</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span> {
@@ -1415,7 +1415,7 @@
                 <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
                 <span class="comment">// Avoid a deadlock</span>
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">unit_res</span>.<span class="ident">inner</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>) {
-                    <span class="ident">unit_res</span>.<span class="ident">resolve_through_bidegree</span>(<span class="self">self</span>.<span class="ident">max_product_homological_degree</span>, <span class="ident">t</span>);
+                    <span class="ident">unit_res</span>.<span class="ident">resolve_through_bidegree</span>(<span class="self">self</span>.<span class="ident">max_product_homological_degree</span>, <span class="ident">t</span> <span class="op">-</span> <span class="ident">min_degree</span>);
                 }
             }
 

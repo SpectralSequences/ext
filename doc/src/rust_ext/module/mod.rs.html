@@ -258,6 +258,8 @@
 <span id="240">240</span>
 <span id="241">241</span>
 <span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
@@ -352,14 +354,16 @@
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ZeroModule</span> {
     <span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>,
+    <span class="ident">min_degree</span> : <span class="ident">i32</span>,
     <span class="ident">name</span> : <span class="ident">String</span>
 }
 
 <span class="kw">impl</span> <span class="ident">ZeroModule</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">min_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Zero Module over {}&quot;</span>, <span class="ident">algebra</span>.<span class="ident">name</span>());
         <span class="ident">ZeroModule</span> {
             <span class="ident">algebra</span>,
+            <span class="ident">min_degree</span>,
             <span class="ident">name</span>
         }
     }
@@ -379,7 +383,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
-        <span class="number">0</span>
+        <span class="self">self</span>.<span class="ident">min_degree</span>
     }
 
     <span class="comment">// Since the dimension is 0, the input of this function is an element of the basis which is the empty set.</span>

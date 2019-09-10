@@ -288,10 +288,9 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">FiniteModule</span>, <span class="ident">Module</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::<span class="ident">Matrix</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::<span class="ident">FpVectorT</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">CochainComplex</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplex</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplexConcentratedInDegreeZero</span> <span class="kw">as</span> <span class="ident">CCDZ</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution</span>::{<span class="ident">Resolution</span>, <span class="ident">ModuleResolution</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_complex</span>::<span class="ident">HomComplex</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
@@ -421,9 +420,10 @@
 }
 
 
-<span class="comment">//use crate::fp_vector::FpVectorT;</span>
-<span class="comment">// use crate::resolution_homomorphism::ResolutionHomomorphism;</span>
+<span class="comment">//use crate::resolution_homomorphism::ResolutionHomomorphism;</span>
 <span class="comment">//use crate::module::FDModule;</span>
+<span class="comment">//use crate::chain_complex::CochainComplex;</span>
+<span class="comment">//use crate::hom_complex::HomComplex;</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unreachable_code</span>)]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_mut</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_test</span>() {    
