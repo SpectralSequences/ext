@@ -120,16 +120,16 @@
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
+<span class="kw">use</span> <span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">AlgebraAny</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FreeModule</span>, <span class="ident">FDModuleT</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FreeModule</span>, <span class="ident">BoundedModule</span>};
 <span class="comment">// use crate::module_homomorphism::ModuleHomomorphism;</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module_homomorphism</span>::<span class="ident">FreeModuleHomomorphism</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">CochainComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_space</span>::<span class="ident">HomSpace</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_pullback</span>::<span class="ident">HomPullback</span>;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FDModuleT</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span> {
     <span class="ident">min_degree</span> : <span class="ident">i32</span>,
     <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>,
     <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>,
@@ -139,7 +139,7 @@
     <span class="ident">cohomology_basis</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FDModuleT</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span>
     <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span>, <span class="ident">N</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>, <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">min_degree</span>() <span class="op">-</span> <span class="ident">target</span>.<span class="ident">max_degree</span>();
@@ -156,7 +156,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">FDModuleT</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">FreeModule</span>, <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;&gt;</span>, <span class="ident">N</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span>
     <span class="ident">CochainComplex</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>, <span class="ident">HomPullback</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">HomComplex</span><span class="op">&lt;</span><span class="ident">CC</span>, <span class="ident">N</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">zero_module</span>.<span class="ident">algebra</span>()

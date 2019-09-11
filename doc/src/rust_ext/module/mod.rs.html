@@ -260,6 +260,11 @@
 <span id="242">242</span>
 <span id="243">243</span>
 <span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
@@ -270,13 +275,18 @@
 
 <span class="kw">mod</span> <span class="ident">finite_dimensional_module</span>;
 <span class="kw">mod</span> <span class="ident">finitely_presented_module</span>;
+<span class="kw">mod</span> <span class="ident">truncated_module</span>;
 <span class="kw">mod</span> <span class="ident">free_module</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModule</span> <span class="kw">as</span> <span class="ident">FDModule</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModuleT</span> <span class="kw">as</span> <span class="ident">FDModuleT</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">finitely_presented_module</span>::<span class="ident">FinitelyPresentedModule</span> <span class="kw">as</span> <span class="ident">FPModule</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">truncated_module</span>::<span class="ident">TruncatedModule</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">free_module</span>::<span class="ident">FreeModule</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">free_module</span>::<span class="ident">FreeModuleTableEntry</span>;
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BoundedModule</span> : <span class="ident">Module</span> {
+    <span class="kw">fn</span> <span class="ident">max_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span>;
+}
 
 <span class="attribute">#[<span class="ident">enum_dispatch</span>(<span class="ident">FiniteModule</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Module</span> {
