@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["split_mut_borrow",""],["yoneda_representative",""]],"struct":[["YonedaRepresentative",""]]});

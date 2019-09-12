@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["QuotientHomomorphism",""],["QuotientHomomorphismSource",""],["QuotientModule","Given a module `module`, this is the quotient of `module` by a collection of basis elements."]]});

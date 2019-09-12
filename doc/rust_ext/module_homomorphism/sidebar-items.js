@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ZeroHomomorphism",""]],"trait":[["ModuleHomomorphism",""]]});
+initSidebarItems({"struct":[["FDModuleHomomorphism",""],["ZeroHomomorphism",""]],"trait":[["ModuleHomomorphism",""]]});
