@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["split_mut_borrow",""],["yoneda_representative",""]],"struct":[["YonedaRepresentative",""]]});
+initSidebarItems({"constant":[["PENALTY_UNIT",""]],"fn":[["rate_adem_operation",""],["rate_operation",""],["split_mut_borrow",""],["yoneda_representative",""]],"struct":[["YonedaRepresentative",""]]});
