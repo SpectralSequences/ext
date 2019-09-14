@@ -1429,6 +1429,21 @@
 <span id="1411">1411</span>
 <span id="1412">1412</span>
 <span id="1413">1413</span>
+<span id="1414">1414</span>
+<span id="1415">1415</span>
+<span id="1416">1416</span>
+<span id="1417">1417</span>
+<span id="1418">1418</span>
+<span id="1419">1419</span>
+<span id="1420">1420</span>
+<span id="1421">1421</span>
+<span id="1422">1422</span>
+<span id="1423">1423</span>
+<span id="1424">1424</span>
+<span id="1425">1425</span>
+<span id="1426">1426</span>
+<span id="1427">1427</span>
+<span id="1428">1428</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -1630,6 +1645,21 @@
         <span class="kw">let</span> <span class="ident">container</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vector_container_mut</span>();
         <span class="ident">container</span>.<span class="ident">slice_start</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="ident">container</span>.<span class="ident">slice_end</span> <span class="op">=</span> <span class="ident">container</span>.<span class="ident">dimension</span>;
+    }
+
+    <span class="doccomment">/// Drops every element in the fp_vector that is not in the current slice.</span>
+    <span class="kw">fn</span> <span class="ident">into_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
+        <span class="kw">let</span> <span class="ident">container</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vector_container_mut</span>();
+        <span class="kw">let</span> <span class="ident">entries_per_64_bits</span> <span class="op">=</span> <span class="ident">entries_per_64_bits</span>(<span class="ident">p</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">container</span>.<span class="ident">slice_start</span> <span class="op">%</span> <span class="ident">entries_per_64_bits</span>, <span class="number">0</span>);
+        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">container</span>.<span class="ident">slice_start</span> <span class="op">/</span> <span class="ident">entries_per_64_bits</span>;
+        <span class="ident">container</span>.<span class="ident">limbs</span>.<span class="ident">drain</span>(<span class="number">0</span>..<span class="ident">n</span>);
+
+        <span class="ident">container</span>.<span class="ident">slice_end</span> <span class="op">-=</span> <span class="ident">container</span>.<span class="ident">slice_start</span>;
+        <span class="ident">container</span>.<span class="ident">dimension</span> <span class="op">=</span> <span class="ident">container</span>.<span class="ident">slice_end</span>;
+        <span class="ident">container</span>.<span class="ident">slice_start</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="ident">container</span>.<span class="ident">limbs</span>.<span class="ident">truncate</span>((<span class="ident">container</span>.<span class="ident">slice_end</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">/</span> <span class="ident">entries_per_64_bits</span> <span class="op">+</span> <span class="number">1</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">min_limb</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
