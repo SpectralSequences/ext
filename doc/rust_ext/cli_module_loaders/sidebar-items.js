@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["gens_to_json",""],["get_expression_to_vector",""],["get_gens",""],["get_relation",""],["interactive_module_define",""],["interactive_module_define_fdmodule",""],["interactive_module_define_fpmodule",""],["query",""],["query_with_default",""],["query_with_default_no_default_indicated",""],["query_yes_no",""]]});
+initSidebarItems({"fn":[["gens_to_json",""],["get_expression_to_vector",""],["get_gens",""],["get_relation",""],["interactive_module_define",""],["interactive_module_define_fdmodule",""],["interactive_module_define_fpmodule",""]]});

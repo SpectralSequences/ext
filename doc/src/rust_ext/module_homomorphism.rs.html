@@ -279,6 +279,30 @@
 <span id="261">261</span>
 <span id="262">262</span>
 <span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Mutex</span>, <span class="ident">MutexGuard</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -540,6 +564,30 @@
             <span class="ident">degree_shift</span>,
             <span class="ident">matrices</span>,
             <span class="ident">quasi_inverses</span>
+        }
+    }
+
+    <span class="doccomment">/// This function replaces the source of the FDModuleHomomorphism and does nothing else.</span>
+    <span class="doccomment">/// This is useful for changing the type of the source (but not the mathematical module</span>
+    <span class="doccomment">/// itself). This is intended to be used in conjunction with `BoundedModule::to_fd_module`</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_source</span><span class="op">&lt;</span><span class="ident">S_</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">FDModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">FDModuleHomomorphism</span> {
+            <span class="ident">source</span> : <span class="ident">source</span>,
+            <span class="ident">target</span> : <span class="self">self</span>.<span class="ident">target</span>,
+            <span class="ident">degree_shift</span> : <span class="self">self</span>.<span class="ident">degree_shift</span>,
+            <span class="ident">matrices</span> : <span class="self">self</span>.<span class="ident">matrices</span>,
+            <span class="ident">quasi_inverses</span> : <span class="self">self</span>.<span class="ident">quasi_inverses</span>
+        }
+    }
+
+    <span class="doccomment">/// See `replace_source`</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_target</span><span class="op">&lt;</span><span class="ident">T_</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">FDModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T_</span><span class="op">&gt;</span> {
+        <span class="ident">FDModuleHomomorphism</span> {
+            <span class="ident">source</span> : <span class="self">self</span>.<span class="ident">source</span>,
+            <span class="ident">target</span> : <span class="ident">target</span>,
+            <span class="ident">degree_shift</span> : <span class="self">self</span>.<span class="ident">degree_shift</span>,
+            <span class="ident">matrices</span> : <span class="self">self</span>.<span class="ident">matrices</span>,
+            <span class="ident">quasi_inverses</span> : <span class="self">self</span>.<span class="ident">quasi_inverses</span>
         }
     }
 }
