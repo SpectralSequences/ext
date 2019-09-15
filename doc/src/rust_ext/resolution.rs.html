@@ -1482,7 +1482,7 @@
 
 <span class="comment">// Product algorithms</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> <span class="kw">where</span>
-    <span class="ident">CC</span> : <span class="ident">ChainComplex</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>
+    <span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="comment">// + Send + Sync + &#39;static</span>
 {
     <span class="doccomment">/// This function computes the products between the element most recently added to product_list</span>
     <span class="doccomment">/// and the parts of Ext that have already been computed. This function should be called right</span>

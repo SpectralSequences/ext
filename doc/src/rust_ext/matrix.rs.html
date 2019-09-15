@@ -1095,19 +1095,6 @@
 <span id="1077">1077</span>
 <span id="1078">1078</span>
 <span id="1079">1079</span>
-<span id="1080">1080</span>
-<span id="1081">1081</span>
-<span id="1082">1082</span>
-<span id="1083">1083</span>
-<span id="1084">1084</span>
-<span id="1085">1085</span>
-<span id="1086">1086</span>
-<span id="1087">1087</span>
-<span id="1088">1088</span>
-<span id="1089">1089</span>
-<span id="1090">1090</span>
-<span id="1091">1091</span>
-<span id="1092">1092</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1297,10 +1284,6 @@
         <span class="self">self</span>.<span class="ident">slice_row_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">rows</span>;
         <span class="self">self</span>.<span class="ident">slice_col_start</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="self">self</span>.<span class="ident">slice_col_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">columns</span>;
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_row</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">row_idx</span> : <span class="ident">usize</span>, <span class="ident">row</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) {
-        <span class="self">self</span>.<span class="ident">vectors</span>[<span class="ident">row_idx</span>] <span class="op">=</span> <span class="ident">row</span>.<span class="ident">clone</span>();
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
@@ -1618,7 +1601,8 @@
     <span class="doccomment">/// of rows. This can be achieved by setting the number of rows to be the dimension plus one</span>
     <span class="doccomment">/// when creating the subspace.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_vector</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">row</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) {
-        <span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">set_row</span>(<span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">rows</span>() <span class="op">-</span> <span class="number">1</span>, <span class="ident">row</span>);
+        <span class="kw">let</span> <span class="ident">last_row</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">rows</span>() <span class="op">-</span> <span class="number">1</span>;
+        <span class="self">self</span>.<span class="ident">matrix</span>[<span class="ident">last_row</span>].<span class="ident">assign</span>(<span class="ident">row</span>);
         <span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">column_to_pivot_row</span>);
     }
 
@@ -1672,16 +1656,6 @@
             }
             <span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">column_to_pivot_row</span>);
         }
-        <span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">column_to_pivot_row</span>);
-    }
-
-    <span class="doccomment">/// A version of add_vector that doesn&#39;t row reduce the resulting subspace.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_vector_raw</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">row</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) {
-        <span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">set_row</span>(<span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">rows</span>() <span class="op">-</span> <span class="number">1</span>, <span class="ident">row</span>);
-    }
-
-    <span class="doccomment">/// Flush the actions of the `add_vector_raw`</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">column_to_pivot_row</span>);
     }
 
@@ -1983,12 +1957,12 @@
             <span class="self">self</span>.<span class="ident">clear_slice</span>();
         }
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res_preimage</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">res_image_rows</span>, <span class="ident">source_columns</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res_image</span> <span class="op">=</span> <span class="ident">Subspace</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">res_image_rows</span>, <span class="ident">res_columns</span>);            
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res_image</span> <span class="op">=</span> <span class="ident">Subspace</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">res_image_rows</span>, <span class="ident">res_columns</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">res_image_rows</span> {
             <span class="kw">let</span> <span class="ident">old_slice</span> <span class="op">=</span> <span class="self">self</span>[<span class="ident">i</span>].<span class="ident">slice</span>();
             <span class="self">self</span>[<span class="ident">i</span>].<span class="ident">set_slice</span>(<span class="ident">first_res_col</span>, <span class="ident">last_res_col</span>);
             <span class="ident">res_image</span>.<span class="ident">matrix</span>[<span class="ident">i</span>].<span class="ident">assign</span>(<span class="kw-2">&amp;</span><span class="self">self</span>[<span class="ident">i</span>]);
-            <span class="ident">res_image</span>.<span class="ident">column_to_pivot_row</span>.<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">new_pivots</span>[<span class="ident">first_res_col</span>..<span class="ident">last_res_col</span>]);
+            <span class="ident">res_image</span>.<span class="ident">column_to_pivot_row</span>.<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">new_pivots</span>[..<span class="ident">res_columns</span>]);
             <span class="self">self</span>[<span class="ident">i</span>].<span class="ident">restore_slice</span>(<span class="ident">old_slice</span>);
             <span class="self">self</span>[<span class="ident">i</span>].<span class="ident">set_slice</span>(<span class="ident">first_source_col</span>, <span class="ident">columns</span>);
             <span class="ident">res_preimage</span>[<span class="ident">i</span>].<span class="ident">assign</span>(<span class="kw-2">&amp;</span><span class="self">self</span>[<span class="ident">i</span>]);
@@ -2091,13 +2065,13 @@
                 <span class="kw">continue</span>;
             }
             <span class="comment">// Look up the cycle that we&#39;re missing and add a generator hitting it.</span>
-            <span class="kw">let</span> <span class="ident">kernel_vector_row</span> <span class="op">=</span> <span class="ident">desired_pivots</span>[<span class="ident">i</span>] <span class="kw">as</span> <span class="ident">usize</span>;
+            <span class="kw">let</span> <span class="ident">kernel_vector_row</span> <span class="op">=</span> <span class="ident">desired_pivots</span>[<span class="ident">i</span> <span class="op">-</span> <span class="ident">start_column</span>] <span class="kw">as</span> <span class="ident">usize</span>;
             <span class="kw">let</span> <span class="ident">new_image</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">desired_image</span>.<span class="ident">matrix</span>[<span class="ident">kernel_vector_row</span>];
             <span class="kw">let</span> <span class="ident">matrix_row</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[<span class="ident">first_empty_row</span>];
             <span class="ident">added_pivots</span>.<span class="ident">push</span>(<span class="ident">i</span>);
             <span class="ident">matrix_row</span>.<span class="ident">set_to_zero</span>();
             <span class="kw">let</span> <span class="ident">old_slice</span> <span class="op">=</span> <span class="ident">matrix_row</span>.<span class="ident">slice</span>();
-            <span class="ident">matrix_row</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">desired_image</span>.<span class="ident">matrix</span>.<span class="ident">columns</span>);
+            <span class="ident">matrix_row</span>.<span class="ident">set_slice</span>(<span class="ident">start_column</span>, <span class="ident">start_column</span> <span class="op">+</span> <span class="ident">desired_image</span>.<span class="ident">matrix</span>.<span class="ident">columns</span>);
             <span class="ident">matrix_row</span>.<span class="ident">assign</span>(<span class="kw-2">&amp;</span><span class="ident">new_image</span>);
             <span class="ident">matrix_row</span>.<span class="ident">restore_slice</span>(<span class="ident">old_slice</span>);
             <span class="ident">first_empty_row</span> <span class="op">+=</span> <span class="number">1</span>;
