@@ -335,14 +335,16 @@
 <span id="317">317</span>
 <span id="318">318</span>
 <span id="319">319</span>
+<span id="320">320</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">actions</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sseq</span>::<span class="ident">Sseq</span>;
 
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">Config</span>;
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">AlgebraicObjectsBundle</span>;
-<span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FiniteModule</span>};
-<span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">resolution</span>::{<span class="ident">ModuleResolution</span>};
+<span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">CCC</span>;
+<span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">module</span>::<span class="ident">Module</span>;
+<span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">resolution</span>::<span class="ident">Resolution</span>;
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplex</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
 
@@ -362,7 +364,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ResolutionManager</span> {
     <span class="ident">sender</span> : <span class="ident">Sender</span>,
     <span class="ident">is_unit</span> : <span class="ident">bool</span>,
-    <span class="ident">resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>
+    <span class="ident">resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>
 }
 
 <span class="kw">impl</span> <span class="ident">ResolutionManager</span> {
@@ -454,8 +456,8 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">process_bundle</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">bundle</span> : <span class="ident">AlgebraicObjectsBundle</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>) {
-        <span class="self">self</span>.<span class="ident">is_unit</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">module</span>.<span class="ident">is_unit</span>();
+    <span class="kw">fn</span> <span class="ident">process_bundle</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">bundle</span> : <span class="ident">AlgebraicObjectsBundle</span>) {
+        <span class="self">self</span>.<span class="ident">is_unit</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">chain_complex</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">bundle</span>.<span class="ident">chain_complex</span>.<span class="ident">module</span>(<span class="number">0</span>).<span class="ident">is_unit</span>();
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_unit</span> {
             <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">set_unit_resolution</span>(<span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">bundle</span>.<span class="ident">resolution</span>));
         } <span class="kw">else</span> {
@@ -507,7 +509,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">ResolutionManager</span> {
-    <span class="kw">fn</span> <span class="ident">setup_callback</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">resolution</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ModuleResolution</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>, <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>) {
+    <span class="kw">fn</span> <span class="ident">setup_callback</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">resolution</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;</span>, <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>) {
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">prime</span>();
 
         <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">clone</span>();

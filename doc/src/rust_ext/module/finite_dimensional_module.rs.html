@@ -434,12 +434,18 @@
 <span id="416">416</span>
 <span id="417">417</span>
 <span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">OptionModule</span>, <span class="ident">ModuleFailedRelationError</span>, <span class="ident">BoundedModule</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">ZeroModuleT</span>, <span class="ident">OptionModule</span>, <span class="ident">ModuleFailedRelationError</span>, <span class="ident">BoundedModule</span>};
 
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">json</span>;
@@ -510,6 +516,12 @@
 <span class="kw">impl</span> <span class="ident">BoundedModule</span> <span class="kw">for</span> <span class="ident">FiniteDimensionalModule</span> {
     <span class="kw">fn</span> <span class="ident">max_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
         <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">max_degree</span>()
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">ZeroModuleT</span> <span class="kw">for</span> <span class="ident">FiniteDimensionalModule</span> {
+    <span class="kw">fn</span> <span class="ident">zero_module</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">min_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">algebra</span>, <span class="string">&quot;zero&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>))
     }
 }
 
