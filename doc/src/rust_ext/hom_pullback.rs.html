@@ -229,7 +229,6 @@
 <span id="211">211</span>
 <span id="212">212</span>
 <span id="213">213</span>
-<span id="214">214</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Mutex</span>, <span class="ident">MutexGuard</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -242,8 +241,7 @@
 <span class="comment">// use crate::field::Field;</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FreeModule</span>, <span class="ident">BoundedModule</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hom_space</span>::<span class="ident">HomSpace</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module_homomorphism</span>::<span class="ident">ModuleHomomorphism</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">free_module_homomorphism</span>::<span class="ident">FreeModuleHomomorphism</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module_homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">FreeModuleHomomorphism</span>};
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HomPullback</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span> {
     <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">HomSpace</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>,
