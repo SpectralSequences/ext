@@ -307,6 +307,10 @@
 <span id="289">289</span>
 <span id="290">290</span>
 <span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
@@ -320,11 +324,15 @@
 <span class="kw">mod</span> <span class="ident">truncated_module</span>;
 <span class="kw">mod</span> <span class="ident">quotient_module</span>;
 <span class="kw">mod</span> <span class="ident">free_module</span>;
+<span class="kw">mod</span> <span class="ident">hom_module</span>;
+
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">homomorphism</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">finite_dimensional_module</span>::<span class="ident">FiniteDimensionalModule</span> <span class="kw">as</span> <span class="ident">FDModule</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">hom_module</span>::<span class="ident">HomModule</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">finitely_presented_module</span>::<span class="ident">FinitelyPresentedModule</span> <span class="kw">as</span> <span class="ident">FPModule</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">truncated_module</span>::{<span class="ident">TruncatedModule</span>, <span class="ident">TruncatedHomomorphism</span>, <span class="ident">TruncatedHomomorphismSource</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">quotient_module</span>::{<span class="ident">QuotientModule</span>, <span class="ident">QuotientHomomorphism</span>, <span class="ident">QuotientHomomorphismSource</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">truncated_module</span>::<span class="ident">TruncatedModule</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">quotient_module</span>::<span class="ident">QuotientModule</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">free_module</span>::<span class="ident">FreeModule</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">free_module</span>::<span class="ident">FreeModuleTableEntry</span>;
 

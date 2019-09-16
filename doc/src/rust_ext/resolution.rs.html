@@ -920,7 +920,6 @@
 <span id="902">902</span>
 <span id="903">903</span>
 <span id="904">904</span>
-<span id="905">905</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Weak</span>, <span class="ident">RwLock</span>, <span class="ident">Mutex</span>};
@@ -933,7 +932,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FiniteModule</span>, <span class="ident">FDModule</span>, <span class="ident">FreeModule</span>};
 <span class="kw">use</span> <span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module_homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">FreeModuleHomomorphism</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">FreeModuleHomomorphism</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">AugmentedChainComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplexConcentratedInDegreeZero</span> <span class="kw">as</span> <span class="ident">CCDZ</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution_homomorphism</span>::{<span class="ident">ResolutionHomomorphism</span>, <span class="ident">ResolutionHomomorphismToUnit</span>};
@@ -1136,8 +1135,7 @@
                 <span class="comment">// X_{s,t} has a nontrivial image f(x) \in C_{s,t}. We need to set d(x) so that f(dX(x)) = dC(f(x)).</span>
                 <span class="comment">// So we set dX(x) = f^{-1}(dC(f(x)))</span>
                 <span class="kw">let</span> <span class="ident">prev_chain_map</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_map</span>(<span class="ident">s</span> <span class="op">-</span> <span class="number">1</span>);
-                <span class="kw">let</span> <span class="ident">maybe_qi</span> <span class="op">=</span> <span class="ident">prev_chain_map</span>.<span class="ident">quasi_inverse</span>(<span class="ident">t</span>);
-                <span class="kw">let</span> <span class="ident">quasi_inverse</span> <span class="op">=</span> <span class="ident">maybe_qi</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">quasi_inverse</span> <span class="op">=</span> <span class="ident">prev_chain_map</span>.<span class="ident">quasi_inverse</span>(<span class="ident">t</span>);
 
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out_vec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">target_res_dimension</span>);
                 <span class="kw">let</span> <span class="ident">dfx_dim</span> <span class="op">=</span> <span class="ident">complex_cur_differential</span>.<span class="ident">target</span>().<span class="ident">dimension</span>(<span class="ident">t</span>);

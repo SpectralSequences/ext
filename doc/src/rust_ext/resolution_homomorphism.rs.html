@@ -156,6 +156,7 @@
 <span id="138">138</span>
 <span id="139">139</span>
 <span id="140">140</span>
+<span id="141">141</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Weak</span>;
 
@@ -163,7 +164,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{ <span class="ident">FpVector</span>, <span class="ident">FpVectorT</span> };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::<span class="ident">Matrix</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FiniteModule</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module_homomorphism</span>::{<span class="ident">FreeModuleHomomorphism</span>, <span class="ident">ModuleHomomorphism</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">FreeModuleHomomorphism</span>, <span class="ident">ModuleHomomorphism</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">AugmentedChainComplex</span>, <span class="ident">ChainComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplexConcentratedInDegreeZero</span> <span class="kw">as</span> <span class="ident">CCDZ</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution</span>::<span class="ident">ResolutionInner</span>;
@@ -240,7 +241,6 @@
         <span class="kw">let</span> <span class="ident">output_homological_degree</span> <span class="op">=</span> <span class="ident">input_homological_degree</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">homological_degree_shift</span>;
         <span class="kw">let</span> <span class="ident">output_internal_degree</span> <span class="op">=</span> <span class="ident">input_internal_degree</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">internal_degree_shift</span>;        
         <span class="kw">let</span> <span class="ident">target_chain_map</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">chain_map</span>(<span class="ident">output_homological_degree</span>);
-        <span class="kw">let</span> <span class="ident">target_chain_map_qi</span> <span class="op">=</span> <span class="ident">target_chain_map</span>.<span class="ident">quasi_inverse</span>(<span class="ident">output_internal_degree</span>);
         <span class="kw">let</span> <span class="ident">target_cc_dimension</span> <span class="op">=</span> <span class="ident">target_chain_map</span>.<span class="ident">target</span>().<span class="ident">dimension</span>(<span class="ident">output_internal_degree</span>);
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">extra_images_matrix</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">extra_images</span> {
             <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">target_cc_dimension</span> <span class="op">==</span> <span class="ident">extra_images_matrix</span>.<span class="ident">columns</span>());
@@ -254,11 +254,12 @@
         }
         <span class="kw">if</span> <span class="ident">output_homological_degree</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">extra_images_matrix</span>) <span class="op">=</span> <span class="ident">extra_images</span> {
+                <span class="kw">let</span> <span class="ident">target_chain_map_qi</span> <span class="op">=</span> <span class="ident">target_chain_map</span>.<span class="ident">quasi_inverse</span>(<span class="ident">output_internal_degree</span>);
                 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">num_gens</span> <span class="op">==</span> <span class="ident">extra_images_matrix</span>.<span class="ident">rows</span>(),
                     <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;num_gens : {} greater than rows : {} hom_deg : {}, int_deg : {}&quot;</span>, 
                     <span class="ident">num_gens</span>, <span class="ident">extra_images_matrix</span>.<span class="ident">rows</span>(), <span class="ident">input_homological_degree</span>, <span class="ident">input_internal_degree</span>));
                 <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
-                    <span class="ident">target_chain_map_qi</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">outputs_matrix</span>[<span class="ident">k</span>], <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">extra_images_matrix</span>[<span class="ident">k</span>]);
+                    <span class="ident">target_chain_map_qi</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">outputs_matrix</span>[<span class="ident">k</span>], <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">extra_images_matrix</span>[<span class="ident">k</span>]);
                 }
             }
             <span class="kw">return</span> <span class="ident">outputs_matrix</span>;            
@@ -270,7 +271,6 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">d_source</span>.<span class="ident">target</span>().<span class="ident">name</span>(), <span class="ident">f_prev</span>.<span class="ident">source</span>().<span class="ident">name</span>());
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">d_target</span>.<span class="ident">source</span>().<span class="ident">name</span>(), <span class="ident">f_cur</span>.<span class="ident">target</span>().<span class="ident">name</span>());
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">d_target</span>.<span class="ident">target</span>().<span class="ident">name</span>(), <span class="ident">f_prev</span>.<span class="ident">target</span>().<span class="ident">name</span>());
-        <span class="kw">let</span> <span class="ident">d_quasi_inverse</span> <span class="op">=</span> <span class="ident">d_target</span>.<span class="ident">quasi_inverse</span>(<span class="ident">output_internal_degree</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">dx_dimension</span> <span class="op">=</span> <span class="ident">f_prev</span>.<span class="ident">source</span>().<span class="ident">dimension</span>(<span class="ident">input_internal_degree</span>);
         <span class="kw">let</span> <span class="ident">fdx_dimension</span> <span class="op">=</span> <span class="ident">f_prev</span>.<span class="ident">target</span>().<span class="ident">dimension</span>(<span class="ident">output_internal_degree</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dx_vector</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">dx_dimension</span>);
@@ -280,9 +280,11 @@
             <span class="ident">d_source</span>.<span class="ident">apply_to_generator</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dx_vector</span>, <span class="number">1</span>, <span class="ident">input_internal_degree</span>, <span class="ident">k</span>);
             <span class="kw">if</span> <span class="ident">dx_vector</span>.<span class="ident">is_zero</span>() {
                 <span class="kw">let</span> <span class="ident">extra_image_matrix</span> <span class="op">=</span> <span class="ident">extra_images</span>.<span class="ident">as_mut</span>().<span class="ident">expect</span>(<span class="string">&quot;Missing extra image rows&quot;</span>);
-                <span class="ident">target_chain_map_qi</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">outputs_matrix</span>[<span class="ident">k</span>], <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">extra_image_matrix</span>[<span class="ident">extra_image_row</span>]);
+                <span class="kw">let</span> <span class="ident">target_chain_map_qi</span> <span class="op">=</span> <span class="ident">target_chain_map</span>.<span class="ident">quasi_inverse</span>(<span class="ident">output_internal_degree</span>);
+                <span class="ident">target_chain_map_qi</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">outputs_matrix</span>[<span class="ident">k</span>], <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">extra_image_matrix</span>[<span class="ident">extra_image_row</span>]);
                 <span class="ident">extra_image_row</span> <span class="op">+=</span> <span class="number">1</span>;
             } <span class="kw">else</span> {
+                <span class="kw">let</span> <span class="ident">d_quasi_inverse</span> <span class="op">=</span> <span class="ident">d_target</span>.<span class="ident">quasi_inverse</span>(<span class="ident">output_internal_degree</span>);
                 <span class="ident">f_prev</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fdx_vector</span>, <span class="number">1</span>, <span class="ident">input_internal_degree</span>, <span class="kw-2">&amp;</span><span class="ident">dx_vector</span>);
                 <span class="ident">d_quasi_inverse</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">outputs_matrix</span>[<span class="ident">k</span>], <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">fdx_vector</span>);
                 <span class="ident">dx_vector</span>.<span class="ident">set_to_zero</span>();

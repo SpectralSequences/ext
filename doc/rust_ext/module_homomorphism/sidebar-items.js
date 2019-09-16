@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["bounded_module_homomorphism",""],["free_module_homomorphism",""]],"struct":[["BoundedModuleHomomorphism",""],["FreeModuleHomomorphism",""],["ZeroHomomorphism",""]],"trait":[["ModuleHomomorphism",""],["ZeroHomomorphismT",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["TruncatedHomomorphism",""],["TruncatedHomomorphismSource",""],["TruncatedModule","A module M where we quotient out everything above degree `truncation`"]]});
+initSidebarItems({"struct":[["TruncatedModule","A module M where we quotient out everything above degree `truncation`"]]});

@@ -298,9 +298,6 @@
 <span id="280">280</span>
 <span id="281">281</span>
 <span id="282">282</span>
-<span id="283">283</span>
-<span id="284">284</span>
-<span id="285">285</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -314,10 +311,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">steenrod_parser</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">steenrod_evaluator</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">module</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">module_homomorphism</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">chain_complex</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hom_space</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hom_pullback</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hom_complex</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">resolution</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">resolution_homomorphism</span>;
@@ -333,7 +327,7 @@
 <span class="kw">use</span> <span class="ident">resolution</span>::{<span class="ident">Resolution</span>, <span class="ident">ModuleResolution</span>};
 <span class="kw">use</span> <span class="ident">resolution_homomorphism</span>::<span class="ident">ResolutionHomomorphism</span>;
 <span class="kw">use</span> <span class="ident">yoneda</span>::<span class="ident">yoneda_representative</span>;
-<span class="kw">use</span> <span class="ident">module_homomorphism</span>::<span class="ident">BoundedModuleHomomorphism</span>;
+<span class="kw">use</span> <span class="ident">module</span>::<span class="ident">homomorphism</span>::<span class="ident">BoundedModuleHomomorphism</span>;
 
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="ident">query</span>::<span class="kw-2">*</span>;
