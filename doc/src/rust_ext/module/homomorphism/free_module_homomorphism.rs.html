@@ -250,6 +250,11 @@
 <span id="232">232</span>
 <span id="233">233</span>
 <span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Mutex</span>, <span class="ident">MutexGuard</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -478,6 +483,11 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">max_degree</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>()
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_kernel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lock</span> : <span class="kw-2">&amp;</span><span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">kernel</span> : <span class="ident">Subspace</span>){
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">kernel</span>.<span class="ident">len</span>());
+        <span class="self">self</span>.<span class="ident">kernel</span>.<span class="ident">push</span>(<span class="ident">kernel</span>);
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">lock</span> : <span class="kw-2">&amp;</span><span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">quasi_inverse</span> : <span class="ident">QuasiInverse</span>){
