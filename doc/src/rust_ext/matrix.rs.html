@@ -1095,6 +1095,14 @@
 <span id="1077">1077</span>
 <span id="1078">1078</span>
 <span id="1079">1079</span>
+<span id="1080">1080</span>
+<span id="1081">1081</span>
+<span id="1082">1082</span>
+<span id="1083">1083</span>
+<span id="1084">1084</span>
+<span id="1085">1085</span>
+<span id="1086">1086</span>
+<span id="1087">1087</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1564,7 +1572,15 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">quotient</span>(<span class="ident">space</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Subspace</span><span class="op">&gt;</span>, <span class="ident">subspace</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Subspace</span><span class="op">&gt;</span>, <span class="ident">ambient_dimension</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Given a chain of subspaces `subspace` &lt; `space` &lt; k^`ambient_dimension`, compute the</span>
+    <span class="doccomment">/// subquotient `space`/`subspace`. The answer is expressed as a list of basis vectors of</span>
+    <span class="doccomment">/// `space` whose image in `space`/`subspace` forms a basis, and a basis vector of `space` is</span>
+    <span class="doccomment">/// described by its index in the list of basis vectors of `space` (not the ambient space).</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Arguments</span>
+    <span class="doccomment">///  * `space` - If this is None, it is the whole space k^`ambient_dimension`</span>
+    <span class="doccomment">///  * `subspace` - If this is None, it is empty</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">subquotient</span>(<span class="ident">space</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Subspace</span><span class="op">&gt;</span>, <span class="ident">subspace</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Subspace</span><span class="op">&gt;</span>, <span class="ident">ambient_dimension</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">subspace</span> {
             <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sp</span>) <span class="op">=</span> <span class="ident">space</span> {
