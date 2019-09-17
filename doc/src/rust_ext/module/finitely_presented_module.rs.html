@@ -264,6 +264,14 @@
 <span id="246">246</span>
 <span id="247">247</span>
 <span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
@@ -274,7 +282,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::<span class="ident">Matrix</span>;
 <span class="kw">use</span> <span class="ident">once</span>::<span class="ident">OnceVec</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">ZeroModuleT</span>, <span class="ident">FreeModule</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">ZeroModule</span>, <span class="ident">FreeModule</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">FreeModuleHomomorphism</span>};
 
 <span class="kw">struct</span> <span class="ident">FPMIndexTable</span> {
@@ -291,7 +299,15 @@
     <span class="ident">index_table</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">FPMIndexTable</span><span class="op">&gt;</span>
 }
 
-<span class="kw">impl</span> <span class="ident">ZeroModuleT</span> <span class="kw">for</span> <span class="ident">FinitelyPresentedModule</span> {
+<span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">FinitelyPresentedModule</span> {
+    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span> : <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="macro">unimplemented</span><span class="macro">!</span>()
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">FinitelyPresentedModule</span> {}
+
+<span class="kw">impl</span> <span class="ident">ZeroModule</span> <span class="kw">for</span> <span class="ident">FinitelyPresentedModule</span> {
     <span class="kw">fn</span> <span class="ident">zero_module</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">min_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">algebra</span>, <span class="string">&quot;zero&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">min_degree</span>)
     }
