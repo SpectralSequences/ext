@@ -447,6 +447,9 @@
 <span id="429">429</span>
 <span id="430">430</span>
 <span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 
@@ -571,7 +574,6 @@
     
     <span class="kw">fn</span> <span class="ident">module_gens_from_json</span>(<span class="ident">gens</span> : <span class="kw-2">&amp;</span><span class="ident">Value</span>) <span class="op">-&gt;</span> (<span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span>, <span class="ident">HashMap</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="ident">gens</span> <span class="op">=</span> <span class="ident">gens</span>.<span class="ident">as_object</span>().<span class="ident">unwrap</span>();
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">gens</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="number">10000</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="op">-</span><span class="number">10000</span>;
         <span class="kw">for</span> (<span class="ident">_name</span>, <span class="ident">degree_value</span>) <span class="kw">in</span> <span class="ident">gens</span>.<span class="ident">iter</span>() {
@@ -582,6 +584,10 @@
             <span class="kw">if</span> <span class="ident">degree</span> <span class="op">+</span> <span class="number">1</span> <span class="op">&gt;</span> <span class="ident">max_degree</span> {
                 <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">degree</span> <span class="op">+</span> <span class="number">1</span>;
             }
+        }
+        <span class="kw">if</span> <span class="ident">gens</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
+            <span class="ident">min_degree</span> <span class="op">=</span> <span class="number">0</span>;
+            <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">0</span>;
         }
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gen_to_idx</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">graded_dimension</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">min_degree</span>, <span class="ident">max_degree</span>);
