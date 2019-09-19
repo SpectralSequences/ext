@@ -339,7 +339,6 @@
 <span id="321">321</span>
 <span id="322">322</span>
 <span id="323">323</span>
-<span id="324">324</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">AlgebraAny</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>, <span class="ident">QuasiInverse</span>};
@@ -621,7 +620,7 @@
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">construct_from_json</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution_homomorphism</span>::<span class="ident">ResolutionHomomorphism</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">yoneda</span>::<span class="ident">yoneda_representative</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">yoneda</span>::<span class="ident">yoneda_representative_element</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_square_ccs</span>() {
@@ -641,8 +640,7 @@
         <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
         <span class="ident">resolution</span>.<span class="ident">resolve_through_bidegree</span>(<span class="number">2</span> <span class="op">*</span> <span class="ident">s</span>, <span class="number">2</span> <span class="op">*</span> <span class="ident">t</span>);
 
-        <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">module</span>(<span class="ident">s</span>).<span class="ident">operation_generator_to_index</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="ident">t</span>, <span class="ident">i</span>);
-        <span class="kw">let</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">yoneda_representative</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">inner</span>), <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">idx</span>));
+        <span class="kw">let</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">yoneda_representative_element</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">inner</span>), <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">i</span>));
 
         <span class="kw">let</span> <span class="ident">square</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">TensorChainComplex</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">yoneda</span>), <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">yoneda</span>)));
 
