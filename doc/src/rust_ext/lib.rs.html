@@ -431,6 +431,7 @@
 <span id="413">413</span>
 <span id="414">414</span>
 <span id="415">415</span>
+<span id="416">416</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -451,14 +452,14 @@
 <span class="kw">mod</span> <span class="ident">yoneda</span>;
 
 <span class="kw">use</span> <span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
-<span class="kw">use</span> <span class="ident">module</span>::{<span class="ident">FiniteModule</span>, <span class="ident">FDModule</span>, <span class="ident">Module</span>, <span class="ident">BoundedModule</span>};
+<span class="kw">use</span> <span class="ident">module</span>::{<span class="ident">FiniteModule</span>, <span class="ident">Module</span>, <span class="ident">BoundedModule</span>};
 <span class="kw">use</span> <span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">FiniteModuleHomomorphism</span>, <span class="ident">ModuleHomomorphism</span>, <span class="ident">FreeModuleHomomorphism</span>};
 <span class="kw">use</span> <span class="ident">matrix</span>::<span class="ident">Matrix</span>;
 <span class="kw">use</span> <span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
-<span class="kw">use</span> <span class="ident">chain_complex</span>::{<span class="ident">FiniteChainComplex</span>, <span class="ident">ChainComplex</span>, <span class="ident">TensorChainComplex</span>};
+<span class="kw">use</span> <span class="ident">chain_complex</span>::{<span class="ident">FiniteChainComplex</span>, <span class="ident">ChainComplex</span>, <span class="ident">TensorChainComplex</span>, <span class="ident">ChainMap</span>};
 <span class="kw">use</span> <span class="ident">resolution</span>::<span class="ident">Resolution</span>;
 <span class="kw">use</span> <span class="ident">resolution_homomorphism</span>::<span class="ident">ResolutionHomomorphism</span>;
-<span class="kw">use</span> <span class="ident">yoneda</span>::<span class="ident">yoneda_representative_element</span>;
+<span class="kw">use</span> <span class="ident">yoneda</span>::{<span class="ident">yoneda_representative_element</span>, <span class="ident">yoneda_representative</span>};
 
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="ident">query</span>::<span class="kw-2">*</span>;
@@ -490,38 +491,40 @@
     <span class="ident">construct_from_json</span>(<span class="ident">json</span>, <span class="ident">config</span>.<span class="ident">algebra_name</span>.<span class="ident">clone</span>())
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_derived_resolution</span>(<span class="ident">json</span> : <span class="ident">Value</span>, <span class="ident">algebra_name</span> : <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraicObjectsBundle</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AlgebraAny</span>::<span class="ident">from_json</span>(<span class="kw-2">&amp;</span><span class="ident">json</span>, <span class="ident">algebra_name</span>)<span class="question-mark">?</span>);
-    <span class="kw">let</span> <span class="ident">unit_module</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from</span>(<span class="ident">FDModule</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="string">&quot;unit&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">BiVec</span>::<span class="ident">from_vec</span>(<span class="number">0</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]))));
-    <span class="kw">let</span> <span class="ident">unit_chain_complex</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteChainComplex</span>::<span class="ident">ccdz</span>(<span class="ident">unit_module</span>));
-    <span class="kw">let</span> <span class="ident">unit_resolution</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">unit_chain_complex</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>));
-
-    <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">prime</span>();
-    <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;s&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
-    <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;t&quot;</span>].<span class="ident">as_i64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">i32</span>;
-    <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;idx&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-
-    <span class="ident">unit_resolution</span>.<span class="ident">resolve_through_bidegree</span>(<span class="ident">s</span>, <span class="ident">t</span>);
-
-    <span class="kw">let</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">yoneda_representative_element</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">unit_resolution</span>.<span class="ident">inner</span>), <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">idx</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">FiniteChainComplex</span>::<span class="ident">from</span>(<span class="ident">yoneda</span>);
-    <span class="ident">yoneda</span>.<span class="ident">pop</span>();
-
-    <span class="kw">let</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">yoneda</span>);
-    <span class="prelude-val">Ok</span>(<span class="ident">AlgebraicObjectsBundle</span> {
-        <span class="ident">chain_complex</span> : <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">yoneda</span>),
-        <span class="ident">resolution</span> : <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">yoneda</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>))),
-    })
-}
-
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_from_json</span>(<span class="kw-2">mut</span> <span class="ident">json</span> : <span class="ident">Value</span>, <span class="ident">algebra_name</span> : <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraicObjectsBundle</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">if</span> <span class="ident">json</span>[<span class="string">&quot;type&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>() <span class="op">==</span> <span class="string">&quot;derived cofiber&quot;</span> {
-        <span class="kw">return</span> <span class="ident">construct_derived_resolution</span>(<span class="ident">json</span>, <span class="ident">algebra_name</span>);
-    }
     <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AlgebraAny</span>::<span class="ident">from_json</span>(<span class="kw-2">&amp;</span><span class="ident">json</span>, <span class="ident">algebra_name</span>)<span class="question-mark">?</span>);
     <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from_json</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">algebra</span>), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>)<span class="question-mark">?</span>);
-    <span class="kw">let</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteChainComplex</span>::<span class="ident">ccdz</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteChainComplex</span>::<span class="ident">ccdz</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+
+    <span class="kw">let</span> <span class="ident">cofiber</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">json</span>[<span class="string">&quot;cofiber&quot;</span>];
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">cofiber</span>.<span class="ident">is_null</span>() {
+        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">cofiber</span>[<span class="string">&quot;s&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">cofiber</span>[<span class="string">&quot;t&quot;</span>].<span class="ident">as_i64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">cofiber</span>[<span class="string">&quot;idx&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+
+        <span class="ident">resolution</span>.<span class="ident">resolve_through_bidegree</span>(<span class="ident">s</span>, <span class="ident">t</span> <span class="op">+</span> <span class="ident">module</span>.<span class="ident">max_degree</span>());
+
+        <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">FreeModuleHomomorphism</span>::<span class="ident">new</span>(<span class="ident">resolution</span>.<span class="ident">module</span>(<span class="ident">s</span>), <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>), <span class="ident">t</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_output</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">module</span>.<span class="ident">prime</span>(), <span class="ident">resolution</span>.<span class="ident">module</span>(<span class="ident">s</span>).<span class="ident">number_of_gens_in_degree</span>(<span class="ident">t</span>), <span class="number">1</span>);
+        <span class="ident">new_output</span>[<span class="ident">idx</span>].<span class="ident">set_entry</span>(<span class="number">0</span>, <span class="number">1</span>);
+
+        <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">lock</span>();
+        <span class="ident">map</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">new_output</span>, <span class="number">0</span>, <span class="number">0</span>);
+        <span class="ident">drop</span>(<span class="ident">lock</span>);
+        <span class="ident">map</span>.<span class="ident">extend_by_zero_safe</span>(<span class="ident">module</span>.<span class="ident">max_degree</span>() <span class="op">+</span> <span class="ident">t</span>);
+
+        <span class="kw">let</span> <span class="ident">cm</span> <span class="op">=</span> <span class="ident">ChainMap</span> {
+            <span class="ident">s_shift</span> : <span class="ident">s</span>,
+            <span class="ident">chain_maps</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">map</span>]
+        };
+        <span class="kw">let</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">yoneda_representative</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">inner</span>), <span class="ident">cm</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">FiniteChainComplex</span>::<span class="ident">from</span>(<span class="ident">yoneda</span>);
+        <span class="ident">yoneda</span>.<span class="ident">pop</span>();
+
+        <span class="ident">chain_complex</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">yoneda</span>);
+        <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">chain_complex</span>), <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+    }
 
     <span class="kw">let</span> <span class="ident">products_value</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">json</span>[<span class="string">&quot;products&quot;</span>];
     <span class="kw">if</span> <span class="op">!</span><span class="ident">products_value</span>.<span class="ident">is_null</span>() {
@@ -532,7 +535,7 @@
             <span class="kw">let</span> <span class="ident">class</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_value</span>(<span class="ident">prod</span>[<span class="string">&quot;class&quot;</span>].<span class="ident">take</span>()).<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">prod</span>[<span class="string">&quot;name&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
 
-            <span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">add_product</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">class</span>, <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>());
+            <span class="ident">resolution</span>.<span class="ident">add_product</span>(<span class="ident">hom_deg</span>, <span class="ident">int_deg</span>, <span class="ident">class</span>, <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>());
         }
     }
 
@@ -557,13 +560,12 @@
                     <span class="ident">map_data</span>[<span class="ident">r</span>].<span class="ident">set_entry</span>(<span class="ident">c</span>, <span class="ident">json_map_data</span>[<span class="ident">r</span>][<span class="ident">c</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>);
                 }
             }
-            <span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">add_self_map</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">map_data</span>);
+            <span class="ident">resolution</span>.<span class="ident">add_self_map</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="ident">map_data</span>);
         }
     }
-
     <span class="prelude-val">Ok</span>(<span class="ident">AlgebraicObjectsBundle</span> {
         <span class="ident">chain_complex</span>,
-        <span class="ident">resolution</span>
+        <span class="ident">resolution</span> : <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">resolution</span>))
     })
 }
 

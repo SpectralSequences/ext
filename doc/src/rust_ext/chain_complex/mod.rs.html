@@ -161,7 +161,6 @@
 <span id="143">143</span>
 <span id="144">144</span>
 <span id="145">145</span>
-<span id="146">146</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">hom_complex</span>;
 <span class="kw">mod</span> <span class="ident">finite_chain_complex</span>;
@@ -304,8 +303,7 @@
 
 
 <span class="doccomment">/// `chain_maps` is required to be non-empty</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ChainMap</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ChainComplex</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">CC1</span>::<span class="ident">Module</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC1</span><span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ChainMap</span><span class="op">&lt;</span><span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="ident">s_shift</span> : <span class="ident">u32</span>,
     <span class="kw">pub</span> <span class="ident">chain_maps</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>
 }
