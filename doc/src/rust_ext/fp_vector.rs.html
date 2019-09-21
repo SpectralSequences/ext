@@ -1463,6 +1463,15 @@
 <span id="1445">1445</span>
 <span id="1446">1446</span>
 <span id="1447">1447</span>
+<span id="1448">1448</span>
+<span id="1449">1449</span>
+<span id="1450">1450</span>
+<span id="1451">1451</span>
+<span id="1452">1452</span>
+<span id="1453">1453</span>
+<span id="1454">1454</span>
+<span id="1455">1455</span>
+<span id="1456">1456</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -1788,6 +1797,15 @@
             <span class="ident">target_limbs</span>[<span class="ident">min_target_limb</span> <span class="op">+</span> <span class="ident">i</span>] <span class="op">&amp;=</span> <span class="op">!</span><span class="ident">mask</span>;
             <span class="ident">target_limbs</span>[<span class="ident">min_target_limb</span> <span class="op">+</span> <span class="ident">i</span>] <span class="op">|=</span> <span class="ident">result</span>;
         }
+    }
+
+    <span class="kw">fn</span> <span class="ident">is_zero_pure</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">for</span> <span class="ident">limb</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">limbs</span>().<span class="ident">iter</span>() {
+            <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">limb</span> <span class="op">!=</span> <span class="number">0</span> {
+                <span class="kw">return</span> <span class="bool-val">false</span>;
+            }
+        }
+        <span class="bool-val">true</span>
     }
 
     <span class="kw">fn</span> <span class="ident">is_zero</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>{
