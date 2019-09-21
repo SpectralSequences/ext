@@ -218,7 +218,6 @@
 <span id="200">200</span>
 <span id="201">201</span>
 <span id="202">202</span>
-<span id="203">203</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -277,7 +276,6 @@
 
     <span class="kw">fn</span> <span class="ident">apply_to_basis_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">fn_degree</span> : <span class="ident">i32</span>, <span class="ident">fn_idx</span> : <span class="ident">usize</span>) {
         <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;fn_deg : {}, fn_idx : {}&quot;</span>, <span class="ident">fn_degree</span>, <span class="ident">fn_idx</span>);
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">target_module</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">target</span>();
         <span class="kw">for</span> <span class="ident">out_deg</span> <span class="kw">in</span> <span class="ident">target_module</span>.<span class="ident">min_degree</span>() ..= <span class="ident">target_module</span>.<span class="ident">max_degree</span>() {
             <span class="kw">let</span> <span class="ident">x_degree</span> <span class="op">=</span> <span class="ident">fn_degree</span> <span class="op">+</span> <span class="ident">out_deg</span>;
@@ -298,7 +296,7 @@
         <span class="kw">let</span> <span class="ident">qi_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">quasi_inverse</span>.<span class="ident">len</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">kernel_len</span>, <span class="ident">qi_len</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">kernel_len</span> ..= <span class="ident">degree</span> {
-            <span class="kw">let</span> (<span class="ident">kernel</span>, <span class="ident">qi</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">kernel_and_quasi_inverse</span>(<span class="ident">degree</span>);
+            <span class="kw">let</span> (<span class="ident">kernel</span>, <span class="ident">qi</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">kernel_and_quasi_inverse</span>(<span class="ident">i</span>);
             <span class="self">self</span>.<span class="ident">kernel</span>.<span class="ident">push</span>(<span class="ident">kernel</span>);
             <span class="self">self</span>.<span class="ident">quasi_inverse</span>.<span class="ident">push</span>(<span class="ident">qi</span>);
         }

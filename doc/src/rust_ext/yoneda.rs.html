@@ -530,7 +530,6 @@
 <span id="512">512</span>
 <span id="513">513</span>
 <span id="514">514</span>
-<span id="515">515</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>, <span class="ident">AdemAlgebra</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">AugmentedChainComplex</span>, <span class="ident">FiniteAugmentedChainComplex</span>, <span class="ident">BoundedChainComplex</span>, <span class="ident">ChainMap</span>};
@@ -657,7 +656,6 @@
       <span class="ident">CMF</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">CC</span>::<span class="ident">Module</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">CMM</span><span class="op">&gt;</span>,
       <span class="ident">F</span> : <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">CC</span>::<span class="ident">Module</span>, <span class="kw-2">&amp;</span><span class="ident">Subspace</span>, <span class="ident">i32</span>, <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">cc</span>.<span class="ident">prime</span>();
-    <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">cc</span>.<span class="ident">algebra</span>();
     <span class="kw">let</span> <span class="ident">target_cc</span> <span class="op">=</span> <span class="ident">cc</span>.<span class="ident">target</span>();
 
     <span class="kw">let</span> <span class="ident">t_shift</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">chain_maps</span>[<span class="number">0</span>].<span class="ident">degree_shift</span>();
@@ -738,14 +736,14 @@
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pivot_columns</span> : <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="ident">pivots</span>
                 .<span class="ident">into_iter</span>()
                 .<span class="ident">enumerate</span>()
-                .<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span>(<span class="ident">i</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">v</span> <span class="op">&gt;=</span> <span class="number">0</span>)
-                .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="ident">v</span>)<span class="op">|</span> {
+                .<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span>(<span class="ident">_i</span>, <span class="ident">v</span>)<span class="op">|</span> <span class="ident">v</span> <span class="op">&gt;=</span> <span class="number">0</span>)
+                .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="ident">_v</span>)<span class="op">|</span> {
                     (<span class="ident">strategy</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>, <span class="ident">subspace</span>, <span class="ident">t</span>, <span class="ident">i</span>), <span class="ident">i</span>)
                 })
                 .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
             <span class="ident">pivot_columns</span>.<span class="ident">sort</span>();
 
-            <span class="kw">let</span> <span class="ident">image_pivots</span> <span class="op">=</span> <span class="ident">images</span>.<span class="ident">find_pivots_permutation</span>(<span class="ident">pivot_columns</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">p</span>, <span class="ident">i</span>)<span class="op">|</span> <span class="kw-2">*</span><span class="ident">i</span>));
+            <span class="kw">let</span> <span class="ident">image_pivots</span> <span class="op">=</span> <span class="ident">images</span>.<span class="ident">find_pivots_permutation</span>(<span class="ident">pivot_columns</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">_p</span>, <span class="ident">i</span>)<span class="op">|</span> <span class="kw-2">*</span><span class="ident">i</span>));
 
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chosen_cols</span> : <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">HashSet</span>::<span class="ident">new</span>();
 

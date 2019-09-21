@@ -176,7 +176,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">set_cohomology_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">homological_degree</span> : <span class="ident">u32</span>, <span class="ident">internal_degree</span> : <span class="ident">i32</span>, <span class="ident">cohomology_basis</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) {
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">cohomology_basis</span>.<span class="ident">len</span>() ..= <span class="ident">homological_degree</span> <span class="kw">as</span> <span class="ident">usize</span> {
+        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="ident">cohomology_basis</span>.<span class="ident">len</span>() ..= <span class="ident">homological_degree</span> <span class="kw">as</span> <span class="ident">usize</span> {
             <span class="self">self</span>.<span class="ident">cohomology_basis</span>.<span class="ident">push</span>(<span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">min_degree</span>()));
         }
         <span class="macro">assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">cohomology_basis</span>[<span class="ident">homological_degree</span>].<span class="ident">len</span>() <span class="op">==</span> <span class="ident">internal_degree</span>);

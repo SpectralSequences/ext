@@ -435,7 +435,6 @@
 <span id="417">417</span>
 <span id="418">418</span>
 <span id="419">419</span>
-<span id="420">420</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -651,7 +650,7 @@
             <span class="ident">FiniteModule</span>::<span class="ident">FDModule</span>(<span class="ident">m</span>) <span class="op">=&gt;</span> {
                 <span class="ident">module_strings</span>.<span class="ident">push</span>(<span class="ident">m</span>.<span class="ident">to_minimal_json</span>());
             }
-            <span class="ident">FiniteModule</span>::<span class="ident">FPModule</span>(<span class="ident">m</span>) <span class="op">=&gt;</span> {
+            <span class="ident">FiniteModule</span>::<span class="ident">FPModule</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
                 <span class="comment">// This should never happen</span>
                 <span class="macro">panic</span><span class="macro">!</span>();
             }
@@ -777,7 +776,6 @@
                 <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">inner</span>.<span class="ident">module</span>(<span class="ident">s</span>);
                 <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">square</span>.<span class="ident">module</span>(<span class="ident">s</span> <span class="op">+</span> <span class="ident">i</span>);
 
-                <span class="kw">let</span> <span class="ident">dsource</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">s</span> <span class="op">&gt;</span> <span class="number">0</span> { <span class="ident">resolution</span>.<span class="ident">inner</span>.<span class="ident">module</span>(<span class="ident">s</span> <span class="op">-</span> <span class="number">1</span>) } <span class="kw">else</span> { <span class="ident">resolution</span>.<span class="ident">inner</span>.<span class="ident">module</span>(<span class="ident">s</span>) }; <span class="comment">// We don&#39;t need it for s = 0, but we want to have something</span>
                 <span class="kw">let</span> <span class="ident">dtarget</span> <span class="op">=</span> <span class="ident">square</span>.<span class="ident">module</span>(<span class="ident">s</span> <span class="op">+</span> <span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>);
 
                 <span class="kw">let</span> <span class="ident">d_res</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">inner</span>.<span class="ident">differential</span>(<span class="ident">s</span>);
