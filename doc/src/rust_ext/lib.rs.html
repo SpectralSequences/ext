@@ -435,6 +435,36 @@
 <span id="417">417</span>
 <span id="418">418</span>
 <span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -821,7 +851,37 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_test</span>() { }
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_test</span>() {
+    <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;type&quot; : &quot;finite dimensional module&quot;,&quot;name&quot;: &quot;$S_2$&quot;, &quot;file_name&quot;: &quot;S_2&quot;, &quot;p&quot;: 2, &quot;generic&quot;: false, &quot;gens&quot;: {&quot;x0&quot;: 0}, &quot;adem_actions&quot;: []}&quot;#</span>;
+    <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">k</span>).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct_from_json</span>(<span class="ident">k</span>, <span class="string">&quot;adem&quot;</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">2</span>;
+
+    <span class="kw">let</span> <span class="ident">x</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="number">30</span>;
+    <span class="kw">let</span> <span class="ident">s</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="number">6</span>;
+    <span class="kw">let</span> <span class="ident">idx</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
+
+    <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">x</span>;
+    <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
+    <span class="ident">resolution</span>.<span class="ident">resolve_through_bidegree</span>(<span class="ident">s</span>, <span class="ident">t</span>);
+
+    <span class="kw">let</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">yoneda_representative_element</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">inner</span>), <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">idx</span>));
+    <span class="kw">let</span> <span class="ident">square</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">TensorChainComplex</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">yoneda</span>), <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">yoneda</span>)));
+
+    <span class="ident">square</span>.<span class="ident">compute_through_bidegree</span>(<span class="number">6</span>, <span class="number">48</span>);
+    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Starting test&quot;</span>);
+    <span class="kw">for</span> <span class="ident">deg</span> <span class="kw">in</span> <span class="number">0</span> ..= <span class="number">30</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">square</span>.<span class="ident">module</span>(<span class="number">6</span>).<span class="ident">dimension</span>(<span class="ident">deg</span> <span class="op">+</span> <span class="number">18</span>));
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">square</span>.<span class="ident">module</span>(<span class="number">6</span>).<span class="ident">dimension</span>(<span class="ident">deg</span>) {
+            <span class="ident">square</span>.<span class="ident">module</span>(<span class="number">6</span>).<span class="ident">act_on_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="number">1</span>, <span class="number">18</span>, <span class="number">2</span>, <span class="ident">deg</span>, <span class="ident">i</span>);
+        }
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">square</span>.<span class="ident">module</span>(<span class="number">5</span>).<span class="ident">dimension</span>(<span class="ident">deg</span> <span class="op">+</span> <span class="number">18</span>));
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">square</span>.<span class="ident">module</span>(<span class="number">5</span>).<span class="ident">dimension</span>(<span class="ident">deg</span>) {
+            <span class="ident">square</span>.<span class="ident">module</span>(<span class="number">5</span>).<span class="ident">act_on_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="number">1</span>, <span class="number">18</span>, <span class="number">3</span>, <span class="ident">deg</span>, <span class="ident">i</span>);
+        }
+    }
+}
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_module_from_file</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="prelude-val">None</span>;
