@@ -280,6 +280,8 @@
 <span id="262">262</span>
 <span id="263">263</span>
 <span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="ident">once</span>::<span class="ident">OnceBiVec</span>;
@@ -323,6 +325,8 @@
         <span class="kw">let</span> <span class="ident">source_offset</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">offsets</span>[<span class="ident">mod_degree</span>];
         <span class="kw">let</span> <span class="ident">target_offset</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">offsets</span>[<span class="ident">mod_degree</span> <span class="op">+</span> <span class="ident">op_degree</span>];
 
+        <span class="kw">let</span> <span class="ident">borrow_output</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">borrow_output</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">borrow_output</span>();
+
         <span class="kw">for</span> (<span class="ident">op_deg_l</span>, <span class="ident">op_idx_l</span>, <span class="ident">op_deg_r</span>, <span class="ident">op_idx_r</span>) <span class="kw">in</span> <span class="ident">coproduct</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">idx</span> <span class="op">=</span> <span class="number">0</span>;
             <span class="kw">for</span> <span class="ident">left_deg</span> <span class="kw">in</span> <span class="ident">source_offset</span>.<span class="ident">min_degree</span>() .. <span class="ident">source_offset</span>.<span class="ident">len</span>() {
@@ -340,7 +344,7 @@
                         <span class="kw">continue</span>;
                     }
 
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">borrow_output</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">borrow_output</span>() {
+                <span class="kw">if</span> <span class="ident">borrow_output</span> {
                     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">left_source_dim</span> {
                         <span class="kw">let</span> <span class="ident">left_result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">act_on_basis_borrow</span>(<span class="ident">op_deg_l</span>, <span class="ident">op_idx_l</span>, <span class="ident">left_deg</span>, <span class="ident">i</span>);
 
