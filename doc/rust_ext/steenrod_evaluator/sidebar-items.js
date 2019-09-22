@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["evaluate_algebra",""],["evaluate_algebra_tree",""],["evaluate_algebra_tree_helper",""],["evaluate_basis_element",""],["evaluate_module",""],["evaluate_module_basis_element",""],["evaluate_module_tree",""],["evaluate_module_tree_helper",""]],"struct":[["DegreeError",""],["UnknownBasisElementError",""]]});
