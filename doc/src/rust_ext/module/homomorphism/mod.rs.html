@@ -173,7 +173,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">truncated_homomorphism</span>::{<span class="ident">TruncatedHomomorphism</span>, <span class="ident">TruncatedHomomorphismSource</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">quotient_homomorphism</span>::{<span class="ident">QuotientHomomorphism</span>, <span class="ident">QuotientHomomorphismSource</span>};
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ModuleHomomorphism</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ModuleHomomorphism</span> : <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> {
     <span class="kw">type</span> <span class="ident">Source</span> : <span class="ident">Module</span>;
     <span class="kw">type</span> <span class="ident">Target</span> : <span class="ident">Module</span>;
     <span class="kw">const</span> <span class="ident">CUSTOM_QI</span> : <span class="ident">bool</span> <span class="op">=</span> <span class="bool-val">false</span>;

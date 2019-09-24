@@ -1226,27 +1226,6 @@
 <span id="1208">1208</span>
 <span id="1209">1209</span>
 <span id="1210">1210</span>
-<span id="1211">1211</span>
-<span id="1212">1212</span>
-<span id="1213">1213</span>
-<span id="1214">1214</span>
-<span id="1215">1215</span>
-<span id="1216">1216</span>
-<span id="1217">1217</span>
-<span id="1218">1218</span>
-<span id="1219">1219</span>
-<span id="1220">1220</span>
-<span id="1221">1221</span>
-<span id="1222">1222</span>
-<span id="1223">1223</span>
-<span id="1224">1224</span>
-<span id="1225">1225</span>
-<span id="1226">1226</span>
-<span id="1227">1227</span>
-<span id="1228">1228</span>
-<span id="1229">1229</span>
-<span id="1230">1230</span>
-<span id="1231">1231</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">matrix</span>::{<span class="ident">Subspace</span>, <span class="ident">Matrix</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1257,11 +1236,6 @@
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">actions</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Sender</span>;
-
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">threadpool</span>::<span class="ident">ThreadPool</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
-<span class="kw">const</span> <span class="ident">NUM_THREAD</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="number">2</span>;
 
 <span class="kw">const</span> <span class="ident">MIN_PAGE</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INFINITY</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">i32</span>::<span class="ident">MAX</span>;
@@ -1462,8 +1436,6 @@
     <span class="ident">min_x</span> : <span class="ident">i32</span>,
     <span class="ident">min_y</span> : <span class="ident">i32</span>,
 
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">threadpool</span> : <span class="ident">ThreadPool</span>,
     <span class="kw">pub</span> <span class="ident">block_refresh</span> : <span class="ident">u32</span>,
     <span class="ident">sender</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>,
     <span class="ident">page_list</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
@@ -1490,8 +1462,6 @@
             <span class="ident">sender</span>,
             <span class="ident">block_refresh</span> : <span class="number">0</span>,
 
-            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
-            <span class="ident">threadpool</span> : <span class="ident">ThreadPool</span>::<span class="ident">new</span>(<span class="ident">NUM_THREAD</span>),
             <span class="ident">page_list</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="number">2</span>],
             <span class="ident">product_name_to_index</span> : <span class="ident">HashMap</span>::<span class="ident">new</span>(),
             <span class="ident">products</span> : <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">Vec</span>::<span class="ident">new</span>())),
@@ -1548,11 +1518,9 @@
         }
         <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
             <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
-                <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">true</span>);
+                <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
             }
         }
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
-        <span class="self">self</span>.<span class="ident">threadpool</span>.<span class="ident">join</span>();
     }
 
     <span class="doccomment">/// Adds a page to the page list, which is the list of pages where something changes from the</span>
@@ -1755,7 +1723,7 @@
     }
 
     <span class="doccomment">/// Computes products whose source is at (x, y).</span>
-    <span class="kw">fn</span> <span class="ident">compute_edges</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>, <span class="ident">parallel</span> : <span class="ident">bool</span>) {
+    <span class="kw">fn</span> <span class="ident">compute_edges</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>) {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">block_refresh</span> <span class="op">&gt;</span> <span class="number">0</span> { <span class="kw">return</span>; }
 
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">x</span>, <span class="ident">y</span>) {
@@ -1773,17 +1741,7 @@
             <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">p</span>;
             <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">name</span>;
 
-            <span class="kw">if</span> <span class="ident">parallel</span> {
-                <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
-                <span class="self">self</span>.<span class="ident">threadpool</span>.<span class="ident">execute</span>(<span class="kw">move</span> <span class="op">||</span> {
-                    <span class="ident">Sseq</span>::<span class="ident">compute_edges_inner</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">p</span>, <span class="ident">name</span>, <span class="ident">sender</span>, <span class="ident">page_classes</span>, <span class="ident">products</span>, <span class="ident">zeros</span>);
-                });
-
-                <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>))]</span>
-                <span class="ident">Sseq</span>::<span class="ident">compute_edges_inner</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">p</span>, <span class="ident">name</span>, <span class="ident">sender</span>, <span class="ident">page_classes</span>, <span class="ident">products</span>, <span class="ident">zeros</span>);
-            } <span class="kw">else</span> {
-                <span class="ident">Sseq</span>::<span class="ident">compute_edges_inner</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">p</span>, <span class="ident">name</span>, <span class="ident">sender</span>, <span class="ident">page_classes</span>, <span class="ident">products</span>, <span class="ident">zeros</span>);
-            }
+            <span class="ident">Sseq</span>::<span class="ident">compute_edges_inner</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">p</span>, <span class="ident">name</span>, <span class="ident">sender</span>, <span class="ident">page_classes</span>, <span class="ident">products</span>, <span class="ident">zeros</span>);
         }
     }
 
@@ -1959,9 +1917,9 @@
         }
 
         <span class="kw">if</span> <span class="ident">refresh_edge</span> {
-            <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">false</span>);
+            <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
             <span class="kw">for</span> <span class="ident">prod</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">products</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">iter</span>() {
-                <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span> <span class="op">-</span> <span class="ident">prod</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">prod</span>.<span class="ident">y</span>, <span class="bool-val">false</span>);
+                <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span> <span class="op">-</span> <span class="ident">prod</span>.<span class="ident">x</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">prod</span>.<span class="ident">y</span>);
             }
         }
     }
@@ -2363,7 +2321,7 @@
                 }
             }
         }
-        <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">false</span>);
+        <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
         <span class="self">self</span>.<span class="ident">send_class_data</span>(<span class="ident">x</span> <span class="op">+</span> <span class="ident">mult_x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">mult_y</span>);
     }
 }
