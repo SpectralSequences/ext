@@ -350,12 +350,6 @@
 <span id="332">332</span>
 <span id="333">333</span>
 <span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">actions</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">sseq</span>::<span class="ident">Sseq</span>;
@@ -363,9 +357,10 @@
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">Config</span>;
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">AlgebraicObjectsBundle</span>;
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">CCC</span>;
-<span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">module</span>::<span class="ident">Module</span>;
+<span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FiniteModule</span>, <span class="ident">FDModule</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">resolution</span>::<span class="ident">Resolution</span>;
-<span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">chain_complex</span>::<span class="ident">ChainComplex</span>;
+<span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">chain_complex</span>::{<span class="ident">FiniteChainComplex</span>, <span class="ident">ChainComplex</span>};
+<span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">RwLock</span>, <span class="ident">Arc</span>};
@@ -390,7 +385,8 @@
     <span class="ident">bucket</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TokenBucket</span><span class="op">&gt;</span>,
     <span class="ident">sender</span> : <span class="ident">Sender</span>,
     <span class="ident">is_unit</span> : <span class="ident">bool</span>,
-    <span class="ident">resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>
+    <span class="ident">resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">unit_resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>
 }
 
 <span class="kw">impl</span> <span class="ident">ResolutionManager</span> {
@@ -405,6 +401,7 @@
 
             <span class="ident">sender</span> : <span class="ident">sender</span>,
             <span class="ident">resolution</span> : <span class="prelude-val">None</span>,
+            <span class="ident">unit_resolution</span> : <span class="prelude-val">None</span>,
             <span class="ident">is_unit</span> : <span class="bool-val">false</span>,
         }
     }
@@ -423,21 +420,13 @@
             <span class="ident">Action</span>::<span class="ident">Resolve</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">resolve</span>(<span class="ident">a</span>, <span class="ident">msg</span>.<span class="ident">sseq</span>)<span class="question-mark">?</span>,
             <span class="ident">Action</span>::<span class="ident">BlockRefresh</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> {
-                <span class="comment">// Find a better way to make this work.</span>
-                <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">sseq</span> {
-                    <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> {
-                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">resolution</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span> {
-                            <span class="ident">ret</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_resolution</span>(<span class="ident">resolution</span>);
-                        }
-                    },
-                    <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> {
-                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">main_resolution</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span> {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">resolution</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">main_resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">unit_resolution</span> {
-                                <span class="ident">ret</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_resolution</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>());
-                            }
-                        }
-                    }
-                }
+                <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">sseq</span> {
+                    <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span>,
+                    <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span>
+                };
+                <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
+
+                <span class="ident">ret</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_resolution</span>(<span class="ident">resolution</span>);
             }
         };
 
@@ -487,36 +476,49 @@
 
     <span class="kw">fn</span> <span class="ident">process_bundle</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">bundle</span> : <span class="ident">AlgebraicObjectsBundle</span>) {
         <span class="self">self</span>.<span class="ident">is_unit</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">chain_complex</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">bundle</span>.<span class="ident">chain_complex</span>.<span class="ident">module</span>(<span class="number">0</span>).<span class="ident">is_unit</span>();
+
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_unit</span> {
             <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">set_unit_resolution</span>(<span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">bundle</span>.<span class="ident">resolution</span>));
+            <span class="self">self</span>.<span class="ident">unit_resolution</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">bundle</span>.<span class="ident">resolution</span>));
         } <span class="kw">else</span> {
-            <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">construct_unit_resolution</span>();
+            <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">algebra</span>();
+
+            <span class="kw">let</span> <span class="ident">unit_module</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from</span>(<span class="ident">FDModule</span>::<span class="ident">new</span>(<span class="ident">algebra</span>, <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;unit&quot;</span>), <span class="ident">BiVec</span>::<span class="ident">from_vec</span>(<span class="number">0</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]))));
+            <span class="kw">let</span> <span class="ident">ccdz</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteChainComplex</span>::<span class="ident">ccdz</span>(<span class="ident">unit_module</span>));
+            <span class="kw">let</span> <span class="ident">unit_resolution</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">ccdz</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
+
+            <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">set_unit_resolution</span>(<span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">unit_resolution</span>));
+            <span class="self">self</span>.<span class="ident">unit_resolution</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">unit_resolution</span>));
         }
         <span class="self">self</span>.<span class="ident">resolution</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">bundle</span>.<span class="ident">resolution</span>);
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">resolution</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span> {
-            <span class="self">self</span>.<span class="ident">setup_callback</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>(), <span class="ident">SseqChoice</span>::<span class="ident">Main</span>);
-            <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_unit</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">unit_res</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">unit_resolution</span> {
-                    <span class="self">self</span>.<span class="ident">setup_callback</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">unit_res</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">write</span>().<span class="ident">unwrap</span>(), <span class="ident">SseqChoice</span>::<span class="ident">Unit</span>);
+        <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();
+        <span class="self">self</span>.<span class="ident">setup_callback</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">resolution</span>, <span class="ident">SseqChoice</span>::<span class="ident">Main</span>);
 
-                }
-            }
+        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_unit</span> {
+            <span class="kw">let</span> <span class="ident">unit_resolution</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">unit_resolution</span> <span class="op">=</span> <span class="ident">unit_resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();
+            <span class="self">self</span>.<span class="ident">setup_callback</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">unit_resolution</span>, <span class="ident">SseqChoice</span>::<span class="ident">Unit</span>);
         }
-   }
+    }
 
     <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">action</span> : <span class="ident">Resolve</span>, <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
-        <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">sseq</span> {
-            <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> <span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">min_degree</span>(),
-            <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> <span class="number">0</span>
+        <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">sseq</span> {
+            <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span>,
+            <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span>
         };
+
+        <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+
+        <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">min_degree</span>();
 
         <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">Message</span> {
             <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
             <span class="ident">sseq</span>,
             <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">Resolving</span> {
-                <span class="ident">p</span> : <span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">prime</span>(),
+                <span class="ident">p</span> : <span class="ident">resolution</span>.<span class="ident">prime</span>(),
                 <span class="ident">min_degree</span>,
                 <span class="ident">max_degree</span> : <span class="ident">action</span>.<span class="ident">max_degree</span>,
                 <span class="ident">is_unit</span> : <span class="self">self</span>.<span class="ident">is_unit</span>
@@ -525,24 +527,10 @@
         <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>;
 
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>))]</span>
-        <span class="kw">match</span> <span class="ident">sseq</span> {
-            <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> <span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">resolve_through_degree</span>(<span class="ident">action</span>.<span class="ident">max_degree</span>),
-            <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">unit_resolution</span> {
-                    <span class="ident">r</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">resolve_through_degree</span>(<span class="ident">action</span>.<span class="ident">max_degree</span>)
-                }
-            }
-        };
+        <span class="ident">resolution</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">action</span>.<span class="ident">max_degree</span>);
 
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
-        <span class="kw">match</span> <span class="ident">sseq</span> {
-            <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> <span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">resolve_through_degree_concurrent</span>(<span class="ident">action</span>.<span class="ident">max_degree</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bucket</span>),
-            <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">unit_resolution</span> {
-                    <span class="ident">r</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">resolve_through_degree_concurrent</span>(<span class="ident">action</span>.<span class="ident">max_degree</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bucket</span>)
-                }
-            }
-        };
+        <span class="ident">resolution</span>.<span class="ident">resolve_through_degree_concurrent</span>(<span class="ident">action</span>.<span class="ident">max_degree</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bucket</span>);
 
         <span class="prelude-val">Ok</span>(())
     }

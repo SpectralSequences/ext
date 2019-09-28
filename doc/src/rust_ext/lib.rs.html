@@ -616,6 +616,31 @@
 <span id="598">598</span>
 <span id="599">599</span>
 <span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -647,9 +672,12 @@
 
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="ident">query</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">saveload</span>::{<span class="ident">Save</span>, <span class="ident">Load</span>};
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="ident">BufReader</span>, <span class="ident">BufWriter</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::<span class="ident">Instant</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
@@ -880,7 +908,20 @@
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;type&quot; : &quot;finite dimensional module&quot;,&quot;name&quot;: &quot;$S_2$&quot;, &quot;file_name&quot;: &quot;S_2&quot;, &quot;p&quot;: 2, &quot;generic&quot;: false, &quot;gens&quot;: {&quot;x0&quot;: 0}, &quot;adem_actions&quot;: []}&quot;#</span>;
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">k</span>).<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct_from_json</span>(<span class="ident">k</span>, <span class="string">&quot;adem&quot;</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>();
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+
+    <span class="kw">let</span> <span class="ident">saved_resolution</span>;
+
+    <span class="kw">if</span> <span class="ident">Path</span>::<span class="ident">new</span>(<span class="string">&quot;resolution.save&quot;</span>).<span class="ident">exists</span>() {
+        <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;Loading saved resolution: &quot;</span>);
+        <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
+        <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">File</span>::<span class="ident">open</span>(<span class="string">&quot;resolution.save&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">f</span>);
+        <span class="ident">saved_resolution</span> <span class="op">=</span> <span class="ident">Resolution</span>::<span class="ident">load</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">f</span>, <span class="kw-2">&amp;</span><span class="ident">bundle</span>.<span class="ident">chain_complex</span>)<span class="question-mark">?</span>;
+        <span class="ident">resolution</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">saved_resolution</span>;
+        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">start</span>.<span class="ident">elapsed</span>());
+    }
+
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">2</span>;
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
     <span class="kw">let</span> <span class="ident">num_threads</span> <span class="op">=</span> <span class="ident">query_with_default_no_default_indicated</span>(<span class="string">&quot;Number of threads&quot;</span>, <span class="number">2</span>, <span class="op">|</span><span class="ident">x</span> : <span class="ident">usize</span><span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">x</span>));
@@ -903,6 +944,14 @@
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>))]</span>
         <span class="ident">resolution</span>.<span class="ident">resolve_through_bidegree</span>(<span class="number">2</span> <span class="op">*</span> <span class="ident">s</span>, <span class="number">2</span> <span class="op">*</span> <span class="ident">t</span>);
 
+        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">start</span>.<span class="ident">elapsed</span>());
+
+        <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;Saving resolution: &quot;</span>);
+        <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
+        <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">File</span>::<span class="ident">create</span>(<span class="string">&quot;resolution.save&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">BufWriter</span>::<span class="ident">new</span>(<span class="ident">file</span>);
+        <span class="ident">resolution</span>.<span class="ident">save</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">file</span>)<span class="question-mark">?</span>;
+        <span class="ident">drop</span>(<span class="ident">file</span>);
         <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">start</span>.<span class="ident">elapsed</span>());
 
         <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;Computing Yoneda representative: &quot;</span>);
@@ -1113,7 +1162,7 @@
 
                 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
                 {
-                    <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">thread</span>::<span class="ident">Builder</span>::<span class="ident">new</span>().<span class="ident">name</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Delta_{}, s = {}&quot;</span>, <span class="ident">i</span>, <span class="ident">s</span>)).<span class="ident">spawn</span>(<span class="ident">fun</span>);
+                    <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">thread</span>::<span class="ident">Builder</span>::<span class="ident">new</span>().<span class="ident">name</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;D_{}, s = {}&quot;</span>, <span class="ident">i</span>, <span class="ident">s</span>)).<span class="ident">spawn</span>(<span class="ident">fun</span>);
                     <span class="ident">last_receiver</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">new_receiver</span>);
                     <span class="ident">handles_inner</span>.<span class="ident">push</span>(<span class="ident">handle</span>.<span class="ident">unwrap</span>());
                 }
@@ -1147,6 +1196,7 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unreachable_code</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_test</span>() {
     <span class="kw">let</span> <span class="ident">calculator</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">steenrod_evaluator</span>::<span class="ident">SteenrodCalculator</span>::<span class="ident">new</span>(<span class="number">2</span>);
     <span class="ident">calculator</span>.<span class="ident">compute_basis</span>(<span class="number">20</span>);
