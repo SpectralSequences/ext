@@ -360,7 +360,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">compute_kernels_and_quasi_inverses_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) {
-        <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>();
+        <span class="kw">let</span> <span class="ident">_lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>();
         <span class="kw">let</span> <span class="ident">kernel_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">kernel</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">qi_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">quasi_inverse</span>.<span class="ident">len</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">kernel_len</span>, <span class="ident">qi_len</span>);

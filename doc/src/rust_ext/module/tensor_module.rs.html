@@ -282,6 +282,7 @@
 <span id="264">264</span>
 <span id="265">265</span>
 <span id="266">266</span>
+<span id="267">267</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="ident">once</span>::<span class="ident">OnceBiVec</span>;
@@ -478,7 +479,8 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">basis_element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span> { <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;&quot;</span>) }
+    <span class="doccomment">/// TODO: Implement</span>
+    <span class="kw">fn</span> <span class="ident">basis_element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>, <span class="ident">_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span> { <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;&quot;</span>) }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span> : <span class="ident">BoundedModule</span>, <span class="ident">N</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span> <span class="ident">BoundedModule</span> <span class="kw">for</span> <span class="ident">TensorModule</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">N</span><span class="op">&gt;</span> {

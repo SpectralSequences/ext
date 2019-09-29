@@ -637,15 +637,7 @@
 <span id="619">619</span>
 <span id="620">620</span>
 <span id="621">621</span>
-<span id="622">622</span>
-<span id="623">623</span>
-<span id="624">624</span>
-<span id="625">625</span>
-<span id="626">626</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
-
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">combinatorics</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">fp_vector</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">matrix</span>;
@@ -1013,7 +1005,6 @@
         <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">start</span>.<span class="ident">elapsed</span>());
 
         <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Computing Steenrod operations: &quot;</span>);
-        <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">delta</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>);
 
@@ -1040,7 +1031,6 @@
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">handles</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">JoinHandle</span><span class="op">&lt;</span>()<span class="op">&gt;&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
 
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
         <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
 
         <span class="comment">// We use the formula d Δ_i + Δ_i d = Δ_{i-1} + τΔ_{i-1}</span>
@@ -1056,6 +1046,7 @@
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_receiver</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">mpsc</span>::<span class="ident">Receiver</span><span class="op">&lt;</span>()<span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 
+            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
             <span class="kw">let</span> <span class="ident">top_s</span> <span class="op">=</span> <span class="number">2</span> <span class="op">*</span> <span class="ident">s</span> <span class="op">-</span> <span class="ident">i</span>;
 
             <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> ..= <span class="number">2</span> <span class="op">*</span> <span class="ident">s</span> <span class="op">-</span> <span class="ident">i</span> {
@@ -1216,7 +1207,6 @@
     <span class="kw">let</span> <span class="ident">idx</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
 
     <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">x</span>;
-    <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
     <span class="ident">resolution</span>.<span class="ident">resolve_through_bidegree</span>(<span class="ident">s</span>, <span class="ident">t</span>);
 
     <span class="kw">let</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">yoneda_representative_element</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">inner</span>), <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">idx</span>));

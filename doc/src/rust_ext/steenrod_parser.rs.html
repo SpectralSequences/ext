@@ -400,7 +400,7 @@
     <span class="ident">fold_many0</span>(
         <span class="ident">pair</span>(<span class="ident">alt</span>((<span class="ident">char</span>(<span class="string">&#39;*&#39;</span>), <span class="ident">char</span>(<span class="string">&#39; &#39;</span>))), <span class="ident">algebra_factor</span>),
         <span class="ident">first_factor</span>,
-        <span class="op">|</span><span class="ident">acc</span>, (<span class="ident">op</span>, <span class="ident">val</span>): (<span class="ident">char</span>, <span class="ident">AlgebraParseNode</span>)<span class="op">|</span> {
+        <span class="op">|</span><span class="ident">acc</span>, (<span class="ident">_op</span>, <span class="ident">val</span>): (<span class="ident">char</span>, <span class="ident">AlgebraParseNode</span>)<span class="op">|</span> {
             <span class="ident">AlgebraParseNode</span>::<span class="ident">Product</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">acc</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">val</span>))
         }
     )(<span class="ident">i</span>)
@@ -412,7 +412,7 @@
   <span class="ident">fold_many0</span>(
     <span class="ident">pair</span>(<span class="ident">alt</span>((<span class="ident">char</span>(<span class="string">&#39;+&#39;</span>), <span class="ident">char</span>(<span class="string">&#39;-&#39;</span>))), <span class="ident">algebra_term</span>),
     <span class="ident">init</span>,
-    <span class="op">|</span><span class="ident">acc</span>, (<span class="ident">op</span>, <span class="ident">val</span>): (<span class="ident">char</span>, <span class="ident">AlgebraParseNode</span>)<span class="op">|</span> {
+    <span class="op">|</span><span class="ident">acc</span>, (<span class="ident">_op</span>, <span class="ident">val</span>): (<span class="ident">char</span>, <span class="ident">AlgebraParseNode</span>)<span class="op">|</span> {
         <span class="ident">AlgebraParseNode</span>::<span class="ident">Sum</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">acc</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">val</span>))
     }
   )(<span class="ident">i</span>)
@@ -465,7 +465,7 @@
   <span class="ident">fold_many0</span>(
     <span class="ident">pair</span>(<span class="ident">alt</span>((<span class="ident">char</span>(<span class="string">&#39;+&#39;</span>), <span class="ident">char</span>(<span class="string">&#39;-&#39;</span>))), <span class="ident">module_term</span>),
     <span class="ident">init</span>,
-    <span class="op">|</span><span class="ident">acc</span>, (<span class="ident">op</span>, <span class="ident">val</span>): (<span class="ident">char</span>, <span class="ident">ModuleParseNode</span>)<span class="op">|</span> {
+    <span class="op">|</span><span class="ident">acc</span>, (<span class="ident">_op</span>, <span class="ident">val</span>): (<span class="ident">char</span>, <span class="ident">ModuleParseNode</span>)<span class="op">|</span> {
         <span class="ident">ModuleParseNode</span>::<span class="ident">Sum</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">acc</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">val</span>))
     }
   )(<span class="ident">i</span>)

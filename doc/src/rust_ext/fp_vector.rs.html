@@ -1669,8 +1669,6 @@
 <span id="1651">1651</span>
 <span id="1652">1652</span>
 <span id="1653">1653</span>
-<span id="1654">1654</span>
-<span id="1655">1655</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -2593,8 +2591,6 @@
         <span class="kw">let</span> <span class="ident">bit_length</span> <span class="op">=</span> <span class="ident">bit_length</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">cur_limb</span> <span class="op">=</span> <span class="ident">limbs</span>[<span class="ident">pair</span>.<span class="ident">limb</span>] <span class="op">&gt;&gt;</span> <span class="ident">pair</span>.<span class="ident">bit_index</span>;
 
-        <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">vec</span>.<span class="ident">offset</span>();
-
         <span class="kw">let</span> <span class="ident">entries_per_64_bits</span> <span class="op">=</span> <span class="ident">entries_per_64_bits</span>(<span class="ident">p</span>);
         <span class="ident">FpVectorIterator</span> {
             <span class="ident">limbs</span>,
@@ -2806,7 +2802,7 @@
     <span class="kw">fn</span> <span class="ident">random_vector</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">dimension</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">dimension</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand</span>::<span class="ident">thread_rng</span>();
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">dimension</span> {
+        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">dimension</span> {
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">rng</span>.<span class="ident">gen</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>() <span class="op">%</span> <span class="ident">p</span>);
         }
         <span class="kw">return</span> <span class="ident">result</span>;
@@ -2823,7 +2819,7 @@
             <span class="ident">v</span>.<span class="ident">pack</span>(<span class="kw-2">&amp;</span><span class="ident">v_arr</span>);
             <span class="ident">v</span>.<span class="ident">reduce_limbs</span>(<span class="ident">v</span>.<span class="ident">min_limb</span>(), <span class="ident">v</span>.<span class="ident">max_limb</span>());
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="kw-2">*</span><span class="ident">dim</span>);
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">dim</span> {
+            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">dim</span> {
                 <span class="ident">result</span>.<span class="ident">push</span>(<span class="number">0</span>);
             }
             <span class="ident">v</span>.<span class="ident">unpack</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
@@ -2847,7 +2843,7 @@
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v_arr</span> <span class="op">=</span> <span class="ident">random_vector</span>(<span class="ident">p</span>, <span class="kw-2">*</span><span class="ident">dim</span>);
             <span class="kw">let</span> <span class="ident">w_arr</span> <span class="op">=</span> <span class="ident">random_vector</span>(<span class="ident">p</span>, <span class="kw-2">*</span><span class="ident">dim</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="kw-2">*</span><span class="ident">dim</span>);
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">dim</span> {
+            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">dim</span> {
                 <span class="ident">result</span>.<span class="ident">push</span>(<span class="number">0</span>);
             }
             <span class="ident">v</span>.<span class="ident">pack</span>(<span class="kw-2">&amp;</span><span class="ident">v_arr</span>);
@@ -2877,7 +2873,7 @@
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="kw-2">*</span><span class="ident">dim</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand</span>::<span class="ident">thread_rng</span>();
             <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>() <span class="op">%</span> <span class="ident">p</span>;
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">dim</span> {
+            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">dim</span> {
                 <span class="ident">result</span>.<span class="ident">push</span>(<span class="number">0</span>);
             }
             <span class="ident">v</span>.<span class="ident">pack</span>(<span class="kw-2">&amp;</span><span class="ident">v_arr</span>);
@@ -3082,7 +3078,7 @@
             <span class="kw">let</span> <span class="ident">v_arr</span> <span class="op">=</span> <span class="ident">random_vector</span>(<span class="ident">p</span>, <span class="kw-2">*</span><span class="ident">dim</span>);
             <span class="kw">let</span> <span class="ident">w_arr</span> <span class="op">=</span> <span class="ident">random_vector</span>(<span class="ident">p</span>, <span class="kw-2">*</span><span class="ident">dim</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="kw-2">*</span><span class="ident">dim</span>);
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">dim</span> {
+            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="kw-2">*</span><span class="ident">dim</span> {
                 <span class="ident">result</span>.<span class="ident">push</span>(<span class="number">0</span>);
             }
             <span class="ident">v</span>.<span class="ident">pack</span>(<span class="kw-2">&amp;</span><span class="ident">v_arr</span>);
