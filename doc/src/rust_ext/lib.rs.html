@@ -641,6 +641,7 @@
 <span id="623">623</span>
 <span id="624">624</span>
 <span id="625">625</span>
+<span id="626">626</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
@@ -1197,16 +1198,16 @@
 }
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unreachable_code</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_test</span>() {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_test</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">calculator</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">steenrod_evaluator</span>::<span class="ident">SteenrodCalculator</span>::<span class="ident">new</span>(<span class="number">2</span>);
     <span class="ident">calculator</span>.<span class="ident">compute_basis</span>(<span class="number">20</span>);
     <span class="ident">calculator</span>.<span class="ident">evaluate_adem_to_string</span>(<span class="string">&quot;P19&quot;</span>).<span class="ident">unwrap</span>();
     <span class="ident">calculator</span>.<span class="ident">evaluate_adem_to_string</span>(<span class="string">&quot;Q4&quot;</span>).<span class="ident">unwrap</span>();
-    <span class="kw">return</span>;
+    <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
 
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;type&quot; : &quot;finite dimensional module&quot;,&quot;name&quot;: &quot;$S_2$&quot;, &quot;file_name&quot;: &quot;S_2&quot;, &quot;p&quot;: 2, &quot;generic&quot;: false, &quot;gens&quot;: {&quot;x0&quot;: 0}, &quot;adem_actions&quot;: []}&quot;#</span>;
-    <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">k</span>).<span class="ident">unwrap</span>();
-    <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct_from_json</span>(<span class="ident">k</span>, <span class="string">&quot;adem&quot;</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">k</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct_from_json</span>(<span class="ident">k</span>, <span class="string">&quot;adem&quot;</span>.<span class="ident">to_string</span>())<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">2</span>;
 
@@ -1233,6 +1234,7 @@
             <span class="ident">square</span>.<span class="ident">module</span>(<span class="number">5</span>).<span class="ident">act_on_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="number">1</span>, <span class="number">18</span>, <span class="number">3</span>, <span class="ident">deg</span>, <span class="ident">i</span>);
         }
     }
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_module_from_file</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
