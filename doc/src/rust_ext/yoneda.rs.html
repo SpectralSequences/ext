@@ -525,11 +525,6 @@
 <span id="507">507</span>
 <span id="508">508</span>
 <span id="509">509</span>
-<span id="510">510</span>
-<span id="511">511</span>
-<span id="512">512</span>
-<span id="513">513</span>
-<span id="514">514</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>, <span class="ident">AdemAlgebra</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">AugmentedChainComplex</span>, <span class="ident">FiniteAugmentedChainComplex</span>, <span class="ident">BoundedChainComplex</span>, <span class="ident">ChainMap</span>};
@@ -932,7 +927,7 @@
         <span class="ident">result</span>.<span class="ident">set_entry</span>(<span class="ident">padded_source_degree</span> <span class="op">+</span> <span class="ident">total_padded_degree</span> <span class="op">+</span> <span class="ident">i</span>, <span class="number">1</span>);
         <span class="ident">matrix_rows</span>.<span class="ident">push</span>(<span class="ident">result</span>);
     }
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="ident">p</span>, <span class="ident">matrix_rows</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="ident">p</span>, <span class="ident">matrix_rows</span>, <span class="ident">total_cols</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pivots</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>; <span class="ident">total_cols</span>];
     <span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pivots</span>);
 
@@ -954,12 +949,7 @@
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">first_image_row</span> .. <span class="ident">matrix</span>.<span class="ident">rows</span>() {
         <span class="ident">images</span>.<span class="ident">push</span>(<span class="ident">matrix</span>[<span class="ident">i</span>].<span class="ident">clone</span>());
     }
-    <span class="kw">let</span> <span class="ident">image_matrix</span>;
-    <span class="kw">if</span> <span class="ident">images</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
-        <span class="ident">image_matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="ident">p</span>, <span class="ident">images</span>);
-    } <span class="kw">else</span> {
-        <span class="ident">image_matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">0</span>, <span class="ident">source_orig_dimension</span>);
-    }
+    <span class="kw">let</span> <span class="ident">image_matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="ident">p</span>, <span class="ident">images</span>, <span class="ident">source_orig_dimension</span>);
     (<span class="ident">matrix</span>, <span class="ident">image_matrix</span>)
 }
 
@@ -1023,7 +1013,7 @@
 <span class="comment">//                        matrix_rows.push(result);</span>
 <span class="comment">//                    }</span>
 <span class="comment">//</span>
-<span class="comment">//                    let mut matrix = Matrix::from_rows(p, matrix_rows);</span>
+<span class="comment">//                    let mut matrix = Matrix::from_rows(p, matrix_rows, total_cols);</span>
 <span class="comment">//                    let mut pivots = vec![-1; total_cols];</span>
 <span class="comment">//                    matrix.row_reduce(&amp;mut pivots);</span>
 <span class="comment">//</span>

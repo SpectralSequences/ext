@@ -1144,11 +1144,6 @@
 <span id="1126">1126</span>
 <span id="1127">1127</span>
 <span id="1128">1128</span>
-<span id="1129">1129</span>
-<span id="1130">1130</span>
-<span id="1131">1131</span>
-<span id="1132">1132</span>
-<span id="1133">1133</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1201,12 +1196,12 @@
     <span class="doccomment">/// Produces a matrix from a list of rows. If `vectors.len() == 0`, this returns a matrix</span>
     <span class="doccomment">/// with 0 rows and columns.  The function does not check if the rows have the same length,</span>
     <span class="doccomment">/// but please only input rows that do have the same length.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_rows</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">vectors</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_rows</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">vectors</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>, <span class="ident">columns</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">vectors</span>.<span class="ident">len</span>();
-        <span class="kw">if</span> <span class="ident">rows</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="kw">return</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">0</span>, <span class="number">0</span>);
+        <span class="kw">for</span> <span class="ident">row</span> <span class="kw">in</span> <span class="ident">vectors</span>.<span class="ident">iter</span>() {
+            <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">row</span>.<span class="ident">dimension</span>(), <span class="ident">columns</span>);
         }
-        <span class="kw">let</span> <span class="ident">columns</span> <span class="op">=</span> <span class="ident">vectors</span>[<span class="number">0</span>].<span class="ident">dimension</span>();
+
         <span class="ident">Matrix</span> {
             <span class="ident">p</span>,
             <span class="ident">rows</span>, <span class="ident">columns</span>,
@@ -1216,7 +1211,9 @@
         }
     }
 
-    <span class="doccomment">/// Produces a Matrix from an `&amp;[Vec&lt;u32&gt;]` object</span>
+    <span class="doccomment">/// Produces a Matrix from an `&amp;[Vec&lt;u32&gt;]` object. If the number of rows is 0, the number</span>
+    <span class="doccomment">/// of columns is also assumed to be zero.</span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">/// let p = 7;</span>
@@ -2201,14 +2198,7 @@
         <span class="kw">let</span> <span class="ident">columns</span> <span class="op">=</span> <span class="ident">usize</span>::<span class="ident">load</span>(<span class="ident">buffer</span>, <span class="kw-2">&amp;</span>())<span class="question-mark">?</span>;
 
         <span class="kw">let</span> <span class="ident">vectors</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Load</span>::<span class="ident">load</span>(<span class="ident">buffer</span>, <span class="ident">p</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="kw-2">*</span><span class="ident">p</span>, <span class="ident">vectors</span>);
-
-        <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">rows</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="ident">result</span>.<span class="ident">columns</span> <span class="op">=</span> <span class="ident">columns</span>;
-            <span class="ident">result</span>.<span class="ident">slice_col_end</span> <span class="op">=</span> <span class="ident">columns</span>;
-        }
-
-        <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
+        <span class="prelude-val">Ok</span>(<span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="kw-2">*</span><span class="ident">p</span>, <span class="ident">vectors</span>, <span class="ident">columns</span>))
     }
 }
 

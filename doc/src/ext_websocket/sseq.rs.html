@@ -1759,7 +1759,7 @@
             <span class="ident">vectors</span>.<span class="ident">push</span>(<span class="ident">result</span>);
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="ident">p</span>, <span class="ident">vectors</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="ident">p</span>, <span class="ident">vectors</span>, <span class="ident">source_dim</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pivots</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>; <span class="ident">matrix</span>.<span class="ident">columns</span>()];
         <span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pivots</span>);
 
@@ -1817,7 +1817,7 @@
             <span class="ident">dvec</span>.<span class="ident">set_to_zero</span>();
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">vectors</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">from_rows</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">vectors</span>, <span class="ident">source_dim</span> <span class="op">+</span> <span class="ident">target_dim</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pivots</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>; <span class="ident">matrix</span>.<span class="ident">columns</span>()];
         <span class="ident">matrix</span>.<span class="ident">row_reduce_offset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pivots</span>, <span class="ident">source_dim</span>);
 
