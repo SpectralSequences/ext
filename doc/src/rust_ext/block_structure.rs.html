@@ -84,7 +84,33 @@
 <span id="66">66</span>
 <span id="67">67</span>
 <span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="comment">// A block structure is a structure that makes it efficient to convert between an index </span>
+<span class="comment">// into a sum of vector spaces and an index into an individual one. For instance, a FreeModule</span>
+<span class="comment">// has some collection of generators in various degrees and a general element is a homogenous sum</span>
+<span class="comment">// \sum Op^i x_i. The basis for the FreeModule is divided into a block for each generator x_i.</span>
+<span class="comment">// The entries in the block correspond to a basis for the algebra. In order to multiply by a steenrod operation, </span>
+<span class="comment">// we have to pull out each block and multiply each block separately by the steenrod operation.</span>
+
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 
@@ -99,7 +125,13 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BlockStructure</span> {
     <span class="kw">pub</span> <span class="ident">total_dimension</span> : <span class="ident">usize</span>,
     <span class="ident">basis_element_to_block_idx</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">GeneratorBasisEltPair</span><span class="op">&gt;</span>,
-    <span class="ident">block_starts</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>)<span class="op">&gt;&gt;</span>, <span class="comment">// generator_degree --&gt; generator_index --&gt; (index, size)</span>
+    <span class="ident">block_starts</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BlockStart</span><span class="op">&gt;&gt;</span>, <span class="comment">// generator_degree --&gt; generator_index --&gt; (index, size)</span>
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BlockStart</span> {
+    <span class="kw">pub</span> <span class="ident">block_start_index</span> : <span class="ident">usize</span>,
+    <span class="kw">pub</span> <span class="ident">block_size</span> : <span class="ident">usize</span>
 }
 
 <span class="kw">impl</span> <span class="ident">BlockStructure</span> {
@@ -110,7 +142,7 @@
         <span class="kw">for</span> (<span class="ident">degree</span>, <span class="ident">blocks</span>) <span class="kw">in</span> <span class="ident">block_sizes</span>.<span class="ident">iter_enum</span>() {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">block_starts_entry</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">blocks</span>.<span class="ident">len</span>());
             <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">size</span>) <span class="kw">in</span> <span class="ident">blocks</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                <span class="ident">block_starts_entry</span>.<span class="ident">push</span>((<span class="ident">total_dimension</span>, <span class="kw-2">*</span><span class="ident">size</span>));
+                <span class="ident">block_starts_entry</span>.<span class="ident">push</span>(<span class="ident">BlockStart</span> { <span class="ident">block_start_index</span> : <span class="ident">total_dimension</span>, <span class="ident">block_size</span> : <span class="kw-2">*</span><span class="ident">size</span> });
                 <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="kw-2">*</span><span class="ident">size</span> {
                     <span class="ident">basis_element_to_block_idx</span>.<span class="ident">push</span>(
                         <span class="ident">GeneratorBasisEltPair</span> {
@@ -131,22 +163,28 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generator_to_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">gen_deg</span> : <span class="ident">i32</span>, <span class="ident">gen_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> (<span class="ident">usize</span>, <span class="ident">usize</span>) {
-        <span class="self">self</span>.<span class="ident">block_starts</span>[<span class="ident">gen_deg</span>][<span class="ident">gen_idx</span>]
+    <span class="comment">// Find the start of the block corresponding to a given generator.</span>
+    <span class="comment">// Returns (block_start_index, block_size).</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generator_to_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">gen_deg</span> : <span class="ident">i32</span>, <span class="ident">gen_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">BlockStart</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">block_starts</span>[<span class="ident">gen_deg</span>][<span class="ident">gen_idx</span>]
     }
 
+    <span class="comment">// Convert (generator, basis element) to basis element of the sum.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generator_basis_elt_to_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">gen_deg</span> : <span class="ident">i32</span>, <span class="ident">gen_idx</span> : <span class="ident">usize</span>, <span class="ident">basis_elt</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">block_starts</span>[<span class="ident">gen_deg</span>][<span class="ident">gen_idx</span>].<span class="number">0</span> <span class="op">+</span> <span class="ident">basis_elt</span>
+        <span class="self">self</span>.<span class="ident">block_starts</span>[<span class="ident">gen_deg</span>][<span class="ident">gen_idx</span>].<span class="ident">block_start_index</span> <span class="op">+</span> <span class="ident">basis_elt</span>
     }
 
+    <span class="comment">// Find the (generator, basis element) pair corresponding to a given basis element of the block structure.</span>
+    <span class="comment">// For the FreeModule application, index =&gt; (free module generator, Steenrod algebra basis element)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">index_to_generator_basis_elt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">GeneratorBasisEltPair</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">basis_element_to_block_idx</span>[<span class="ident">idx</span>]
     }
 
+    <span class="comment">// Add source vector &quot;source&quot; to the block indicated by (gen_deg, gen_idx).</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">target</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">gen_deg</span> : <span class="ident">i32</span>, <span class="ident">gen_idx</span> : <span class="ident">usize</span>, <span class="ident">source</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>){
-        <span class="kw">let</span> (<span class="ident">block_min</span>, <span class="ident">block_dimension</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">block_starts</span>[<span class="ident">gen_deg</span>][<span class="ident">gen_idx</span>];
-        <span class="kw">let</span> <span class="ident">block_max</span> <span class="op">=</span> <span class="ident">block_min</span> <span class="op">+</span> <span class="ident">block_dimension</span>;
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">source</span>.<span class="ident">dimension</span>() <span class="op">==</span> <span class="ident">block_dimension</span>);
+        <span class="kw">let</span> <span class="ident">BlockStart</span> { <span class="ident">block_start_index</span> : <span class="ident">block_min</span>,  <span class="ident">block_size</span> } <span class="op">=</span> <span class="self">self</span>.<span class="ident">block_starts</span>[<span class="ident">gen_deg</span>][<span class="ident">gen_idx</span>];
+        <span class="kw">let</span> <span class="ident">block_max</span> <span class="op">=</span> <span class="ident">block_min</span> <span class="op">+</span> <span class="ident">block_size</span>;
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">source</span>.<span class="ident">dimension</span>() <span class="op">==</span> <span class="ident">block_size</span>);
         <span class="kw">let</span> <span class="ident">old_slice</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">slice</span>();
         <span class="ident">target</span>.<span class="ident">set_slice</span>(<span class="ident">block_min</span>, <span class="ident">block_max</span>);
         <span class="ident">target</span>.<span class="ident">shift_add</span>(<span class="ident">source</span>, <span class="ident">coeff</span>);

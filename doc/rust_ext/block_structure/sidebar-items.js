@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["BlockStructure",""],["GeneratorBasisEltPair",""]]});
+initSidebarItems({"struct":[["BlockStart",""],["BlockStructure",""],["GeneratorBasisEltPair",""]]});
