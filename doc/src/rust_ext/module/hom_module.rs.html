@@ -377,7 +377,7 @@
                     <span class="kw">continue</span>;
                 }
                 <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">number_of_gens_in_degree</span>(<span class="ident">d</span> <span class="op">+</span> <span class="ident">i</span>);
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">block_sizes_entry</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">num_gens</span>);                
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">block_sizes_entry</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">num_gens</span>);
                 <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
                     <span class="ident">block_sizes_entry</span>.<span class="ident">push</span>(<span class="ident">target_dim</span>)
                 }

@@ -315,14 +315,78 @@
 <span id="297">297</span>
 <span id="298">298</span>
 <span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AdemAlgebra</span>, <span class="ident">MilnorAlgebra</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">adem_algebra</span>::<span class="ident">AdemBasisElement</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">steenrod_parser</span>::<span class="ident">BocksteinOrSq</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">Module</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">steenrod_parser</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">change_of_basis</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
+
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SteenrodCalculator</span> {
     <span class="ident">adem_algebra</span> : <span class="ident">AdemAlgebra</span>,
@@ -436,6 +500,11 @@
     <span class="kw">let</span> <span class="ident">degree</span> : <span class="ident">i32</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span>;
     <span class="kw">match</span> <span class="ident">basis_elt</span> {
+        <span class="ident">AlgebraBasisElt</span>::<span class="ident">AList</span>(<span class="ident">p_or_b_list</span>) <span class="op">=&gt;</span> {
+            <span class="kw">let</span> <span class="ident">degree_result</span> <span class="op">=</span> <span class="ident">evaluate_p_or_b_list</span>(<span class="ident">adem_algebra</span>, <span class="kw-2">&amp;</span><span class="ident">p_or_b_list</span>);
+            <span class="ident">degree</span> <span class="op">=</span> <span class="ident">degree_result</span>.<span class="number">0</span>;
+            <span class="ident">result</span> <span class="op">=</span> <span class="ident">degree_result</span>.<span class="number">1</span>;
+        }
         <span class="ident">AlgebraBasisElt</span>::<span class="ident">PList</span>(<span class="ident">p_list</span>) <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">xi_degrees</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">xi_degrees</span>(<span class="ident">p</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">temp_deg</span> <span class="op">=</span> <span class="number">0</span>;
@@ -555,6 +624,58 @@
     <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">degree</span>, <span class="ident">result</span>))
 }
 
+<span class="kw">fn</span> <span class="ident">bockstein_or_sq_to_adem_basis_elt</span>(<span class="ident">e</span> : <span class="kw-2">&amp;</span><span class="ident">BocksteinOrSq</span>, <span class="ident">q</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">AdemBasisElement</span> {
+    <span class="kw">match</span> <span class="ident">e</span> {
+        <span class="ident">BocksteinOrSq</span>::<span class="ident">Bockstein</span> <span class="op">=&gt;</span> <span class="kw">if</span> <span class="ident">q</span> <span class="op">==</span> <span class="number">1</span> {
+            <span class="ident">AdemBasisElement</span> {
+                <span class="ident">degree</span> : <span class="number">1</span>,
+                <span class="ident">excess</span> : <span class="number">1</span>,
+                <span class="ident">bocksteins</span> : <span class="number">1</span>,
+                <span class="ident">ps</span> : <span class="macro">vec</span><span class="macro">!</span>[]
+            }
+        } <span class="kw">else</span> {
+            <span class="ident">AdemBasisElement</span> {
+                <span class="ident">degree</span> : <span class="number">1</span>,
+                <span class="ident">excess</span> : <span class="number">1</span>,
+                <span class="ident">bocksteins</span> : <span class="number">0</span>,
+                <span class="ident">ps</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]
+            }            
+        },
+        <span class="ident">BocksteinOrSq</span>::<span class="ident">Sq</span>(<span class="ident">x</span>) <span class="op">=&gt;</span> <span class="ident">AdemBasisElement</span> {
+            <span class="ident">degree</span> : (<span class="kw-2">*</span><span class="ident">x</span>) <span class="kw">as</span> <span class="ident">i32</span> <span class="op">*</span> <span class="ident">q</span>,
+            <span class="ident">excess</span> : <span class="number">2</span> <span class="op">*</span> (<span class="kw-2">*</span><span class="ident">x</span>) <span class="kw">as</span> <span class="ident">i32</span>,
+            <span class="ident">bocksteins</span> : <span class="number">0</span>,
+            <span class="ident">ps</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="kw-2">*</span><span class="ident">x</span>]         
+        }
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">evaluate_p_or_b_list</span>(<span class="ident">adem_algebra</span> : <span class="kw-2">&amp;</span><span class="ident">AdemAlgebra</span>, <span class="ident">list</span> : <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BocksteinOrSq</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> (<span class="ident">i32</span>, <span class="ident">FpVector</span>) {
+    <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">adem_algebra</span>.<span class="ident">prime</span>();
+    <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">adem_algebra</span>.<span class="ident">generic</span> { <span class="number">2</span><span class="kw-2">*</span><span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">-</span> <span class="number">2</span>} <span class="kw">else</span> { <span class="number">1</span> };
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_vector_a</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">scratch_vector</span>(<span class="ident">p</span>, <span class="number">1</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_vector_b</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">scratch_vector</span>(<span class="ident">p</span>, <span class="number">1</span>);
+    <span class="kw">let</span> <span class="ident">first_elt</span> <span class="op">=</span> <span class="ident">bockstein_or_sq_to_adem_basis_elt</span>(<span class="kw-2">&amp;</span><span class="ident">list</span>[<span class="number">0</span>], <span class="ident">q</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">total_degree</span> <span class="op">=</span> <span class="ident">first_elt</span>.<span class="ident">degree</span>;
+    <span class="ident">adem_algebra</span>.<span class="ident">compute_basis</span>(<span class="ident">total_degree</span>);
+    <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">adem_algebra</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">first_elt</span>);
+    <span class="kw">let</span> <span class="ident">cur_dim</span> <span class="op">=</span> <span class="ident">adem_algebra</span>.<span class="ident">dimension</span>(<span class="ident">total_degree</span>, <span class="op">-</span><span class="number">1</span>);
+    <span class="ident">tmp_vector_a</span> <span class="op">=</span> <span class="ident">tmp_vector_a</span>.<span class="ident">set_scratch_vector_size</span>(<span class="ident">cur_dim</span>);
+    <span class="ident">tmp_vector_a</span>.<span class="ident">set_entry</span>(<span class="ident">idx</span>, <span class="number">1</span>);
+
+    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">list</span>.<span class="ident">len</span>() {
+        <span class="kw">let</span> <span class="ident">cur_elt</span> <span class="op">=</span> <span class="ident">bockstein_or_sq_to_adem_basis_elt</span>(<span class="kw-2">&amp;</span><span class="ident">list</span>[<span class="ident">i</span>], <span class="ident">q</span>);
+        <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">adem_algebra</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">cur_elt</span>);
+        <span class="kw">let</span> <span class="ident">cur_dim</span> <span class="op">=</span> <span class="ident">adem_algebra</span>.<span class="ident">dimension</span>(<span class="ident">total_degree</span> <span class="op">+</span> <span class="ident">cur_elt</span>.<span class="ident">degree</span>, <span class="op">-</span><span class="number">1</span>);
+        <span class="ident">tmp_vector_b</span> <span class="op">=</span> <span class="ident">tmp_vector_b</span>.<span class="ident">set_scratch_vector_size</span>(<span class="ident">cur_dim</span>);
+        <span class="ident">adem_algebra</span>.<span class="ident">multiply_element_by_basis_element</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_vector_b</span>, <span class="number">1</span>, <span class="ident">total_degree</span>, <span class="kw-2">&amp;</span><span class="ident">tmp_vector_a</span>, <span class="ident">cur_elt</span>.<span class="ident">degree</span>, <span class="ident">idx</span>, <span class="op">-</span><span class="number">1</span>);
+        <span class="ident">total_degree</span> <span class="op">+=</span> <span class="ident">cur_elt</span>.<span class="ident">degree</span>;
+        <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_vector_a</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_vector_b</span>);
+        <span class="ident">tmp_vector_b</span>.<span class="ident">set_to_zero</span>();
+    }
+    <span class="kw">return</span> (<span class="ident">total_degree</span>, <span class="ident">tmp_vector_a</span>);
+}
+
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DegreeError</span> {}
 
@@ -604,6 +725,7 @@
 
         <span class="kw">for</span> (<span class="ident">input</span>, <span class="ident">output</span>) <span class="kw">in</span> <span class="macro">vec</span><span class="macro">!</span>[
             (<span class="string">&quot;Sq2 * Sq2&quot;</span>, <span class="string">&quot;P3 P1&quot;</span>),
+            (<span class="string">&quot;A(2 2)&quot;</span>, <span class="string">&quot;P3 P1&quot;</span>),
             (<span class="string">&quot;Sq2 * Sq2 * Sq2 + Sq3 * Sq3&quot;</span>, <span class="string">&quot;0&quot;</span>),
             (<span class="string">&quot;Sq2 * (Sq2 * Sq2 + Sq4)&quot;</span>, <span class="string">&quot;P6&quot;</span>),
             (<span class="string">&quot;Sq7 + Q2&quot;</span>,<span class="string">&quot;P5 P2 + P6 P1 + P4 P2 P1&quot;</span>),            

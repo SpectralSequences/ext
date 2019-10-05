@@ -346,8 +346,8 @@
                 <span class="kw">if</span> <span class="ident">left_target_dim</span> <span class="op">==</span> <span class="number">0</span> <span class="op">||</span> <span class="ident">right_target_dim</span> <span class="op">==</span> <span class="number">0</span> <span class="op">||</span>
                     <span class="ident">left_source_dim</span> <span class="op">==</span> <span class="number">0</span> <span class="op">||</span> <span class="ident">right_source_dim</span> <span class="op">==</span> <span class="number">0</span> 
                 {
-                        <span class="ident">idx</span> <span class="op">+=</span> <span class="ident">left_source_dim</span> <span class="op">*</span> <span class="ident">right_source_dim</span>;
-                        <span class="kw">continue</span>;
+                    <span class="ident">idx</span> <span class="op">+=</span> <span class="ident">left_source_dim</span> <span class="op">*</span> <span class="ident">right_source_dim</span>;
+                    <span class="kw">continue</span>;
                 }
                 <span class="kw">if</span> <span class="ident">borrow_output</span> {
                     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">left_source_dim</span> {
