@@ -161,8 +161,13 @@
 <span id="143">143</span>
 <span id="144">144</span>
 <span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="comment">//mod hom_complex;</span>
+<span class="kw">mod</span> <span class="ident">hom_complex</span>;
 <span class="kw">mod</span> <span class="ident">finite_chain_complex</span>;
 <span class="kw">mod</span> <span class="ident">tensor_product_chain_complex</span>;
 
@@ -173,7 +178,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::<span class="ident">ModuleHomomorphism</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
-<span class="comment">//pub use hom_complex::HomComplex;</span>
+<span class="comment">// pub use hom_complex::HomComplex;</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">finite_chain_complex</span>::{<span class="ident">FiniteChainComplex</span>, <span class="ident">FiniteAugmentedChainComplex</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">tensor_product_chain_complex</span>::<span class="ident">TensorChainComplex</span>;
 
@@ -181,6 +186,11 @@
     <span class="ident">Homological</span>,
     <span class="ident">Cohomological</span>
 }
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ResolutionComplex</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span>
+    <span class="ident">Module</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">FreeModule</span>, 
+    <span class="ident">Homomorphism</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::<span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">FreeModule</span><span class="op">&gt;</span>
+<span class="op">&gt;</span> {}
 
 <span class="doccomment">/// A chain complex is defined to start in degree 0. The min_degree is the min_degree of the</span>
 <span class="doccomment">/// modules in the chain complex, all of which must be the same.</span>

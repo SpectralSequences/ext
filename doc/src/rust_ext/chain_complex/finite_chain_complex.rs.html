@@ -207,6 +207,10 @@
 <span id="189">189</span>
 <span id="190">190</span>
 <span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">AlgebraAny</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">ZeroModule</span>};
@@ -225,6 +229,10 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span> <span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span>
 <span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
       <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">M</span><span class="op">&gt;</span> {
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
+        <span class="macro">unimplemented</span><span class="macro">!</span>()
+    }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {

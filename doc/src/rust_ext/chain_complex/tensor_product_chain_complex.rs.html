@@ -515,7 +515,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ChainComplex</span>, <span class="ident">CC2</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">TensorChainComplex</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">CC2</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">left_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC1</span><span class="op">&gt;</span>, <span class="ident">right_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC2</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">TensorChainComplex</span> {
+        <span class="self">Self</span> {
             <span class="ident">lock</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
             <span class="ident">modules</span> : <span class="ident">OnceVec</span>::<span class="ident">new</span>(),
             <span class="ident">differentials</span> : <span class="ident">OnceVec</span>::<span class="ident">new</span>(),

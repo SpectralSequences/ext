@@ -1049,6 +1049,7 @@
 <span id="1031">1031</span>
 <span id="1032">1032</span>
 <span id="1033">1033</span>
+<span id="1034">1034</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Weak</span>, <span class="ident">RwLock</span>, <span class="ident">Mutex</span>};
@@ -1062,7 +1063,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FiniteModule</span>, <span class="ident">FDModule</span>, <span class="ident">FreeModule</span>};
 <span class="kw">use</span> <span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">FreeModuleHomomorphism</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">AugmentedChainComplex</span>, <span class="ident">FiniteChainComplex</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">AugmentedChainComplex</span>, <span class="ident">FiniteChainComplex</span>, <span class="ident">ResolutionComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution_homomorphism</span>::{<span class="ident">ResolutionHomomorphism</span>, <span class="ident">ResolutionHomomorphismToUnit</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">CCC</span>;
 
@@ -1355,8 +1356,9 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">ChainComplex</span> <span class="kw">for</span> <span class="ident">ResolutionInner</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>
-{
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">ResolutionComplex</span> <span class="kw">for</span> <span class="ident">ResolutionInner</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">ChainComplex</span> <span class="kw">for</span> <span class="ident">ResolutionInner</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Module</span> <span class="op">=</span> <span class="ident">FreeModule</span>;
     <span class="kw">type</span> <span class="ident">Homomorphism</span> <span class="op">=</span> <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span>;
 
