@@ -799,7 +799,7 @@
                         <span class="ident">row</span>.<span class="ident">shift_assign</span>(<span class="kw-2">&amp;</span><span class="ident">result</span>);
                         <span class="ident">row</span>.<span class="ident">clear_slice</span>();
                     }
-                    <span class="ident">result</span>.<span class="ident">set_to_zero</span>();
+                    <span class="ident">result</span>.<span class="ident">set_to_zero_pure</span>();
                 }
                 <span class="ident">target_offset</span> <span class="op">+=</span> <span class="ident">target_right_dim</span> <span class="op">*</span> <span class="ident">target_left_dim</span>;
                 <span class="ident">row_count</span> <span class="op">+=</span> <span class="ident">source_right_dim</span> <span class="op">*</span> <span class="ident">source_left_dim</span>;
@@ -830,7 +830,7 @@
                         }
                         <span class="ident">row_count</span> <span class="op">+=</span> <span class="number">1</span>;
                     }
-                    <span class="ident">result</span>.<span class="ident">set_to_zero</span>();
+                    <span class="ident">result</span>.<span class="ident">set_to_zero_pure</span>();
                 }
                 <span class="ident">target_offset</span> <span class="op">+=</span> <span class="ident">target_right_dim</span> <span class="op">*</span> <span class="ident">target_left_dim</span>;
             }

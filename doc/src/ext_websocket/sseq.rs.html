@@ -1226,6 +1226,26 @@
 <span id="1208">1208</span>
 <span id="1209">1209</span>
 <span id="1210">1210</span>
+<span id="1211">1211</span>
+<span id="1212">1212</span>
+<span id="1213">1213</span>
+<span id="1214">1214</span>
+<span id="1215">1215</span>
+<span id="1216">1216</span>
+<span id="1217">1217</span>
+<span id="1218">1218</span>
+<span id="1219">1219</span>
+<span id="1220">1220</span>
+<span id="1221">1221</span>
+<span id="1222">1222</span>
+<span id="1223">1223</span>
+<span id="1224">1224</span>
+<span id="1225">1225</span>
+<span id="1226">1226</span>
+<span id="1227">1227</span>
+<span id="1228">1228</span>
+<span id="1229">1229</span>
+<span id="1230">1230</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">matrix</span>::{<span class="ident">Subspace</span>, <span class="ident">Matrix</span>};
 <span class="kw">use</span> <span class="ident">rust_ext</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1239,6 +1259,9 @@
 
 <span class="kw">const</span> <span class="ident">MIN_PAGE</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INFINITY</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">i32</span>::<span class="ident">MAX</span>;
+
+<span class="kw">fn</span> <span class="ident">sseq_profile</span>(<span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-&gt;</span> (<span class="ident">i32</span>, <span class="ident">i32</span>) { (<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>) }
+<span class="kw">fn</span> <span class="ident">sseq_profile_i</span>(<span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span>: <span class="ident">i32</span>) <span class="op">-&gt;</span> (<span class="ident">i32</span>, <span class="ident">i32</span>) { (<span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>) }
 
 <span class="doccomment">/// Given a vector `elt`, a subspace `zeros` of the total space (with a specified choice of</span>
 <span class="doccomment">/// complement) and a basis `basis` of a subspace of the complement, project `elt` to the complement and express</span>
@@ -1542,7 +1565,8 @@
     <span class="doccomment">/// classes to 0.</span>
     <span class="kw">fn</span> <span class="ident">allocate_differential_matrix</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">r</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">y</span> : <span class="ident">i32</span>) {
         <span class="kw">let</span> <span class="ident">source_dim</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>][<span class="ident">y</span>];
-        <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>];
+        <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">ty</span>) <span class="op">=</span> <span class="ident">sseq_profile</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+        <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">tx</span>][<span class="ident">ty</span>];
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">p</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">Differential</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">source_dim</span>, <span class="ident">target_dim</span>);
         <span class="kw">for</span> <span class="ident">vec</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">permanent_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">basis</span>() {
@@ -1615,9 +1639,11 @@
             <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
 
+
         <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">permanent</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">t_</span>) <span class="op">=</span> <span class="ident">t</span> {
-                <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">new_target</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">t_</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
+                <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">ty</span>) <span class="op">=</span> <span class="ident">sseq_profile</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+                <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">new_target</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">tx</span>, <span class="ident">ty</span>, <span class="ident">t_</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
                 <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="ident">product</span>.<span class="ident">x</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span> {
                     <span class="ident">new_target</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
                 }
@@ -1639,7 +1665,8 @@
                 <span class="comment">// This is more-or-less the same as the permanent code, except we know t is not</span>
                 <span class="comment">// permanent (or else it would be handled by the previous case).</span>
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">t_</span>) <span class="op">=</span> <span class="ident">t</span> {
-                    <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">new_target</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">t_</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
+                    <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">ty</span>) <span class="op">=</span> <span class="ident">sseq_profile</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+                    <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">new_target</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">tx</span>, <span class="ident">ty</span>, <span class="ident">t_</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
                     <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="ident">product</span>.<span class="ident">x</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span> {
                         <span class="ident">new_target</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
                     }
@@ -1652,7 +1679,8 @@
                     <span class="ident">new_target</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
                 }
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">t_</span>) <span class="op">=</span> <span class="ident">t</span> {
-                    <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">tmp</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">t_</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
+                    <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">ty</span>) <span class="op">=</span> <span class="ident">sseq_profile</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+                    <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">tmp</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply</span>(<span class="ident">tx</span>, <span class="ident">ty</span>, <span class="ident">t_</span>, <span class="ident">product</span>)<span class="question-mark">?</span>;
                     <span class="kw">if</span> <span class="ident">product</span>.<span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="ident">product</span>.<span class="ident">x</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span> {
                         <span class="ident">tmp</span>.<span class="ident">scale</span>(<span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>);
                     }
@@ -1782,7 +1810,8 @@
         <span class="kw">let</span> <span class="ident">page_classes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">page_classes</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">source_zeros</span> <span class="op">=</span> <span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">x</span>][<span class="ident">y</span>]);
-        <span class="kw">let</span> <span class="ident">target_zeros</span> <span class="op">=</span> <span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>]);
+        <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">ty</span>) <span class="op">=</span> <span class="ident">sseq_profile</span>(<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+        <span class="kw">let</span> <span class="ident">target_zeros</span> <span class="op">=</span> <span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">tx</span>][<span class="ident">ty</span>]);
         <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>];
 
         <span class="kw">let</span> <span class="ident">source_dim</span> <span class="op">=</span> <span class="ident">d</span>.<span class="ident">source_dim</span>;
@@ -1813,7 +1842,7 @@
             <span class="ident">result</span>.<span class="ident">clear_slice</span>();
 
             <span class="ident">vectors</span>.<span class="ident">push</span>(<span class="ident">result</span>);
-            <span class="ident">differentials</span>.<span class="ident">push</span>(<span class="ident">express_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dvec</span>, <span class="prelude-val">None</span>, <span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">page_classes</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>])));
+            <span class="ident">differentials</span>.<span class="ident">push</span>(<span class="ident">express_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dvec</span>, <span class="prelude-val">None</span>, <span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">page_classes</span>[<span class="ident">tx</span>][<span class="ident">ty</span>])));
             <span class="ident">dvec</span>.<span class="ident">set_to_zero</span>();
         }
 
@@ -1902,9 +1931,11 @@
         <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">MIN_PAGE</span> .. <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() {
             <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>];
             <span class="kw">let</span> <span class="ident">pairs</span> <span class="op">=</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>();
+            <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">ty</span>) <span class="op">=</span> <span class="ident">sseq_profile</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+
             <span class="ident">true_differentials</span>.<span class="ident">push</span>(<span class="ident">pairs</span>.<span class="ident">into_iter</span>()
                 .<span class="ident">map</span>(<span class="op">|</span>(<span class="kw-2">mut</span> <span class="ident">s</span>, <span class="kw-2">mut</span> <span class="ident">t</span>)<span class="op">|</span> (<span class="ident">express_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>, <span class="prelude-val">Some</span>(<span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">x</span>][<span class="ident">y</span>])), <span class="kw-2">&amp;</span><span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">page_classes</span>[<span class="ident">x</span>][<span class="ident">y</span>])),
-                               <span class="ident">express_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>, <span class="prelude-val">Some</span>(<span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>])), <span class="kw-2">&amp;</span><span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">page_classes</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>]))))
+                               <span class="ident">express_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>, <span class="prelude-val">Some</span>(<span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">tx</span>][<span class="ident">ty</span>])), <span class="kw-2">&amp;</span><span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">page_classes</span>[<span class="ident">tx</span>][<span class="ident">ty</span>]))))
                 .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>())
         }
 
@@ -1932,7 +1963,8 @@
             <span class="ident">error</span> <span class="op">|=</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>].<span class="ident">error</span>;
         }
         <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">get_differentials_hitting</span>(<span class="ident">x</span>, <span class="ident">y</span>) {
-            <span class="ident">error</span> <span class="op">|=</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>][<span class="ident">r</span>].<span class="ident">error</span>;
+            <span class="kw">let</span> (<span class="ident">sx</span>, <span class="ident">sy</span>) <span class="op">=</span> <span class="ident">sseq_profile_i</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+            <span class="ident">error</span> <span class="op">|=</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">sx</span>][<span class="ident">sy</span>][<span class="ident">r</span>].<span class="ident">error</span>;
         }
 
         <span class="kw">let</span> <span class="ident">state</span>;
@@ -2020,8 +2052,11 @@
         <span class="kw">let</span> <span class="ident">max_r</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">zeros</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()[<span class="ident">x</span>][<span class="ident">y</span>].<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>; <span class="comment">// If there is a d_r hitting us, then zeros will be populated up to r + 1</span>
 
         (<span class="ident">MIN_PAGE</span> .. <span class="ident">max_r</span>)
-            .<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">r</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>].<span class="ident">max_degree</span>() <span class="op">&gt;=</span> <span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>
-                    <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>].<span class="ident">max_degree</span>() <span class="op">&gt;=</span> <span class="ident">r</span>)
+            .<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">r</span><span class="op">|</span> {
+                <span class="kw">let</span> (<span class="ident">sx</span>, <span class="ident">sy</span>) <span class="op">=</span> <span class="ident">sseq_profile_i</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+                <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">sx</span>].<span class="ident">max_degree</span>() <span class="op">&gt;=</span> <span class="ident">sy</span>
+                    <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">sx</span>][<span class="ident">sy</span>].<span class="ident">max_degree</span>() <span class="op">&gt;=</span> <span class="ident">r</span>
+            })
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;&gt;</span>()
     }
 }
@@ -2090,46 +2125,50 @@
             }
         }
 
+        <span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">ty</span>) <span class="op">=</span> <span class="ident">sseq_profile</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">zeros</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">zeros</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();
-        <span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>]).<span class="ident">reduce</span>(<span class="ident">target</span>);
+        <span class="ident">Sseq</span>::<span class="ident">get_page</span>(<span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">tx</span>][<span class="ident">ty</span>]).<span class="ident">reduce</span>(<span class="ident">target</span>);
 
         <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">r</span>].<span class="ident">add</span>(<span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">target</span>));
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">MIN_PAGE</span> .. <span class="ident">r</span> {
             <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span>][<span class="ident">i</span>].<span class="ident">add</span>(<span class="ident">source</span>, <span class="prelude-val">None</span>)
         }
 
-        <span class="kw">if</span> <span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>].<span class="ident">len</span>() <span class="op">&lt;=</span> <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span> {
-            <span class="kw">for</span> <span class="ident">r_</span> <span class="kw">in</span> <span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>].<span class="ident">len</span>() ..= <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span> {
-                <span class="self">self</span>.<span class="ident">allocate_zeros_subspace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">zeros</span>, <span class="ident">r_</span>, <span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>);
+        <span class="kw">if</span> <span class="ident">zeros</span>[<span class="ident">tx</span>][<span class="ident">ty</span>].<span class="ident">len</span>() <span class="op">&lt;=</span> <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span> {
+            <span class="kw">for</span> <span class="ident">r_</span> <span class="kw">in</span> <span class="ident">zeros</span>[<span class="ident">tx</span>][<span class="ident">ty</span>].<span class="ident">len</span>() ..= <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span> {
+                <span class="self">self</span>.<span class="ident">allocate_zeros_subspace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">zeros</span>, <span class="ident">r_</span>, <span class="ident">tx</span>, <span class="ident">ty</span>);
             }
         }
 
-        <span class="kw">for</span> <span class="ident">r_</span> <span class="kw">in</span> <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span> .. <span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>].<span class="ident">len</span>() {
-            <span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>][<span class="ident">r_</span>].<span class="ident">add_vector</span>(<span class="ident">target</span>);
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">r_</span>) {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">r_</span>].<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">r_</span> {
-                    <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">r_</span>][<span class="ident">r_</span>].<span class="ident">reduce_target</span>(<span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>][<span class="ident">r_</span>]);
+        <span class="kw">for</span> <span class="ident">r_</span> <span class="kw">in</span> <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span> .. <span class="ident">zeros</span>[<span class="ident">tx</span>][<span class="ident">ty</span>].<span class="ident">len</span>() {
+            <span class="ident">zeros</span>[<span class="ident">tx</span>][<span class="ident">ty</span>][<span class="ident">r_</span>].<span class="ident">add_vector</span>(<span class="ident">target</span>);
+            <span class="kw">let</span> (<span class="ident">px</span>, <span class="ident">py</span>) <span class="op">=</span> <span class="ident">sseq_profile_i</span>(<span class="ident">r_</span>, <span class="ident">tx</span>, <span class="ident">ty</span>);
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">class_defined</span>(<span class="ident">px</span>, <span class="ident">py</span>) {
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">px</span>][<span class="ident">py</span>].<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">r_</span> {
+                    <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">px</span>][<span class="ident">py</span>][<span class="ident">r_</span>].<span class="ident">reduce_target</span>(<span class="kw-2">&amp;</span><span class="ident">zeros</span>[<span class="ident">tx</span>][<span class="ident">ty</span>][<span class="ident">r_</span>]);
                 }
             }
         }
 
-        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">zeros</span>[<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>].<span class="ident">len</span>();
+        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">zeros</span>[<span class="ident">tx</span>][<span class="ident">ty</span>].<span class="ident">len</span>();
         <span class="ident">drop</span>(<span class="ident">zeros</span>);
 
         <span class="comment">// add_permanent_class in turn sets the differentials on the targets of the differentials</span>
         <span class="comment">// to 0. add_differential_propagate will take care of propagating this.</span>
-        <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="ident">target</span>);
+        <span class="self">self</span>.<span class="ident">add_permanent_class</span>(<span class="ident">tx</span>, <span class="ident">ty</span>, <span class="ident">target</span>);
 
         <span class="self">self</span>.<span class="ident">add_page</span>(<span class="ident">r</span>);
         <span class="self">self</span>.<span class="ident">add_page</span>(<span class="ident">r</span> <span class="op">+</span> <span class="number">1</span>);
 
-        <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span>, <span class="bool-val">true</span>);
+        <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">tx</span>, <span class="ident">ty</span>, <span class="bool-val">true</span>);
         <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">true</span>);
 
         <span class="comment">// self.zeros[r] will be populated if there is a non-zero differential hit on a</span>
         <span class="comment">// page &lt;= r - 1. Check if these differentials now hit 0.</span>
+        <span class="comment">// TODO: this needs fixing</span>
         <span class="kw">for</span> <span class="ident">r_</span> <span class="kw">in</span> <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span> .. <span class="ident">len</span> <span class="op">-</span> <span class="number">1</span> {
-            <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span> <span class="op">+</span> <span class="ident">r</span> <span class="op">-</span> <span class="ident">r_</span>, <span class="bool-val">true</span>);
+            <span class="kw">let</span> (<span class="ident">px</span>, <span class="ident">py</span>) <span class="op">=</span> <span class="ident">sseq_profile_i</span>(<span class="ident">r_</span>, <span class="ident">tx</span>, <span class="ident">ty</span>);
+            <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">px</span>, <span class="ident">py</span>, <span class="bool-val">true</span>);
         }
     }
 
@@ -2300,9 +2339,10 @@
             }
         } <span class="kw">else</span> {
             <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">get_differentials_hitting</span>(<span class="ident">x</span>, <span class="ident">y</span>) {
-                <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>][<span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>][<span class="ident">r</span>];
+                <span class="kw">let</span> (<span class="ident">sx</span>, <span class="ident">sy</span>) <span class="op">=</span> <span class="ident">sseq_profile_i</span>(<span class="ident">r</span>, <span class="ident">x</span>, <span class="ident">y</span>);
+                <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">sx</span>][<span class="ident">sy</span>][<span class="ident">r</span>];
                 <span class="kw">for</span> (<span class="ident">source</span>, <span class="kw-2">mut</span> <span class="ident">target</span>) <span class="kw">in</span> <span class="ident">d</span>.<span class="ident">get_source_target_pairs</span>() {
-                    <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">x</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">y</span> <span class="op">-</span> <span class="ident">r</span>, <span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>), <span class="ident">idx</span>);
+                    <span class="kw">let</span> <span class="ident">new_d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">leibniz</span>(<span class="ident">r</span>, <span class="ident">sx</span>, <span class="ident">sy</span>, <span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>), <span class="ident">idx</span>);
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="ident">source_</span>, <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">target_</span>))) <span class="op">=</span> <span class="ident">new_d</span> {
                         <span class="self">self</span>.<span class="ident">add_differential</span>(<span class="ident">r_</span>, <span class="ident">x_</span>, <span class="ident">y_</span>, <span class="kw-2">&amp;</span><span class="ident">source_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target_</span>);
                     }
