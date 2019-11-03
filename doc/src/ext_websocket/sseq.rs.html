@@ -1534,13 +1534,13 @@
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">block_refresh</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="kw">return</span>;
         }
-        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
-            <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
+        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_x</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
+            <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_y</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
                 <span class="self">self</span>.<span class="ident">compute_classes</span>(<span class="ident">x</span>, <span class="ident">y</span>, <span class="bool-val">false</span>);
             }
         }
-        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
-            <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
+        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_x</span> .. <span class="self">self</span>.<span class="ident">classes</span>.<span class="ident">len</span>() {
+            <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_y</span> .. <span class="self">self</span>.<span class="ident">classes</span>[<span class="ident">x</span>].<span class="ident">len</span>() {
                 <span class="self">self</span>.<span class="ident">compute_edges</span>(<span class="ident">x</span>, <span class="ident">y</span>);
             }
         }
