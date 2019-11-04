@@ -262,7 +262,7 @@
     <span class="doccomment">/// itself). This is intended to be used in conjunction with `BoundedModule::to_fd_module`</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_source</span><span class="op">&lt;</span><span class="ident">S_</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
         <span class="ident">BoundedModuleHomomorphism</span> {
-            <span class="ident">source</span> : <span class="ident">source</span>,
+            <span class="ident">source</span>,
             <span class="ident">target</span> : <span class="self">self</span>.<span class="ident">target</span>,
             <span class="ident">degree_shift</span> : <span class="self">self</span>.<span class="ident">degree_shift</span>,
             <span class="ident">lock</span> : <span class="self">self</span>.<span class="ident">lock</span>,
@@ -276,7 +276,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_target</span><span class="op">&lt;</span><span class="ident">T_</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T_</span><span class="op">&gt;</span> {
         <span class="ident">BoundedModuleHomomorphism</span> {
             <span class="ident">source</span> : <span class="self">self</span>.<span class="ident">source</span>,
-            <span class="ident">target</span> : <span class="ident">target</span>,
+            <span class="ident">target</span>,
             <span class="ident">degree_shift</span> : <span class="self">self</span>.<span class="ident">degree_shift</span>,
             <span class="ident">lock</span> : <span class="self">self</span>.<span class="ident">lock</span>,
             <span class="ident">matrices</span> : <span class="self">self</span>.<span class="ident">matrices</span>,

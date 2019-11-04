@@ -411,7 +411,7 @@
             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;generator_index {} greater than number of generators {}&quot;</span>, 
                 <span class="ident">generator_index</span>, <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">number_of_gens_in_degree</span>(<span class="ident">generator_degree</span>)
         ));
-        <span class="kw">return</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">outputs</span>[<span class="ident">generator_degree</span>][<span class="ident">generator_index</span>];
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">outputs</span>[<span class="ident">generator_degree</span>][<span class="ident">generator_index</span>]
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extend_by_zero_safe</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) {
@@ -427,7 +427,7 @@
         <span class="kw">if</span> <span class="ident">degree</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">min_degree</span> {
             <span class="kw">return</span>;
         }
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&gt;=</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span> <span class="number">1</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">lock</span>);
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span> <span class="number">1</span> ..= <span class="ident">degree</span>{
             <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">source</span>.<span class="ident">number_of_gens_in_degree</span>(<span class="ident">i</span>);
@@ -537,7 +537,7 @@
             <span class="self">self</span>.<span class="ident">apply_to_basis_element_with_table</span>(<span class="ident">output_vector</span>, <span class="number">1</span>, <span class="ident">degree</span>, <span class="ident">table</span>, <span class="ident">input_idx</span>);
             <span class="ident">output_vector</span>.<span class="ident">restore_slice</span>(<span class="ident">old_slice</span>);
         }
-        <span class="kw">return</span> (<span class="ident">start_row</span> <span class="op">+</span> <span class="ident">source_dimension</span>, <span class="ident">start_column</span> <span class="op">+</span> <span class="ident">target_dimension</span>);
+        (<span class="ident">start_row</span> <span class="op">+</span> <span class="ident">source_dimension</span>, <span class="ident">start_column</span> <span class="op">+</span> <span class="ident">target_dimension</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {

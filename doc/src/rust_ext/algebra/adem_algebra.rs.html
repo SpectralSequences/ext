@@ -1345,7 +1345,6 @@
 <span id="1327">1327</span>
 <span id="1328">1328</span>
 <span id="1329">1329</span>
-<span id="1330">1330</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>;
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="ident">lazy_static</span>;
@@ -1421,10 +1420,10 @@
             <span class="kw">if</span> (<span class="self">self</span>.<span class="ident">bocksteins</span> <span class="op">&gt;&gt;</span> <span class="ident">i</span>) <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
                 <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;b &quot;</span>)<span class="question-mark">?</span>;
             }
-            <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}{}&quot;</span>, <span class="string">&quot;P&quot;</span>, <span class="ident">n</span>)<span class="question-mark">?</span>;
+            <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;P{}&quot;</span>, <span class="ident">n</span>)<span class="question-mark">?</span>;
             <span class="ident">first</span> <span class="op">=</span> <span class="bool-val">false</span>;
         }
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">ps</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">ps</span>.<span class="ident">is_empty</span>() {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
                 <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;b&quot;</span>)<span class="question-mark">?</span>;
             } <span class="kw">else</span> {
@@ -1556,7 +1555,7 @@
         <span class="kw">if</span> <span class="ident">degree</span> <span class="op">&lt;</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="number">0</span>;
         }
-        <span class="kw">return</span> <span class="self">self</span>.<span class="ident">basis_table</span>[<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">len</span>();
+        <span class="self">self</span>.<span class="ident">basis_table</span>[<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">len</span>()
     }
 
     <span class="kw">fn</span> <span class="ident">multiply_basis_elements</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, 
@@ -1578,7 +1577,7 @@
             <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">sq</span>) <span class="kw">in</span> <span class="ident">op</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                 <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">0</span> {
                     <span class="ident">degree</span> <span class="op">+=</span> <span class="ident">sq</span>;
-                    <span class="ident">bocksteins</span> <span class="op">|=</span> <span class="ident">sq</span> <span class="op">&lt;&lt;</span> <span class="ident">i</span><span class="op">/</span><span class="number">2</span>;
+                    <span class="ident">bocksteins</span> <span class="op">|=</span> <span class="ident">sq</span> <span class="op">&lt;&lt;</span> (<span class="ident">i</span><span class="op">/</span><span class="number">2</span>);
                 } <span class="kw">else</span> {
                     <span class="ident">degree</span> <span class="op">+=</span> <span class="ident">q</span> <span class="op">*</span> <span class="ident">sq</span>;
                     <span class="ident">sqs</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">sq</span>);
@@ -1618,8 +1617,7 @@
                 <span class="ident">out_sqs</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">sq</span>);
             }
         }
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">to_value</span>(<span class="ident">out_sqs</span>).<span class="ident">unwrap</span>();
-        <span class="ident">result</span>
+        <span class="ident">serde_json</span>::<span class="ident">to_value</span>(<span class="ident">out_sqs</span>).<span class="ident">unwrap</span>()
     }
 
 
@@ -1697,7 +1695,7 @@
             <span class="kw">let</span> <span class="ident">first_sq</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">beps_pn</span>(<span class="number">0</span>, <span class="ident">x</span>);
             <span class="kw">let</span> <span class="ident">second_sq</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">beps_pn</span>(<span class="ident">b</span>, <span class="ident">y</span>);
             <span class="ident">relation</span>.<span class="ident">push</span>((<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">first_sq</span>, <span class="ident">second_sq</span>));
-            <span class="kw">for</span> <span class="ident">e1</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">b</span> <span class="op">+</span> <span class="number">1</span> {
+            <span class="kw">for</span> <span class="ident">e1</span> <span class="kw">in</span> <span class="number">0</span> ..= <span class="ident">b</span> {
                 <span class="kw">let</span> <span class="ident">e2</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">-</span> <span class="ident">e1</span>;
                 <span class="comment">// e1 and e2 determine where a bockstein shows up.</span>
                 <span class="comment">// e1 determines if a bockstein shows up in front </span>
@@ -1717,7 +1715,7 @@
             }
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">relation</span>);
         }
-        <span class="kw">return</span> <span class="ident">result</span>;
+        <span class="ident">result</span>
     }
 }
 
@@ -1786,7 +1784,7 @@
         <span class="comment">// or (p+1) * last &lt;= n or last &lt;= n/(p+1). We order the squares in decreasing</span>
         <span class="comment">// order of their last element so that as we walk over the previous basis</span>
         <span class="comment">// when we find a square whose end is too small, we can break.</span>
-        <span class="kw">for</span> <span class="ident">last</span> <span class="kw">in</span> (<span class="number">1</span> .. <span class="ident">n</span><span class="op">/</span>(<span class="ident">p</span><span class="op">+</span><span class="number">1</span>) <span class="op">+</span> <span class="number">1</span>).<span class="ident">rev</span>() {
+        <span class="kw">for</span> <span class="ident">last</span> <span class="kw">in</span> (<span class="number">1</span> ..= <span class="ident">n</span><span class="op">/</span>(<span class="ident">p</span><span class="op">+</span><span class="number">1</span>)).<span class="ident">rev</span>() {
             <span class="kw">let</span> <span class="ident">previous_basis</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">even_basis_table</span>[(<span class="ident">n</span><span class="op">-</span><span class="ident">last</span>) <span class="kw">as</span> <span class="ident">usize</span>];
             <span class="kw">for</span> <span class="ident">prev_elt</span> <span class="kw">in</span> <span class="ident">previous_basis</span> {
                 <span class="kw">let</span> <span class="ident">prev_elt_p_len</span> <span class="op">=</span> <span class="ident">prev_elt</span>.<span class="ident">ps</span>.<span class="ident">len</span>();
@@ -1934,7 +1932,7 @@
         <span class="kw">unsafe</span> { <span class="ident">elt</span>.<span class="ident">ps</span> <span class="op">=</span> <span class="ident">shift_vec</span>(<span class="ident">elt</span>.<span class="ident">ps</span>, <span class="op">-</span>(<span class="ident">idx</span> <span class="kw">as</span> <span class="ident">isize</span>)); }
         <span class="ident">elt</span>.<span class="ident">degree</span> <span class="op">=</span> <span class="ident">degree</span>;
         <span class="ident">elt</span>.<span class="ident">bocksteins</span> <span class="op">=</span> <span class="ident">bocksteins</span>;
-        <span class="kw">return</span> (<span class="ident">elt</span>, <span class="ident">result</span>);
+        (<span class="ident">elt</span>, <span class="ident">result</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">generate_multiplication_table_2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">next_degree</span> : <span class="ident">i32</span>, <span class="ident">max_degree</span> : <span class="ident">i32</span>){
@@ -1971,7 +1969,7 @@
         <span class="comment">// Be careful to deal with the case that cur_basis_elt has length 0</span>
         <span class="comment">// If the length is 0 or the sequence is already admissible, we can just write a 1 in the answer</span>
         <span class="comment">// and continue.</span>
-        <span class="kw">if</span> <span class="ident">cur_basis_elt</span>.<span class="ident">ps</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> <span class="op">||</span> <span class="ident">x</span> <span class="op">&gt;=</span> <span class="number">2</span><span class="kw-2">*</span><span class="ident">cur_basis_elt</span>.<span class="ident">ps</span>[<span class="number">0</span>] {
+        <span class="kw">if</span> <span class="ident">cur_basis_elt</span>.<span class="ident">ps</span>.<span class="ident">is_empty</span>() <span class="op">||</span> <span class="ident">x</span> <span class="op">&gt;=</span> <span class="number">2</span><span class="kw-2">*</span><span class="ident">cur_basis_elt</span>.<span class="ident">ps</span>[<span class="number">0</span>] {
             <span class="ident">working_elt</span>.<span class="ident">ps</span>.<span class="ident">insert</span>(<span class="number">0</span>, <span class="ident">x</span>);
             <span class="ident">working_elt</span>.<span class="ident">degree</span> <span class="op">=</span> <span class="ident">n</span>;
             <span class="kw">let</span> <span class="ident">out_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">working_elt</span>);
@@ -2411,7 +2409,7 @@
             }
             <span class="ident">result</span>.<span class="ident">extend</span>(<span class="self">self</span>.<span class="ident">decompose_basis_element_2</span>(<span class="ident">degree</span>, <span class="ident">i</span>));
         }
-        <span class="kw">return</span> <span class="ident">result</span>;
+        <span class="ident">result</span>
     }
 
     <span class="kw">fn</span> <span class="ident">decompose_basis_element_generic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>), (<span class="ident">i32</span>, <span class="ident">usize</span>))<span class="op">&gt;</span> {
@@ -2491,7 +2489,7 @@
             <span class="kw">let</span> (<span class="ident">c</span>, <span class="ident">t1</span>, <span class="ident">t2</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">decompose_basis_element_generic</span>(<span class="ident">degree</span>, <span class="ident">i</span>)[<span class="number">0</span>];
             <span class="ident">result</span>.<span class="ident">push</span>(((<span class="ident">c_inv</span> <span class="op">*</span> <span class="ident">c</span> <span class="op">*</span> <span class="ident">v</span>) <span class="op">%</span> <span class="ident">p</span>, <span class="ident">t1</span>, <span class="ident">t2</span>));
         }
-        <span class="kw">return</span> <span class="ident">result</span>;
+        <span class="ident">result</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">beps_pn</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">e</span> : <span class="ident">u32</span>, <span class="ident">x</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> (<span class="ident">i32</span>, <span class="ident">usize</span>) {
@@ -2504,7 +2502,7 @@
             <span class="ident">bocksteins</span> : <span class="ident">e</span>,
             <span class="ident">ps</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">x</span>]
         });
-        <span class="kw">return</span> (<span class="ident">degree</span>, <span class="ident">index</span>);
+        (<span class="ident">degree</span>, <span class="ident">index</span>)
     }
 }
 

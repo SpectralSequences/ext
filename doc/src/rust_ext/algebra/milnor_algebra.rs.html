@@ -1070,7 +1070,6 @@
 <span id="1052">1052</span>
 <span id="1053">1053</span>
 <span id="1054">1054</span>
-<span id="1055">1055</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
@@ -1136,7 +1135,7 @@
                 <span class="kw">if</span> <span class="ident">qpart</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">!=</span> <span class="number">0</span> {
                     <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Q_{} &quot;</span>, <span class="ident">i</span>)<span class="question-mark">?</span>;
                 }
-                <span class="ident">qpart</span> <span class="op">=</span> <span class="ident">qpart</span> <span class="op">&gt;&gt;</span> <span class="number">1</span>;
+                <span class="ident">qpart</span> <span class="op">&gt;&gt;=</span> <span class="number">1</span>;
                 <span class="ident">i</span> <span class="op">+=</span> <span class="number">1</span>;
             }
         }
@@ -1189,7 +1188,7 @@
         <span class="self">Self</span> {
             <span class="ident">p</span>,
             <span class="ident">generic</span> : <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>,
-            <span class="ident">profile</span>: <span class="ident">profile</span>,
+            <span class="ident">profile</span>,
             <span class="ident">name</span> : <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;MilnorAlgebra(p={})&quot;</span>, <span class="ident">p</span>),
             <span class="ident">next_degree</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="number">0</span>),
             <span class="ident">ppart_table</span> : <span class="ident">OnceVec</span>::<span class="ident">new</span>(),
@@ -1382,9 +1381,9 @@
                 <span class="ident">q_part</span> <span class="op">^=</span> <span class="number">1</span> <span class="op">&lt;&lt;</span> <span class="ident">tz</span>;
                 <span class="ident">q_list</span>.<span class="ident">push</span>(<span class="ident">tz</span>);
             }
-            <span class="kw">return</span> <span class="ident">serde_json</span>::<span class="ident">to_value</span>((<span class="ident">q_list</span>, <span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">p_part</span>)).<span class="ident">unwrap</span>();
+            <span class="ident">serde_json</span>::<span class="ident">to_value</span>((<span class="ident">q_list</span>, <span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">p_part</span>)).<span class="ident">unwrap</span>()
         } <span class="kw">else</span> {
-            <span class="kw">return</span> <span class="ident">serde_json</span>::<span class="ident">to_value</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">p_part</span>).<span class="ident">unwrap</span>();
+            <span class="ident">serde_json</span>::<span class="ident">to_value</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">p_part</span>).<span class="ident">unwrap</span>()
         }
     }
 
@@ -1432,9 +1431,9 @@
         <span class="kw">let</span> <span class="ident">basis</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">basis_table</span>[<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">idx</span>];
         <span class="comment">// If qpart = 0, return self</span>
         <span class="kw">if</span> <span class="ident">basis</span>.<span class="ident">q_part</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">decompose_basis_element_ppart</span>(<span class="ident">degree</span>, <span class="ident">idx</span>);
+            <span class="self">self</span>.<span class="ident">decompose_basis_element_ppart</span>(<span class="ident">degree</span>, <span class="ident">idx</span>)
         } <span class="kw">else</span> {
-            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">decompose_basis_element_qpart</span>(<span class="ident">degree</span>, <span class="ident">idx</span>);
+            <span class="self">self</span>.<span class="ident">decompose_basis_element_qpart</span>(<span class="ident">degree</span>, <span class="ident">idx</span>)
         }
     }
 
@@ -1452,13 +1451,13 @@
             <span class="kw">let</span> (<span class="ident">first_degree</span>, <span class="ident">first_index</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">beps_pn</span>(<span class="number">0</span>, <span class="ident">x</span>);
             <span class="kw">let</span> (<span class="ident">second_degree</span>, <span class="ident">second_index</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">beps_pn</span>(<span class="ident">b</span>, <span class="ident">y</span>);
             <span class="ident">relation</span>.<span class="ident">push</span>((<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>, (<span class="ident">first_degree</span>, <span class="ident">first_index</span>), (<span class="ident">second_degree</span>, <span class="ident">second_index</span>)));
-            <span class="kw">for</span> <span class="ident">e1</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">b</span> <span class="op">+</span> <span class="number">1</span> {
+            <span class="kw">for</span> <span class="ident">e1</span> <span class="kw">in</span> <span class="number">0</span> ..= <span class="ident">b</span> {
                 <span class="kw">let</span> <span class="ident">e2</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">-</span> <span class="ident">e1</span>;
                 <span class="comment">// e1 and e2 determine where a bockstein shows up.</span>
                 <span class="comment">// e1 determines whether a bockstein shows up in front </span>
                 <span class="comment">// e2 determines whether a bockstein shows up in middle</span>
                 <span class="comment">// So our output term looks like b^{e1} P^{x+y-j} b^{e2} P^{j}</span>
-                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">x</span><span class="op">/</span><span class="ident">p</span> <span class="op">+</span> <span class="number">1</span> {
+                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> ..= <span class="ident">x</span><span class="op">/</span><span class="ident">p</span> {
                     <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="ident">p</span>, <span class="ident">x</span>, <span class="ident">y</span>, <span class="ident">j</span>, <span class="ident">e1</span>, <span class="ident">e2</span>);
                     <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="number">0</span> { <span class="kw">continue</span>; }
                     <span class="kw">if</span> <span class="ident">j</span> <span class="op">==</span> <span class="number">0</span> {
@@ -1472,7 +1471,7 @@
             }
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">relation</span>);
         }
-        <span class="kw">return</span> <span class="ident">result</span>;
+        <span class="ident">result</span>
     }
 }
 
@@ -1630,7 +1629,7 @@
             <span class="ident">q_part</span> : <span class="ident">e</span>,
             <span class="ident">p_part</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">x</span>]
         });
-        <span class="kw">return</span> (<span class="ident">degree</span>, <span class="ident">index</span>);
+        (<span class="ident">degree</span>, <span class="ident">index</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">multiply_qpart</span> (<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">m1</span> : <span class="kw-2">&amp;</span><span class="ident">MilnorBasisElement</span>, <span class="ident">f</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">MilnorBasisElement</span>)<span class="op">&gt;</span>{
@@ -1678,7 +1677,7 @@
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">term</span>.<span class="ident">q_part</span> <span class="op">&gt;&gt;</span> (<span class="ident">k</span> <span class="op">+</span> <span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">+</span> <span class="number">1</span>);
                     <span class="kw">while</span> <span class="ident">v</span> <span class="op">!=</span> <span class="number">0</span> {
                         <span class="ident">larger_q</span> <span class="op">+=</span> <span class="ident">v</span> <span class="op">&amp;</span> <span class="number">1</span>;
-                        <span class="ident">v</span> <span class="op">=</span> <span class="ident">v</span> <span class="op">&gt;&gt;</span> <span class="number">1</span>;
+                        <span class="ident">v</span> <span class="op">&gt;&gt;=</span> <span class="number">1</span>;
                     }
 
                     <span class="comment">// If new_p ends with 0, drop them</span>
@@ -1756,9 +1755,8 @@
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">rows</span> {
             <span class="ident">M</span>[<span class="ident">i</span>][<span class="number">0</span>] <span class="op">=</span> <span class="ident">r</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>];
         }
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">cols</span> {
-            <span class="ident">M</span>[<span class="number">0</span>][<span class="ident">i</span>] <span class="op">=</span> <span class="ident">s</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>];
-        }
+        <span class="ident">M</span>[<span class="number">0</span>][<span class="number">1</span>..<span class="ident">cols</span>].<span class="ident">clone_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="number">0</span>..(<span class="ident">cols</span> <span class="op">-</span> <span class="number">1</span>)]);
+
         <span class="ident">PPartMultiplier</span> { <span class="ident">p</span>, <span class="ident">M</span>, <span class="ident">r</span>, <span class="ident">rows</span>, <span class="ident">cols</span>, <span class="ident">diag_num</span>, <span class="ident">cont</span> : <span class="bool-val">true</span> }
     }
 
@@ -1801,7 +1799,7 @@
                 <span class="ident">total</span> <span class="op">+=</span> <span class="self">self</span>.<span class="ident">M</span>[<span class="ident">i</span>][<span class="ident">j</span>] <span class="op">*</span> <span class="ident">p_to_the_j</span>;
             }
         }
-        <span class="kw">return</span> <span class="bool-val">false</span>
+        <span class="bool-val">false</span>
     }
 }
 
@@ -1834,7 +1832,7 @@
                 <span class="kw">continue</span>;
             }
             <span class="ident">coef</span> <span class="op">*=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">multinomial</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="kw-2">&amp;</span><span class="ident">diagonal</span>);
-            <span class="ident">coef</span> <span class="op">=</span> <span class="ident">coef</span> <span class="op">%</span> <span class="self">self</span>.<span class="ident">p</span>;
+            <span class="ident">coef</span> <span class="op">%=</span> <span class="self">self</span>.<span class="ident">p</span>;
             <span class="kw">if</span> <span class="ident">coef</span> <span class="op">==</span> <span class="number">0</span> {
                 <span class="self">self</span>.<span class="ident">cont</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">update</span>();
                 <span class="kw">return</span> <span class="self">self</span>.<span class="ident">next</span>();
@@ -1859,7 +1857,7 @@
         <span class="comment">// Look for left-most non-zero qpart</span>
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">basis</span>.<span class="ident">q_part</span>.<span class="ident">trailing_zeros</span>();
         <span class="comment">// If the basis element is just Q_{k+1}, we decompose Q_{k+1} = P(p^k) Q_k - Q_k P(p^k).</span>
-        <span class="kw">if</span> <span class="ident">basis</span>.<span class="ident">q_part</span> <span class="op">==</span> <span class="number">1</span> <span class="op">&lt;&lt;</span> <span class="ident">i</span> <span class="op">&amp;&amp;</span> <span class="ident">basis</span>.<span class="ident">p_part</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">basis</span>.<span class="ident">q_part</span> <span class="op">==</span> <span class="number">1</span> <span class="op">&lt;&lt;</span> <span class="ident">i</span> <span class="op">&amp;&amp;</span> <span class="ident">basis</span>.<span class="ident">p_part</span>.<span class="ident">is_empty</span>() {
             <span class="kw">let</span> <span class="ident">ppow</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">integer_power</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>);
 
             <span class="kw">let</span> <span class="ident">q_degree</span> <span class="op">=</span> (<span class="number">2</span> <span class="op">*</span> <span class="ident">ppow</span> <span class="op">-</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i32</span>;
@@ -1952,7 +1950,7 @@
                 <span class="ident">result</span>.<span class="ident">push</span>(((<span class="ident">c_inv</span> <span class="op">*</span> <span class="ident">c</span> <span class="op">*</span> <span class="ident">v</span>) <span class="op">%</span> <span class="ident">p</span>, <span class="ident">t1</span>, <span class="ident">t2</span>));
             }
         }
-        <span class="kw">return</span> <span class="ident">result</span>;
+        <span class="ident">result</span>
     }
 }
 
@@ -2057,7 +2055,7 @@
 
 <span class="kw">impl</span> <span class="ident">MilnorAlgebra</span> {
     <span class="doccomment">/// Returns `true` if the new element is not within the bounds</span>
-    <span class="kw">fn</span> <span class="ident">increment_p_part</span>(<span class="ident">element</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>, <span class="ident">max</span> : <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">increment_p_part</span>(<span class="ident">element</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>, <span class="ident">max</span> : <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-&gt;</span> <span class="ident">bool</span> {
         <span class="ident">element</span>[<span class="number">0</span>] <span class="op">+=</span> <span class="number">1</span>;
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">element</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>{
             <span class="kw">if</span> <span class="ident">element</span>[<span class="ident">i</span>] <span class="op">&gt;</span> <span class="ident">max</span>[<span class="ident">i</span>] {

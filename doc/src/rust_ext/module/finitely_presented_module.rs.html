@@ -371,7 +371,7 @@
             <span class="ident">gen_to_idx</span>.<span class="ident">insert</span>(<span class="ident">name</span>, (<span class="ident">degree</span>, <span class="ident">graded_dimension</span>[<span class="ident">degree</span>]));
             <span class="ident">graded_dimension</span>[<span class="ident">degree</span>] <span class="op">+=</span> <span class="number">1</span>;
         }
-        <span class="kw">return</span> (<span class="ident">graded_dimension</span>, <span class="ident">gen_names</span>, <span class="ident">gen_to_idx</span>);
+        (<span class="ident">graded_dimension</span>, <span class="ident">gen_names</span>, <span class="ident">gen_to_idx</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
@@ -398,7 +398,7 @@
                         <span class="ident">generator_degree</span> : <span class="ident">gen_deg</span>,
                         <span class="ident">generator_index</span> : <span class="ident">gen_idx</span>
                     };
-                    <span class="kw">return</span> (<span class="ident">coeff</span>, <span class="ident">op_gen</span>);
+                    (<span class="ident">coeff</span>, <span class="ident">op_gen</span>)
                 }
             ).<span class="ident">collect</span>()
         ).<span class="ident">collect</span>();
@@ -436,7 +436,7 @@
             }
             <span class="ident">result</span>.<span class="ident">add_relations</span>(<span class="ident">i</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">relations_matrix</span>);
         }
-        <span class="kw">return</span> <span class="ident">result</span>;
+        <span class="ident">result</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">relations_to_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Value</span> {

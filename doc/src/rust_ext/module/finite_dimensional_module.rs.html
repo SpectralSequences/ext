@@ -708,7 +708,7 @@
                 <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">degree</span> <span class="op">+</span> <span class="number">1</span>;
             }
         }
-        <span class="kw">if</span> <span class="ident">gens</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">gens</span>.<span class="ident">is_empty</span>() {
             <span class="ident">min_degree</span> <span class="op">=</span> <span class="number">0</span>;
             <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">0</span>;
         }
@@ -865,7 +865,7 @@
                 <span class="ident">output_vec</span>.<span class="ident">set_entry</span>(<span class="ident">output_idx</span>, <span class="ident">output_coeff</span>);
             }
         }
-        <span class="kw">return</span> <span class="ident">result</span>;
+        <span class="ident">result</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_validity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_deg</span> : <span class="ident">i32</span>, <span class="ident">output_deg</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(),<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span>{
@@ -999,7 +999,7 @@
                             }
                             <span class="ident">current_terms</span>.<span class="ident">push</span>(<span class="macro">json</span><span class="macro">!</span>({<span class="string">&quot;gen&quot;</span> : <span class="self">self</span>.<span class="ident">basis_element_to_string</span>(<span class="ident">output_degree</span>, <span class="ident">i</span>), <span class="string">&quot;coeff&quot;</span> : <span class="ident">v</span>}));
                         }
-                        <span class="kw">if</span> <span class="ident">current_terms</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span> {
+                        <span class="kw">if</span> <span class="ident">current_terms</span>.<span class="ident">is_empty</span>() {
                             <span class="kw">continue</span>;
                         }
                         <span class="kw">let</span> <span class="ident">current_action</span> <span class="op">=</span> <span class="macro">json</span><span class="macro">!</span>({
