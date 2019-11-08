@@ -6,5 +6,4 @@ implementors["rust_ext"] = [];
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

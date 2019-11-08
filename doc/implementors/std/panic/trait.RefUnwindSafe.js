@@ -10,5 +10,4 @@ implementors["thread_token"] = [{text:"impl !<a class=\"trait\" href=\"https://d
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

@@ -265,7 +265,7 @@
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
 
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SumModule</span><span class="op">&lt;</span><span class="ident">HomModule</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">SumModule</span><span class="op">&lt;</span><span class="ident">HomModule</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HomChainComplex</span><span class="op">&lt;</span>
     <span class="ident">CC1</span> : <span class="ident">ResolutionComplex</span>, 
@@ -274,16 +274,16 @@
 <span class="op">&gt;</span> {
     <span class="ident">lock</span> : <span class="ident">Mutex</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
     <span class="ident">source_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC1</span><span class="op">&gt;</span>,
-    <span class="ident">target_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;&gt;</span>,
-    <span class="ident">modules</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">zero_module</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>,
-    <span class="ident">differentials</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">HomChainMap</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
+    <span class="ident">target_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">modules</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">zero_module</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">differentials</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">HomChainMap</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ResolutionComplex</span>, <span class="ident">M</span> : <span class="ident">BoundedModule</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;&gt;</span> 
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ResolutionComplex</span>, <span class="ident">M</span> : <span class="ident">BoundedModule</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> 
     <span class="ident">HomChainComplex</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span>
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">source_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC1</span><span class="op">&gt;</span>, <span class="ident">target_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">source_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC1</span><span class="op">&gt;</span>, <span class="ident">target_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">lock</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
             <span class="ident">modules</span> : <span class="ident">OnceVec</span>::<span class="ident">new</span>(),
@@ -293,11 +293,11 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">source_cc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC1</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">source_cc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC1</span><span class="op">&gt;</span> {
         <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source_cc</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">target_cc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">target_cc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target_cc</span>)
     }
 }
@@ -375,16 +375,16 @@
 <span class="comment">//     fn max_homology_degree(&amp;self, _homological_degree : u32) -&gt; i32 { unimplemented!() }</span>
 <span class="comment">// }</span>
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HomChainMap</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ResolutionComplex</span>, <span class="ident">M</span> : <span class="ident">BoundedModule</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HomChainMap</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ResolutionComplex</span>, <span class="ident">M</span> : <span class="ident">BoundedModule</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="ident">source_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC1</span><span class="op">&gt;</span>,
-    <span class="ident">target_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">target_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">lock</span> : <span class="ident">Mutex</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
-    <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>,
-    <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;&gt;</span>,
-    <span class="ident">quasi_inverses</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">FpVector</span>)<span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>
+    <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">quasi_inverses</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">FpVector</span>)<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ResolutionComplex</span>, <span class="ident">M</span> : <span class="ident">BoundedModule</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;&gt;</span> <span class="ident">HomChainMap</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ResolutionComplex</span>, <span class="ident">M</span> : <span class="ident">BoundedModule</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">HomChainMap</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span> {
     <span class="comment">// fn pullback_basis_element(&amp;self, result : &amp;mut FpVector, coeff : u32, hom_deg : i32, int_deg : i32, fn_idx : usize) {</span>
     <span class="comment">//     println!(&quot;fn_deg : {}, fn_idx : {}&quot;, fn_degree, fn_idx);</span>
     <span class="comment">//     let hom_deg_output = 0; // TODO: Figure out hom_deg_output from fn_idx.</span>
@@ -414,14 +414,14 @@
     <span class="comment">// }</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ResolutionComplex</span>, <span class="ident">M</span> : <span class="ident">BoundedModule</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;&gt;</span> <span class="ident">ModuleHomomorphism</span> 
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC1</span> : <span class="ident">ResolutionComplex</span>, <span class="ident">M</span> : <span class="ident">BoundedModule</span>, <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">ModuleHomomorphism</span> 
 <span class="kw">for</span> <span class="ident">HomChainMap</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Source</span> <span class="op">=</span> <span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">SHM</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Source</span><span class="op">&gt;</span> { <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>) }
-    <span class="kw">fn</span> <span class="ident">target</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Target</span><span class="op">&gt;</span> { <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target</span>) }
-    <span class="kw">fn</span> <span class="ident">degree_shift</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> { <span class="number">0</span> }
+    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Source</span><span class="op">&gt;</span> { <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>) }
+    <span class="kw">fn</span> <span class="ident">target</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Target</span><span class="op">&gt;</span> { <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target</span>) }
+    <span class="kw">fn</span> <span class="ident">degree_shift</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> { <span class="number">0</span> }
 
 
     <span class="doccomment">/// At the moment, this is off by a sign. However, we only use this for p = 2</span>
@@ -433,11 +433,11 @@
 
 
 
-    <span class="kw">fn</span> <span class="ident">kernel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Subspace</span> {
+    <span class="kw">fn</span> <span class="ident">kernel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Subspace</span> {
         <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Kernels not calculated for TensorChainMap&quot;</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">QuasiInverse</span> {
+    <span class="kw">fn</span> <span class="ident">quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">QuasiInverse</span> {
         <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Use apply_quasi_inverse instead&quot;</span>);
     }
 
@@ -449,7 +449,7 @@
 
         <span class="kw">let</span> <span class="ident">_lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
 
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">next_degree</span> ..= <span class="ident">degree</span> {
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">next_degree</span> ..<span class="op">=</span> <span class="ident">degree</span> {
             <span class="self">self</span>.<span class="ident">calculate_quasi_inverse</span>(<span class="ident">i</span>);
         }
     }
@@ -461,7 +461,7 @@
         <span class="kw">let</span> <span class="ident">old_slice</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">slice</span>();
 
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">x</span>) <span class="kw">in</span> <span class="ident">input</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">x</span> <span class="op">==</span> <span class="number">0</span> { <span class="kw">continue</span>; }
+            <span class="kw">if</span> <span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="kw">continue</span>; }
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">qi</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">qis</span>[<span class="ident">i</span>] {
                 <span class="kw">for</span> (<span class="ident">offset_start</span>, <span class="ident">offset_end</span>, <span class="ident">data</span>) <span class="kw">in</span> <span class="ident">qi</span>.<span class="ident">iter</span>() {
                     <span class="ident">result</span>.<span class="ident">set_slice</span>(<span class="kw-2">*</span><span class="ident">offset_start</span>, <span class="kw-2">*</span><span class="ident">offset_end</span>);

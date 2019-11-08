@@ -298,11 +298,11 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Algebra</span> {
     <span class="doccomment">/// The &quot;type&quot; of the algebra, which is &quot;adem&quot; or &quot;milnor&quot;. When reading module definitions,</span>
     <span class="doccomment">/// this informs whether we should look at adem_actions or milnor_actions.</span>
-    <span class="kw">fn</span> <span class="ident">algebra_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span>;
+    <span class="kw">fn</span> <span class="ident">algebra_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span>;
 
     <span class="doccomment">/// Returns the prime the algebra is over.</span>
-    <span class="kw">fn</span> <span class="ident">prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">u32</span>;
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> { <span class="string">&quot;&quot;</span> }
+    <span class="kw">fn</span> <span class="ident">prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>;
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> { <span class="string">&quot;&quot;</span> }
 
     <span class="doccomment">/// Computes the list of basis elements up to and including degree `degree`. This should include any</span>
     <span class="doccomment">/// other preparation needed to evaluate all the other functions that involve a degree</span>
@@ -311,7 +311,7 @@
     <span class="kw">fn</span> <span class="ident">compute_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>);
 
     <span class="doccomment">/// Gets the dimension of the algebra in degree `degree`.</span>
-    <span class="kw">fn</span> <span class="ident">dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">excess</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span>;
+    <span class="kw">fn</span> <span class="ident">dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">excess</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span>;
 
     <span class="doccomment">/// Computes the product `r * s` of the two basis elements, and *adds* the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">multiply_basis_elements</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">r_degree</span> : <span class="ident">i32</span>, <span class="ident">r_idx</span> : <span class="ident">usize</span>, <span class="ident">s_degree</span>: <span class="ident">i32</span>, <span class="ident">s_idx</span> : <span class="ident">usize</span>, <span class="ident">excess</span> : <span class="ident">i32</span>);
@@ -319,7 +319,7 @@
     <span class="kw">fn</span> <span class="ident">multiply_basis_element_by_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">r_degree</span> : <span class="ident">i32</span>, <span class="ident">r_idx</span> : <span class="ident">usize</span>, <span class="ident">s_degree</span> : <span class="ident">i32</span>, <span class="ident">s</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">excess</span> : <span class="ident">i32</span>){
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">s</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">v</span> <span class="op">==</span> <span class="number">0</span> { <span class="kw">continue</span>; }
+            <span class="kw">if</span> <span class="ident">v</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="kw">continue</span>; }
             <span class="self">self</span>.<span class="ident">multiply_basis_elements</span>(<span class="ident">result</span>, (<span class="ident">coeff</span> <span class="op">*</span> <span class="ident">v</span>) <span class="op">%</span> <span class="ident">p</span>, <span class="ident">r_degree</span>, <span class="ident">r_idx</span>, <span class="ident">s_degree</span>, <span class="ident">i</span>, <span class="ident">excess</span>);
         }
     }
@@ -327,7 +327,7 @@
     <span class="kw">fn</span> <span class="ident">multiply_element_by_basis_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">r_degree</span> : <span class="ident">i32</span>, <span class="ident">r</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">s_degree</span> : <span class="ident">i32</span>, <span class="ident">s_idx</span> : <span class="ident">usize</span>, <span class="ident">excess</span> : <span class="ident">i32</span>){
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">r</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">v</span> <span class="op">==</span> <span class="number">0</span> { <span class="kw">continue</span>; }
+            <span class="kw">if</span> <span class="ident">v</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="kw">continue</span>; }
             <span class="self">self</span>.<span class="ident">multiply_basis_elements</span>(<span class="ident">result</span>, (<span class="ident">coeff</span> <span class="op">*</span> <span class="ident">v</span>) <span class="op">%</span> <span class="ident">p</span>, <span class="ident">r_degree</span>, <span class="ident">i</span>, <span class="ident">s_degree</span>, <span class="ident">s_idx</span>, <span class="ident">excess</span>);
         }
     }
@@ -335,7 +335,7 @@
     <span class="kw">fn</span> <span class="ident">multiply_element_by_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">r_degree</span> : <span class="ident">i32</span>, <span class="ident">r</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">s_degree</span> : <span class="ident">i32</span>, <span class="ident">s</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>, <span class="ident">excess</span> : <span class="ident">i32</span>){
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">s</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">v</span> <span class="op">==</span> <span class="number">0</span> { <span class="kw">continue</span>; }
+            <span class="kw">if</span> <span class="ident">v</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="kw">continue</span>; }
             <span class="self">self</span>.<span class="ident">multiply_element_by_basis_element</span>(<span class="ident">result</span>, (<span class="ident">coeff</span> <span class="op">*</span> <span class="ident">v</span>) <span class="op">%</span> <span class="ident">p</span>, <span class="ident">r_degree</span>, <span class="ident">r</span>, <span class="ident">s_degree</span>, <span class="ident">i</span>, <span class="ident">excess</span>);
         }
     }
@@ -343,29 +343,29 @@
     <span class="doccomment">/// A filtration one element in Ext(k, k) is the same as an indecomposable element of the</span>
     <span class="doccomment">/// algebra.  This function returns a default list of such elements in the format `(name,</span>
     <span class="doccomment">/// degree, index)` for whom we want to compute products with in the resolutions.</span>
-    <span class="kw">fn</span> <span class="ident">default_filtration_one_products</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> { <span class="ident">Vec</span>::<span class="ident">new</span>() }
+    <span class="kw">fn</span> <span class="ident">default_filtration_one_products</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> { <span class="ident">Vec</span>::<span class="ident">new</span>() }
 
     <span class="doccomment">/// Converts a JSON object into a basis element. The way basis elements are represented by JSON</span>
     <span class="doccomment">/// objects is to be specified by the algebra itself, and will be used by module</span>
     <span class="doccomment">/// specifications.</span>
-    <span class="kw">fn</span> <span class="ident">json_to_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_json</span> : <span class="ident">Value</span>) <span class="op">-&gt;</span> (<span class="ident">i32</span>, <span class="ident">usize</span>) { <span class="macro">unimplemented</span><span class="macro">!</span>() }
-    <span class="kw">fn</span> <span class="ident">json_from_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>, <span class="ident">_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Value</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
+    <span class="kw">fn</span> <span class="ident">json_to_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_json</span> : <span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">i32</span>, <span class="ident">usize</span>) { <span class="macro">unimplemented</span><span class="macro">!</span>() }
+    <span class="kw">fn</span> <span class="ident">json_from_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>, <span class="ident">_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Value</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
 
     <span class="doccomment">/// Converts a basis element into a string for display.</span>
-    <span class="kw">fn</span> <span class="ident">basis_element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">basis_element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;a_{{{}, {}}}&quot;</span>, <span class="ident">degree</span>, <span class="ident">idx</span>)
     }
 
     <span class="doccomment">/// Converts an element into a string for display.</span>
-    <span class="kw">fn</span> <span class="ident">element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">element</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">element</span> : <span class="kw-2">&amp;</span><span class="ident">FpVector</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">zero</span> <span class="op">=</span> <span class="bool-val">true</span>;
         <span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">element</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">value</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">value</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="kw">continue</span>;
             }
             <span class="ident">zero</span> <span class="op">=</span> <span class="bool-val">false</span>;
-            <span class="kw">if</span> <span class="ident">value</span> <span class="op">!=</span> <span class="number">1</span> {
+            <span class="kw">if</span> <span class="ident">value</span> <span class="op">!</span><span class="op">=</span> <span class="number">1</span> {
                 <span class="ident">result</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} * &quot;</span>, <span class="ident">value</span>));
             }
             <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_string</span>(<span class="ident">degree</span>, <span class="ident">idx</span>);
@@ -379,7 +379,7 @@
             <span class="ident">result</span>.<span class="ident">pop</span>();
             <span class="ident">result</span>.<span class="ident">pop</span>();
         }
-        <span class="kw">return</span> <span class="ident">result</span>;
+        <span class="ident">result</span>
     }    
 
     <span class="doccomment">/// Given a degree `degree`, the function returns a list of algebra generators in that degree.</span>
@@ -388,7 +388,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This method need not be fast, because they will only be performed when constructing the module,</span>
     <span class="doccomment">/// and will often only involve low dimensional elements.</span>
-    <span class="kw">fn</span> <span class="ident">generators</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
+    <span class="kw">fn</span> <span class="ident">generators</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
 
     <span class="doccomment">/// Given a non-generator basis element of the algebra, decompose it in terms of algebra</span>
     <span class="doccomment">/// generators. Recall each basis element is given by a pair $(d, i))$, where $d$ is the degree of</span>
@@ -400,10 +400,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This method need not be fast, because they will only be performed when constructing the module,</span>
     <span class="doccomment">/// and will often only involve low dimensional elements.</span>
-    <span class="kw">fn</span> <span class="ident">decompose_basis_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>, <span class="ident">_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>), (<span class="ident">i32</span>, <span class="ident">usize</span>))<span class="op">&gt;</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
+    <span class="kw">fn</span> <span class="ident">decompose_basis_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>, <span class="ident">_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>), (<span class="ident">i32</span>, <span class="ident">usize</span>))<span class="op">&gt;</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
 
     <span class="doccomment">/// Get any relations that the algebra wants checked to ensure the consistency of module.</span>
-    <span class="kw">fn</span> <span class="ident">relations_to_check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>), (<span class="ident">i32</span>, <span class="ident">usize</span>))<span class="op">&gt;&gt;</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
+    <span class="kw">fn</span> <span class="ident">relations_to_check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>), (<span class="ident">i32</span>, <span class="ident">usize</span>))<span class="op">&gt;</span><span class="op">&gt;</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
 }
 
 <span class="attribute">#[<span class="ident">enum_dispatch</span>(<span class="ident">Algebra</span>)]</span>
@@ -414,19 +414,19 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Bialgebra</span> <span class="kw">for</span> <span class="ident">AlgebraAny</span> {
-    <span class="kw">fn</span> <span class="ident">decompose</span> (<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">decompose</span> (<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">AlgebraAny</span>::<span class="ident">AdemAlgebra</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="ident">a</span>.<span class="ident">decompose</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>),
-            <span class="ident">AlgebraAny</span>::<span class="ident">MilnorAlgebra</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="ident">a</span>.<span class="ident">decompose</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>),
-            <span class="ident">AlgebraAny</span>::<span class="ident">Field</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="ident">a</span>.<span class="ident">decompose</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>)
+            <span class="ident">AlgebraAny</span>::<span class="ident">AdemAlgebra</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">decompose</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>),
+            <span class="ident">AlgebraAny</span>::<span class="ident">MilnorAlgebra</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">decompose</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>),
+            <span class="ident">AlgebraAny</span>::<span class="ident">Field</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">decompose</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>)
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">coproduct</span> (<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">coproduct</span> (<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">AlgebraAny</span>::<span class="ident">AdemAlgebra</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="ident">a</span>.<span class="ident">coproduct</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>),
-            <span class="ident">AlgebraAny</span>::<span class="ident">MilnorAlgebra</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="ident">a</span>.<span class="ident">coproduct</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>),
-            <span class="ident">AlgebraAny</span>::<span class="ident">Field</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="ident">a</span>.<span class="ident">coproduct</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>)
+            <span class="ident">AlgebraAny</span>::<span class="ident">AdemAlgebra</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">coproduct</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>),
+            <span class="ident">AlgebraAny</span>::<span class="ident">MilnorAlgebra</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">coproduct</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>),
+            <span class="ident">AlgebraAny</span>::<span class="ident">Field</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">a</span>.<span class="ident">coproduct</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>)
         }
     }
 }
@@ -436,18 +436,18 @@
 <span class="kw">struct</span> <span class="ident">MilnorProfileOption</span> {
     <span class="ident">truncated</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
     <span class="ident">q_part</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
-    <span class="ident">p_part</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>
+    <span class="ident">p_part</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">struct</span> <span class="ident">AlgebraSpec</span> {
     <span class="ident">p</span> : <span class="ident">u32</span>,
-    <span class="ident">algebra</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">algebra</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">profile</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MilnorProfileOption</span><span class="op">&gt;</span>
 }
 
 <span class="kw">impl</span> <span class="ident">AlgebraAny</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="ident">Value</span>, <span class="kw-2">mut</span> <span class="ident">algebra_name</span> : <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="ident">Value</span>, <span class="kw-2">mut</span> <span class="ident">algebra_name</span> : <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">spec</span> : <span class="ident">AlgebraSpec</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_value</span>(<span class="ident">json</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
 
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">p</span>;
@@ -461,8 +461,8 @@
 
         <span class="kw">let</span> <span class="ident">algebra</span> : <span class="ident">AlgebraAny</span>;
         <span class="kw">match</span> <span class="ident">algebra_name</span>.<span class="ident">as_ref</span>() {
-            <span class="string">&quot;adem&quot;</span> <span class="op">=&gt;</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!=</span> <span class="number">2</span>, <span class="bool-val">false</span>)),
-            <span class="string">&quot;milnor&quot;</span> <span class="op">=&gt;</span> {
+            <span class="string">&quot;adem&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="number">2</span>, <span class="bool-val">false</span>)),
+            <span class="string">&quot;milnor&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">algebra_inner</span> <span class="op">=</span> <span class="ident">MilnorAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>);
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">profile</span>) <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">profile</span> {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">truncated</span>) <span class="op">=</span> <span class="ident">profile</span>.<span class="ident">truncated</span> {
@@ -477,7 +477,7 @@
                 }
                 <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">algebra_inner</span>);
             }
-            <span class="kw">_</span> <span class="op">=&gt;</span> { <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">InvalidAlgebraError</span> { <span class="ident">name</span> : <span class="ident">algebra_name</span> })); }
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> { <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">InvalidAlgebraError</span> { <span class="ident">name</span> : <span class="ident">algebra_name</span> })); }
         };
         <span class="prelude-val">Ok</span>(<span class="ident">algebra</span>)
     }
@@ -489,13 +489,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">InvalidAlgebraError</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Invalid algebra: {}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">InvalidAlgebraError</span> {
-    <span class="kw">fn</span> <span class="ident">description</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
+    <span class="kw">fn</span> <span class="ident">description</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
         <span class="string">&quot;Invalid algebra supplied&quot;</span>
     }
 }
@@ -509,11 +509,11 @@
     <span class="doccomment">/// This structure is motivated by the fact that in the admissible basis for the Adem algebra,</span>
     <span class="doccomment">/// an element naturally decomposes into a product of Steenrod squares, each of which has an</span>
     <span class="doccomment">/// easy coproduct formula.</span>
-    <span class="kw">fn</span> <span class="ident">decompose</span> (<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">decompose</span> (<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>;
 
     <span class="doccomment">/// Expresses Delta(x) as sum_j (A_{ij} (x) B_{ij}). Here x must be one of the elements</span>
     <span class="doccomment">/// returned by `decompose`.</span>
-    <span class="kw">fn</span> <span class="ident">coproduct</span> (<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">coproduct</span> (<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>;
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rust_ext";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

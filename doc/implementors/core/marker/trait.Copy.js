@@ -6,5 +6,4 @@ implementors["ext_websocket"] = [{text:"impl <a class=\"trait\" href=\"https://d
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

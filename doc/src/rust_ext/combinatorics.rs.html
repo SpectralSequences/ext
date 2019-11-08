@@ -708,20 +708,20 @@
     [<span class="number">1</span>, <span class="number">37</span>, <span class="number">721</span>, <span class="number">13717</span>, <span class="number">260641</span>, <span class="number">4952197</span>, <span class="number">94091761</span>, <span class="number">1787743477</span>, <span class="number">0</span>, <span class="number">0</span>]
 ];
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_valid_prime</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-    (<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>) <span class="op">&lt;</span> <span class="ident">MAX_PRIME</span> <span class="op">&amp;&amp;</span> <span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">!=</span> <span class="ident">NOT_A_PRIME</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_valid_prime</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    (<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>) <span class="op">&lt;</span> <span class="ident">MAX_PRIME</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">!</span><span class="op">=</span> <span class="ident">NOT_A_PRIME</span>
 }
 
 <span class="comment">// Uses a the lookup table we initialized.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">k</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span>{
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">k</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>{
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_valid_prime</span>(<span class="ident">p</span>));
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">INVERSE_TABLE</span>[<span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>]][<span class="ident">k</span> <span class="kw">as</span> <span class="ident">usize</span>];
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">result</span> <span class="op">!=</span> <span class="number">0</span>);
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">result</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>);
     <span class="kw">return</span> <span class="ident">result</span>;
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minus_one_to_the_n</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">i</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
-    <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">0</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="ident">p</span> <span class="op">-</span> <span class="number">1</span> }
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minus_one_to_the_n</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">i</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="ident">p</span> <span class="op">-</span> <span class="number">1</span> }
 }
 
 
@@ -729,51 +729,51 @@
 <span class="comment">// Lucas&#39;s theorem reduces general binomial coefficients to this case.</span>
 
 <span class="comment">// This is a table lookup, n, k &lt; p.</span>
-<span class="kw">fn</span> <span class="ident">direct_binomial</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">n</span> : <span class="ident">u32</span>, <span class="ident">k</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span>{
+<span class="kw">fn</span> <span class="ident">direct_binomial</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">n</span> : <span class="ident">u32</span>, <span class="ident">k</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>{
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_valid_prime</span>(<span class="ident">p</span>));
     <span class="ident">BINOMIAL_TABLE</span>[<span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>]][<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">k</span> <span class="kw">as</span> <span class="ident">usize</span>]
 }
 
 
 <span class="doccomment">/// Computes b^e.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">integer_power</span>(<span class="ident">b</span> : <span class="ident">u32</span>, <span class="ident">e</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">integer_power</span>(<span class="ident">b</span> : <span class="ident">u32</span>, <span class="ident">e</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">b</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">e</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="number">1u32</span>;
     <span class="kw">while</span> <span class="ident">e</span> <span class="op">&gt;</span> <span class="number">0</span> {
-        <span class="kw">if</span> <span class="ident">e</span><span class="kw-2">&amp;</span><span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
-            <span class="ident">result</span> <span class="op">*=</span> <span class="ident">b</span>;
+        <span class="kw">if</span> <span class="ident">e</span><span class="kw-2">&amp;</span><span class="number">1</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+            <span class="ident">result</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">b</span>;
         }
-        <span class="ident">b</span> <span class="op">*=</span> <span class="ident">b</span>;
-        <span class="ident">e</span> <span class="op">&gt;&gt;=</span> <span class="number">1</span>;
+        <span class="ident">b</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">b</span>;
+        <span class="ident">e</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
     }
     <span class="ident">result</span>
 }
 
 <span class="doccomment">/// Compute b^e mod p.</span>
 <span class="doccomment">/// We use this for computing modulo inverses.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">power_mod</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">b</span> : <span class="ident">u32</span>, <span class="ident">e</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span>{
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">power_mod</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">b</span> : <span class="ident">u32</span>, <span class="ident">e</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>{
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">b</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">e</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="number">1u32</span>;
 <span class="comment">//      b is b^{2^i} mod p</span>
 <span class="comment">//      if the current bit of e is odd, mutliply b^{2^i} mod p into r.</span>
     <span class="kw">while</span> <span class="ident">e</span> <span class="op">&gt;</span> <span class="number">0</span> {
-        <span class="kw">if</span> (<span class="ident">e</span><span class="kw-2">&amp;</span><span class="number">1</span>) <span class="op">==</span> <span class="number">1</span> {
+        <span class="kw">if</span> (<span class="ident">e</span><span class="kw-2">&amp;</span><span class="number">1</span>) <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
             <span class="ident">result</span> <span class="op">=</span> (<span class="ident">result</span><span class="kw-2">*</span><span class="ident">b</span>)<span class="op">%</span><span class="ident">p</span>;
         }
         <span class="ident">b</span> <span class="op">=</span> (<span class="ident">b</span><span class="kw-2">*</span><span class="ident">b</span>)<span class="op">%</span><span class="ident">p</span>;
-        <span class="ident">e</span> <span class="op">&gt;&gt;=</span> <span class="number">1</span>;
+        <span class="ident">e</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
     }
     <span class="ident">result</span>
 }
 
 <span class="comment">// Discrete log base p of n.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">logp</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">n</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">logp</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">n</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="number">0u32</span>;
     <span class="kw">while</span> <span class="ident">n</span> <span class="op">&gt;</span> <span class="number">0</span> {
-        <span class="ident">n</span> <span class="op">/=</span> <span class="ident">p</span>;
-        <span class="ident">result</span> <span class="op">+=</span> <span class="number">1</span>;
+        <span class="ident">n</span> <span class="op">/</span><span class="op">=</span> <span class="ident">p</span>;
+        <span class="ident">result</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
     }
     <span class="ident">result</span>
 }
@@ -782,37 +782,37 @@
  * Expand n base p and write the result into buffer result.
  * Result has to have length greater than logp(p, n) or we&#39;ll have a buffer overflow.
  */</span>
-<span class="kw">fn</span> <span class="ident">basep_expansion</span>(<span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span>[<span class="ident">u32</span>], <span class="ident">p</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">n</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span>[<span class="ident">u32</span>] {
+<span class="kw">fn</span> <span class="ident">basep_expansion</span>(<span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span>[<span class="ident">u32</span>], <span class="ident">p</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">n</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span>[<span class="ident">u32</span>] {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0usize</span>;
     <span class="kw">while</span> <span class="ident">n</span> <span class="op">&gt;</span> <span class="number">0</span> {
         <span class="ident">result</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">n</span> <span class="op">%</span> <span class="ident">p</span>;
-        <span class="ident">i</span> <span class="op">+=</span> <span class="number">1</span>;
-        <span class="ident">n</span> <span class="op">/=</span> <span class="ident">p</span>;
+        <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+        <span class="ident">n</span> <span class="op">/</span><span class="op">=</span> <span class="ident">p</span>;
     }
     <span class="ident">result</span>
 }
 
 
 <span class="comment">//Multinomial coefficient of the list l</span>
-<span class="kw">fn</span> <span class="ident">multinomial2</span>(<span class="ident">l</span> : <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-&gt;</span> <span class="ident">u32</span> {
+<span class="kw">fn</span> <span class="ident">multinomial2</span>(<span class="ident">l</span> : <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit_or</span> <span class="op">=</span> <span class="number">0u32</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="number">0u32</span>;
     <span class="kw">for</span> <span class="ident">e</span> <span class="kw">in</span> <span class="ident">l</span> {
-        <span class="ident">sum</span> <span class="op">+=</span> <span class="ident">e</span>;
-        <span class="ident">bit_or</span> <span class="op">|=</span> <span class="ident">e</span>;
+        <span class="ident">sum</span> <span class="op">+</span><span class="op">=</span> <span class="ident">e</span>;
+        <span class="ident">bit_or</span> <span class="op">|</span><span class="op">=</span> <span class="ident">e</span>;
 <span class="comment">//        if(bit_or &lt; sum){</span>
 <span class="comment">//            return 0;</span>
 <span class="comment">//        }</span>
     }
-    <span class="kw">if</span> <span class="ident">bit_or</span> <span class="op">==</span> <span class="ident">sum</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> }
+    <span class="kw">if</span> <span class="ident">bit_or</span> <span class="op">=</span><span class="op">=</span> <span class="ident">sum</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> }
 }
 
 <span class="comment">//Mod 2 binomial coefficient n choose k</span>
-<span class="kw">fn</span> <span class="ident">binomial2</span>(<span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">k</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
+<span class="kw">fn</span> <span class="ident">binomial2</span>(<span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">k</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
     <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="ident">k</span> {
         <span class="number">0</span>
     } <span class="kw">else</span> {
-        <span class="kw">if</span> (<span class="ident">n</span><span class="op">-</span><span class="ident">k</span>) <span class="op">&amp;</span> <span class="ident">k</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> (<span class="ident">n</span><span class="op">-</span><span class="ident">k</span>) <span class="op">&amp;</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
             <span class="number">1</span>
         } <span class="kw">else</span> {
             <span class="number">0</span>
@@ -822,10 +822,10 @@
 
 <span class="comment">//Mod p multinomial coefficient of l. If p is 2, more efficient to use Multinomial2.</span>
 <span class="comment">//This uses Lucas&#39;s theorem to reduce to n choose k for n, k &lt; p.</span>
-<span class="kw">fn</span> <span class="ident">multinomial_odd</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">l</span> : <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-&gt;</span> <span class="ident">u32</span>{
+<span class="kw">fn</span> <span class="ident">multinomial_odd</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">l</span> : <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>{
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">total</span> <span class="op">=</span> <span class="number">0u32</span>;
     <span class="kw">for</span> <span class="ident">e</span> <span class="kw">in</span> <span class="ident">l</span> {
-        <span class="ident">total</span> <span class="op">+=</span> <span class="ident">e</span>;
+        <span class="ident">total</span> <span class="op">+</span><span class="op">=</span> <span class="ident">e</span>;
     }
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">answer</span> <span class="op">=</span> <span class="number">1u32</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">total_expansion</span> : [<span class="ident">u32</span> ; <span class="ident">MAX_EXPONENT</span>] <span class="op">=</span> [<span class="number">0</span>; <span class="ident">MAX_EXPONENT</span>];
@@ -839,12 +839,12 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">multi</span> <span class="op">=</span> <span class="number">1u32</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">partial_sum</span> <span class="op">=</span> <span class="number">0u32</span>;
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">l</span>.<span class="ident">len</span>() {
-            <span class="ident">partial_sum</span> <span class="op">+=</span> <span class="ident">l_expansions</span>[<span class="ident">i</span>][<span class="ident">index</span>];
+            <span class="ident">partial_sum</span> <span class="op">+</span><span class="op">=</span> <span class="ident">l_expansions</span>[<span class="ident">i</span>][<span class="ident">index</span>];
             <span class="kw">if</span> <span class="ident">partial_sum</span> <span class="op">&gt;</span> <span class="ident">total_expansion</span>[<span class="ident">index</span>] {
                 <span class="kw">return</span> <span class="number">0</span>
             }
-            <span class="ident">multi</span> <span class="op">*=</span> <span class="ident">direct_binomial</span>(<span class="ident">p</span>, <span class="ident">partial_sum</span>, <span class="ident">l_expansions</span>[<span class="ident">i</span>][<span class="ident">index</span>]);
-            <span class="ident">multi</span> <span class="op">=</span> <span class="ident">multi</span> <span class="op">%</span> <span class="ident">p</span>;
+            <span class="ident">multi</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">direct_binomial</span>(<span class="ident">p</span>, <span class="ident">partial_sum</span>, <span class="ident">l_expansions</span>[<span class="ident">i</span>][<span class="ident">index</span>]);
+            <span class="ident">multi</span> <span class="op">%</span><span class="op">=</span> <span class="ident">p</span>;
         }
         <span class="ident">answer</span> <span class="op">=</span> (<span class="ident">answer</span> <span class="op">*</span> <span class="ident">multi</span>) <span class="op">%</span> <span class="ident">p</span>;
     }
@@ -852,8 +852,8 @@
 }
 
 <span class="comment">//Mod p binomial coefficient n choose k. If p is 2, more efficient to use Binomial2.</span>
-<span class="kw">fn</span> <span class="ident">binomial_odd</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">k</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
-    <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="ident">k</span> <span class="op">||</span> <span class="ident">k</span> <span class="op">&lt;</span> <span class="number">0</span> {
+<span class="kw">fn</span> <span class="ident">binomial_odd</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">k</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="ident">k</span> <span class="op">|</span><span class="op">|</span> <span class="ident">k</span> <span class="op">&lt;</span> <span class="number">0</span> {
         <span class="kw">return</span> <span class="number">0</span>;
     }
     <span class="kw">let</span> <span class="ident">l</span> : [<span class="ident">u32</span> ; <span class="number">2</span>] <span class="op">=</span> [(<span class="ident">n</span><span class="op">-</span><span class="ident">k</span>) <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">k</span> <span class="kw">as</span> <span class="ident">u32</span>];
@@ -861,8 +861,8 @@
 }
 
 <span class="comment">//Dispatch to Multinomial2 or MultinomialOdd</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">multinomial</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">l</span> : <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-&gt;</span> <span class="ident">u32</span> {
-    <span class="kw">if</span> <span class="ident">p</span> <span class="op">==</span> <span class="number">2</span>{
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">multinomial</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">l</span> : <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">if</span> <span class="ident">p</span> <span class="op">=</span><span class="op">=</span> <span class="number">2</span>{
         <span class="ident">multinomial2</span>(<span class="ident">l</span>)
     } <span class="kw">else</span> {
         <span class="ident">multinomial_odd</span>(<span class="ident">p</span>, <span class="ident">l</span>)
@@ -870,15 +870,15 @@
 }
 
 <span class="comment">//Dispatch to Binomial2 or BinomialOdd</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">binomial</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">k</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
-    <span class="kw">if</span> <span class="ident">p</span> <span class="op">==</span> <span class="number">2</span>{
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">binomial</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">k</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">if</span> <span class="ident">p</span> <span class="op">=</span><span class="op">=</span> <span class="number">2</span>{
         <span class="ident">binomial2</span>(<span class="ident">n</span>, <span class="ident">k</span>)
     } <span class="kw">else</span> {
         <span class="ident">binomial_odd</span>(<span class="ident">p</span>, <span class="ident">n</span>, <span class="ident">k</span>)
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">adem_relation_coefficient</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">x</span> : <span class="ident">u32</span>, <span class="ident">y</span> : <span class="ident">u32</span>, <span class="ident">j</span> : <span class="ident">u32</span>, <span class="ident">e1</span> : <span class="ident">u32</span>, <span class="ident">e2</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">u32</span>{
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">adem_relation_coefficient</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">x</span> : <span class="ident">u32</span>, <span class="ident">y</span> : <span class="ident">u32</span>, <span class="ident">j</span> : <span class="ident">u32</span>, <span class="ident">e1</span> : <span class="ident">u32</span>, <span class="ident">e2</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>{
     <span class="kw">let</span> <span class="ident">pi32</span> <span class="op">=</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span>;
     <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i32</span>;
     <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">y</span> <span class="kw">as</span> <span class="ident">i32</span>;
@@ -886,14 +886,14 @@
     <span class="kw">let</span> <span class="ident">e1</span> <span class="op">=</span> <span class="ident">e1</span> <span class="kw">as</span> <span class="ident">i32</span>;
     <span class="kw">let</span> <span class="ident">e2</span> <span class="op">=</span> <span class="ident">e2</span> <span class="kw">as</span> <span class="ident">i32</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">binomial</span>(<span class="ident">p</span>, (<span class="ident">y</span><span class="op">-</span><span class="ident">j</span>) <span class="op">*</span> (<span class="ident">pi32</span><span class="op">-</span><span class="number">1</span>) <span class="op">+</span> <span class="ident">e1</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">x</span> <span class="op">-</span> <span class="ident">pi32</span><span class="kw-2">*</span><span class="ident">j</span> <span class="op">-</span> <span class="ident">e2</span>);
-    <span class="kw">if</span> <span class="ident">c</span> <span class="op">==</span> <span class="number">0</span> { 
+    <span class="kw">if</span> <span class="ident">c</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { 
         <span class="kw">return</span> <span class="number">0</span>; 
     }
-    <span class="ident">c</span> <span class="op">*=</span> <span class="ident">minus_one_to_the_n</span>(<span class="ident">p</span>, ((<span class="ident">x</span> <span class="op">+</span> <span class="ident">j</span>) <span class="op">+</span> <span class="ident">e2</span>) <span class="kw">as</span> <span class="ident">u32</span>);
+    <span class="ident">c</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">minus_one_to_the_n</span>(<span class="ident">p</span>, ((<span class="ident">x</span> <span class="op">+</span> <span class="ident">j</span>) <span class="op">+</span> <span class="ident">e2</span>) <span class="kw">as</span> <span class="ident">u32</span>);
     <span class="ident">c</span> <span class="op">%</span> <span class="ident">p</span>
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inadmissible_pairs</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">generic</span> : <span class="ident">bool</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">u32</span>)<span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inadmissible_pairs</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">generic</span> : <span class="ident">bool</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>, <span class="ident">u32</span>)<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">degree</span> <span class="op">=</span> <span class="ident">degree</span> <span class="kw">as</span> <span class="ident">u32</span>;
     <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">generic</span> { <span class="number">2</span><span class="kw-2">*</span><span class="ident">p</span><span class="op">-</span><span class="number">2</span> } <span class="kw">else</span> { <span class="number">1</span> };
     <span class="comment">// (i, b, j) means P^i P^j if b = 0, or P^i b P^j if b = 1.</span>
@@ -901,7 +901,7 @@
 
     <span class="comment">// Since |P^i| is always a multiple of q, we have a relation only if degree = 0 or 1 mod q.</span>
     <span class="comment">// If it is 0, then there is no Bockstein. Otherwise, there is.</span>
-    <span class="kw">if</span> <span class="ident">degree</span> <span class="op">%</span> <span class="ident">q</span> <span class="op">==</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">degree</span> <span class="op">%</span> <span class="ident">q</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
         <span class="kw">let</span> <span class="ident">degq</span> <span class="op">=</span> <span class="ident">degree</span><span class="op">/</span><span class="ident">q</span>;
         <span class="comment">// We want P^i P^j to be inadmissible, so i &lt; p * j. This translates to</span>
         <span class="comment">// i &lt; p * degq /(p + 1). Since Rust automatically rounds *down*, but we want to round</span>
@@ -909,7 +909,7 @@
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span> .. (<span class="ident">p</span> <span class="op">*</span> <span class="ident">degq</span> <span class="op">+</span> <span class="ident">p</span>) <span class="op">/</span> (<span class="ident">p</span> <span class="op">+</span> <span class="number">1</span>) {
             <span class="ident">inadmissible_pairs</span>.<span class="ident">push</span>((<span class="ident">i</span>, <span class="number">0</span>, <span class="ident">degq</span> <span class="op">-</span> <span class="ident">i</span>));
         }
-    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">degree</span> <span class="op">%</span> <span class="ident">q</span> <span class="op">==</span> <span class="number">1</span> {
+    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">degree</span> <span class="op">%</span> <span class="ident">q</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
         <span class="kw">let</span> <span class="ident">degq</span> <span class="op">=</span> <span class="ident">degree</span><span class="op">/</span><span class="ident">q</span>; <span class="comment">// Since we round down, this is actually (degree - 1)/q</span>
         <span class="comment">// We want P^i b P^j to be inadmissible, so i &lt; p * j + 1. This translates to</span>
         <span class="comment">// i &lt; (p * degq + 1)/(p + 1). Since Rust automatically rounds *down*, but we want to round</span>
@@ -921,11 +921,11 @@
     <span class="ident">inadmissible_pairs</span>
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tau_degrees</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">i32</span>] {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tau_degrees</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">i32</span>] {
     <span class="kw-2">&amp;</span><span class="ident">TAU_DEGREES</span>[<span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>]]
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">xi_degrees</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">i32</span>] {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">xi_degrees</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">i32</span>] {
     <span class="kw-2">&amp;</span><span class="ident">XI_DEGREES</span>[<span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>]]
 }
 

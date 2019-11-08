@@ -385,8 +385,8 @@
     <span class="ident">bucket</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TokenBucket</span><span class="op">&gt;</span>,
     <span class="ident">sender</span> : <span class="ident">Sender</span>,
     <span class="ident">is_unit</span> : <span class="ident">bool</span>,
-    <span class="ident">resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>,
-    <span class="ident">unit_resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>
+    <span class="ident">resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">unit_resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
 }
 
 <span class="kw">impl</span> <span class="ident">ResolutionManager</span> {
@@ -394,7 +394,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Arguments</span>
     <span class="doccomment">///  * `sender` - The `sender` object to send messages to.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">sender</span> : <span class="ident">Sender</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">sender</span> : <span class="ident">Sender</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">ResolutionManager</span> {
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
             <span class="ident">bucket</span> : <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">TokenBucket</span>::<span class="ident">new</span>(<span class="ident">NUM_THREADS</span>)),
@@ -407,22 +407,22 @@
     }
 
     <span class="doccomment">/// Reads a message and performs the actions as instructed.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">process_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">process_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="comment">// If the message is BlockRefresh, SseqManager is responsible for marking</span>
         <span class="comment">// it as complete.</span>
-        <span class="kw">let</span> <span class="ident">isblock</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> { <span class="ident">Action</span>::<span class="ident">BlockRefresh</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">true</span>, <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span> };
+        <span class="kw">let</span> <span class="ident">isblock</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> { <span class="ident">Action</span>::<span class="ident">BlockRefresh</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>, <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span> };
         <span class="kw">let</span> <span class="ident">target_sseq</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">sseq</span>;
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ret</span> <span class="op">=</span> <span class="prelude-val">None</span>;
         <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
-            <span class="ident">Action</span>::<span class="ident">Construct</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">construct</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
-            <span class="ident">Action</span>::<span class="ident">ConstructJson</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">construct_json</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
-            <span class="ident">Action</span>::<span class="ident">Resolve</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">resolve</span>(<span class="ident">a</span>, <span class="ident">msg</span>.<span class="ident">sseq</span>)<span class="question-mark">?</span>,
-            <span class="ident">Action</span>::<span class="ident">BlockRefresh</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
-            <span class="kw">_</span> <span class="op">=&gt;</span> {
+            <span class="ident">Action</span>::<span class="ident">Construct</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">construct</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
+            <span class="ident">Action</span>::<span class="ident">ConstructJson</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">construct_json</span>(<span class="ident">a</span>)<span class="question-mark">?</span>,
+            <span class="ident">Action</span>::<span class="ident">Resolve</span>(<span class="ident">a</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolve</span>(<span class="ident">a</span>, <span class="ident">msg</span>.<span class="ident">sseq</span>)<span class="question-mark">?</span>,
+            <span class="ident">Action</span>::<span class="ident">BlockRefresh</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">sseq</span> {
-                    <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span>,
-                    <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span>
+                    <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span>,
+                    <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span>
                 };
                 <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
 
@@ -446,7 +446,7 @@
     }
 
     <span class="doccomment">/// Resolves a module defined by a json object. The result is stored in `self.bundle`.</span>
-    <span class="kw">fn</span> <span class="ident">construct_json</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">action</span> : <span class="ident">ConstructJson</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">construct_json</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">action</span> : <span class="ident">ConstructJson</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">json_data</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="kw-2">&amp;</span><span class="ident">action</span>.<span class="ident">data</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">rust_ext</span>::<span class="ident">construct_from_json</span>(<span class="ident">json_data</span>, <span class="ident">action</span>.<span class="ident">algebra_name</span>).<span class="ident">unwrap</span>();
@@ -457,7 +457,7 @@
     }
 
     <span class="doccomment">/// Resolves a module specified by `json`. The result is stored in `self.bundle`.</span>
-    <span class="kw">fn</span> <span class="ident">construct</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">action</span> : <span class="ident">Construct</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">construct</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">action</span> : <span class="ident">Construct</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dir</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">env</span>::<span class="ident">current_exe</span>().<span class="ident">unwrap</span>();
         <span class="ident">dir</span>.<span class="ident">pop</span>(); <span class="ident">dir</span>.<span class="ident">pop</span>(); <span class="ident">dir</span>.<span class="ident">pop</span>();
         <span class="ident">dir</span>.<span class="ident">push</span>(<span class="string">&quot;modules&quot;</span>);
@@ -475,7 +475,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">process_bundle</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">bundle</span> : <span class="ident">AlgebraicObjectsBundle</span>) {
-        <span class="self">self</span>.<span class="ident">is_unit</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">chain_complex</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">bundle</span>.<span class="ident">chain_complex</span>.<span class="ident">module</span>(<span class="number">0</span>).<span class="ident">is_unit</span>();
+        <span class="self">self</span>.<span class="ident">is_unit</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">chain_complex</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">bundle</span>.<span class="ident">chain_complex</span>.<span class="ident">module</span>(<span class="number">0</span>).<span class="ident">is_unit</span>();
 
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_unit</span> {
             <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">set_unit_resolution</span>(<span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">bundle</span>.<span class="ident">resolution</span>));
@@ -503,10 +503,10 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">action</span> : <span class="ident">Resolve</span>, <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">action</span> : <span class="ident">Resolve</span>, <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">sseq</span> {
-            <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span>,
-            <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span>
+            <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolution</span>,
+            <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span>
         };
 
         <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
@@ -552,20 +552,20 @@
                 })
             };
             <span class="kw">match</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>) {
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> (),
-                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {<span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;Failed to send class: {}&quot;</span>, <span class="ident">e</span>); <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;&quot;</span>)}
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> (),
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> {<span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;Failed to send class: {}&quot;</span>, <span class="ident">e</span>); <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;&quot;</span>)}
             };
         };
 
         <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">clone</span>();
-        <span class="kw">let</span> <span class="ident">add_structline</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">source_s</span>: <span class="ident">u32</span>, <span class="ident">source_t</span>: <span class="ident">i32</span>, <span class="ident">target_s</span> : <span class="ident">u32</span>, <span class="ident">target_t</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="kw-2">mut</span> <span class="ident">product</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span><span class="op">|</span> {
+        <span class="kw">let</span> <span class="ident">add_structline</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">source_s</span>: <span class="ident">u32</span>, <span class="ident">source_t</span>: <span class="ident">i32</span>, <span class="ident">target_s</span> : <span class="ident">u32</span>, <span class="ident">target_t</span> : <span class="ident">i32</span>, <span class="ident">left</span> : <span class="ident">bool</span>, <span class="kw-2">mut</span> <span class="ident">product</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">mult_s</span> <span class="op">=</span> (<span class="ident">target_s</span> <span class="op">-</span> <span class="ident">source_s</span>) <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="kw">let</span> <span class="ident">mult_t</span> <span class="op">=</span> <span class="ident">target_t</span> <span class="op">-</span> <span class="ident">source_t</span>;
             <span class="kw">let</span> <span class="ident">source_s</span> <span class="op">=</span> <span class="ident">source_s</span> <span class="kw">as</span> <span class="ident">i32</span>;
 
             <span class="comment">// Product in Ext is not product in E_2</span>
-            <span class="kw">if</span> (<span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="ident">mult_s</span> <span class="op">*</span> <span class="ident">source_t</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span>) <span class="op">||</span>
-               (<span class="op">!</span><span class="ident">left</span> <span class="op">&amp;&amp;</span> <span class="ident">mult_t</span> <span class="op">*</span> <span class="ident">source_s</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!=</span> <span class="number">0</span>) {
+            <span class="kw">if</span> (<span class="ident">left</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">mult_s</span> <span class="op">*</span> <span class="ident">source_t</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) <span class="op">|</span><span class="op">|</span>
+               (<span class="op">!</span><span class="ident">left</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">mult_t</span> <span class="op">*</span> <span class="ident">source_s</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) {
                 <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">product</span>.<span class="ident">len</span>() {
                     <span class="kw">for</span> <span class="ident">b</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">product</span>[<span class="ident">a</span>].<span class="ident">len</span>() {
                         <span class="ident">product</span>[<span class="ident">a</span>][<span class="ident">b</span>] <span class="op">=</span> ((<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">*</span> <span class="ident">product</span>[<span class="ident">a</span>][<span class="ident">b</span>]) <span class="op">%</span> <span class="ident">p</span>;
@@ -588,8 +588,8 @@
             };
 
             <span class="kw">match</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>) {
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> (),
-                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;Failed to send product: {}&quot;</span>, <span class="ident">e</span>)
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> (),
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;Failed to send product: {}&quot;</span>, <span class="ident">e</span>)
             };
         };
 
@@ -611,7 +611,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Arguments</span>
     <span class="doccomment">///  * `sender` - The `Sender` object to send messages to.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">sender</span> : <span class="ident">Sender</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">sender</span> : <span class="ident">Sender</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">SseqManager</span> {
              <span class="ident">sender</span> : <span class="ident">sender</span>,
              <span class="ident">sseq</span> : <span class="prelude-val">None</span>,
@@ -622,28 +622,28 @@
     <span class="doccomment">/// # Return</span>
     <span class="doccomment">/// Whether this was a user action. If it is a user action, we want to send a &quot;Complete&quot; when</span>
     <span class="doccomment">/// completed, and also report the time.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_user</span>(<span class="ident">action</span> : <span class="kw-2">&amp;</span><span class="ident">Action</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>{
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_user</span>(<span class="ident">action</span> : <span class="kw-2">&amp;</span><span class="ident">Action</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>{
         <span class="kw">match</span> <span class="ident">action</span> {
-            <span class="ident">Action</span>::<span class="ident">AddClass</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">Action</span>::<span class="ident">AddProduct</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">Action</span>::<span class="ident">Complete</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">Action</span>::<span class="ident">QueryTableResult</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">Action</span>::<span class="ident">QueryCocycleStringResult</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>
+            <span class="ident">Action</span>::<span class="ident">AddClass</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">Action</span>::<span class="ident">AddProduct</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">Action</span>::<span class="ident">Complete</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">Action</span>::<span class="ident">QueryTableResult</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">Action</span>::<span class="ident">QueryCocycleStringResult</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">process_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">process_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">user</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">is_user</span>(<span class="kw-2">&amp;</span><span class="ident">msg</span>.<span class="ident">action</span>);
         <span class="kw">let</span> <span class="ident">target_sseq</span> <span class="op">=</span> <span class="ident">msg</span>.<span class="ident">sseq</span>;
 
         <span class="kw">match</span> <span class="ident">msg</span>.<span class="ident">action</span> {
-            <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">resolving</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
-            <span class="ident">Action</span>::<span class="ident">Complete</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
-            <span class="ident">Action</span>::<span class="ident">QueryTableResult</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
-            <span class="ident">Action</span>::<span class="ident">QueryCocycleStringResult</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
-            <span class="kw">_</span> <span class="op">=&gt;</span> {
+            <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">resolving</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
+            <span class="ident">Action</span>::<span class="ident">Complete</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
+            <span class="ident">Action</span>::<span class="ident">QueryTableResult</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
+            <span class="ident">Action</span>::<span class="ident">QueryCocycleStringResult</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sseq</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_sseq</span>(<span class="ident">msg</span>.<span class="ident">sseq</span>) {
                     <span class="ident">msg</span>.<span class="ident">action</span>.<span class="ident">act_sseq</span>(<span class="ident">sseq</span>);
                 }
@@ -660,14 +660,14 @@
         <span class="prelude-val">Ok</span>(<span class="ident">user</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">get_sseq</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_sseq</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">sseq</span> : <span class="ident">SseqChoice</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Sseq</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">sseq</span> {
-            <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">sseq</span>.<span class="ident">as_mut</span>(),
-            <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">unit_sseq</span>.<span class="ident">as_mut</span>()
+            <span class="ident">SseqChoice</span>::<span class="ident">Main</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">sseq</span>.<span class="ident">as_mut</span>(),
+            <span class="ident">SseqChoice</span>::<span class="ident">Unit</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">unit_sseq</span>.<span class="ident">as_mut</span>()
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">resolving</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">resolving</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Action</span>::<span class="ident">Resolving</span>(<span class="ident">m</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">msg</span>.<span class="ident">action</span> {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">sseq</span>.<span class="ident">is_none</span>() {
                 <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">clone</span>();
@@ -680,7 +680,7 @@
         <span class="self">self</span>.<span class="ident">relay</span>(<span class="ident">msg</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">relay</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">relay</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">msg</span> : <span class="ident">Message</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }

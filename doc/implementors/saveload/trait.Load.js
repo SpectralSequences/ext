@@ -9,5 +9,4 @@ implementors["saveload"] = [];
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

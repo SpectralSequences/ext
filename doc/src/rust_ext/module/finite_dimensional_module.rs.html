@@ -533,32 +533,32 @@
     <span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>,
     <span class="ident">name</span> : <span class="ident">String</span>,
     <span class="ident">graded_dimension</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">gen_names</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">gen_names</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="comment">// This goes input_degree --&gt; output_degree --&gt; operation --&gt; input_index --&gt; Vector</span>
-    <span class="ident">actions</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">actions</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">FiniteDimensionalModule</span> {
-    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span> : <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">graded_dimension</span> <span class="op">==</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span> <span class="op">&amp;&amp;</span>
-            <span class="self">self</span>.<span class="ident">actions</span> <span class="op">==</span> <span class="ident">other</span>.<span class="ident">actions</span>
+    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span> : <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">graded_dimension</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span>
+            <span class="self">self</span>.<span class="ident">actions</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">actions</span>
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">FiniteDimensionalModule</span> {}
 
 <span class="kw">impl</span> <span class="ident">FiniteDimensionalModule</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">test_equal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span> : <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">graded_dimension</span> <span class="op">!=</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span> {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>() <span class="op">!=</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>() {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">test_equal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span> : <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">graded_dimension</span> <span class="op">!</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span> {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>() {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Min degrees disagree. left.min_degree() = {} but right.min_degree() = {}.&quot;</span>, <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>(), <span class="ident">other</span>.<span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>()));
             }
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() <span class="op">!=</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Graded dimension lengths disagree. left.len() = {} but right.len() = {}.&quot;</span>, <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>(), <span class="ident">other</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>()));
             }
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">disagreements</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>() .. <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>[<span class="ident">i</span>] <span class="op">!=</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span>[<span class="ident">i</span>] {
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>[<span class="ident">i</span>] <span class="op">!</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">graded_dimension</span>[<span class="ident">i</span>] {
                     <span class="ident">disagreements</span>.<span class="ident">push</span>(<span class="ident">i</span>);
                 }
             }
@@ -568,7 +568,7 @@
                 <span class="ident">other</span>.<span class="ident">graded_dimension</span>
             ))
         }
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">actions</span> <span class="op">!=</span> <span class="ident">other</span>.<span class="ident">actions</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">actions</span> <span class="op">!</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">actions</span> {
             <span class="comment">// actions goes input_degree --&gt; output_degree --&gt; operation --&gt; input_index --&gt; Vector</span>
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">disagreements</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
             <span class="kw">for</span> <span class="ident">input_degree</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">actions</span>.<span class="ident">min_degree</span>() .. <span class="self">self</span>.<span class="ident">actions</span>.<span class="ident">len</span>(){
@@ -577,7 +577,7 @@
                         <span class="kw">for</span> <span class="ident">input_index</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="self">self</span>.<span class="ident">actions</span>[<span class="ident">input_degree</span>][<span class="ident">output_degree</span>][<span class="ident">operation</span>].<span class="ident">len</span>() {
                             <span class="kw">let</span> <span class="ident">self_action</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">actions</span>[<span class="ident">input_degree</span>][<span class="ident">output_degree</span>][<span class="ident">operation</span>][<span class="ident">input_index</span>];
                             <span class="kw">let</span> <span class="ident">other_action</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">actions</span>[<span class="ident">input_degree</span>][<span class="ident">output_degree</span>][<span class="ident">operation</span>][<span class="ident">input_index</span>];
-                            <span class="kw">if</span> <span class="ident">self_action</span> <span class="op">!=</span> <span class="ident">other_action</span> {
+                            <span class="kw">if</span> <span class="ident">self_action</span> <span class="op">!</span><span class="op">=</span> <span class="ident">other_action</span> {
                                 <span class="ident">disagreements</span>.<span class="ident">push</span>((<span class="ident">input_degree</span>, <span class="ident">output_degree</span>, <span class="ident">operation</span>, <span class="ident">input_index</span>, <span class="ident">self_action</span>, <span class="ident">other_action</span>));
                             }
                         }
@@ -596,51 +596,51 @@
             }
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err_string</span>);
         }
-        <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Module</span> <span class="kw">for</span> <span class="ident">FiniteDimensionalModule</span> {
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
         <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">algebra</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
+    <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
         <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>()
     }
     
     <span class="kw">fn</span> <span class="ident">compute_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>){ }
 
-    <span class="kw">fn</span> <span class="ident">dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">dimension</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">if</span> <span class="ident">degree</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>() {
             <span class="kw">return</span> <span class="number">0</span>;
         }
         <span class="kw">if</span> <span class="ident">degree</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">max_degree</span>() {
             <span class="kw">return</span> <span class="number">0</span>;
         }        
-        <span class="kw">return</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>[<span class="ident">degree</span>];
+        <span class="self">self</span>.<span class="ident">graded_dimension</span>[<span class="ident">degree</span>]
     }
 
-    <span class="kw">fn</span> <span class="ident">basis_element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="kw">return</span> <span class="self">self</span>.<span class="ident">gen_names</span>[<span class="ident">degree</span>][<span class="ident">idx</span>].<span class="ident">clone</span>();
+    <span class="kw">fn</span> <span class="ident">basis_element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="self">self</span>.<span class="ident">gen_names</span>[<span class="ident">degree</span>][<span class="ident">idx</span>].<span class="ident">clone</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">is_unit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">min_degree</span>() <span class="op">==</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>[<span class="number">0</span>] <span class="op">==</span> <span class="number">1</span>
+    <span class="kw">fn</span> <span class="ident">is_unit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">min_degree</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>[<span class="number">0</span>] <span class="op">=</span><span class="op">=</span> <span class="number">1</span>
     }
 
     <span class="kw">fn</span> <span class="ident">act_on_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">op_degree</span> : <span class="ident">i32</span>, <span class="ident">op_index</span> : <span class="ident">usize</span>, <span class="ident">mod_degree</span> : <span class="ident">i32</span>, <span class="ident">mod_index</span> : <span class="ident">usize</span>){
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">op_index</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">dimension</span>(<span class="ident">op_degree</span>, <span class="ident">mod_degree</span>));
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">mod_index</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">mod_degree</span>));
         <span class="kw">let</span> <span class="ident">output_dimension</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">mod_degree</span> <span class="op">+</span> <span class="ident">op_degree</span>);    
-        <span class="kw">if</span> <span class="ident">output_dimension</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">output_dimension</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
             <span class="kw">return</span>;
         }
-        <span class="kw">if</span> <span class="ident">op_degree</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">op_degree</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
             <span class="comment">// We assume our algebras are connected so just add input to output.</span>
             <span class="ident">result</span>.<span class="ident">add_basis_element</span>(<span class="ident">mod_index</span>, <span class="ident">coeff</span>);
             <span class="kw">return</span>;
@@ -649,26 +649,26 @@
         <span class="ident">result</span>.<span class="ident">shift_add</span>(<span class="ident">output</span>, <span class="ident">coeff</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">borrow_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> { <span class="bool-val">true</span> }
-    <span class="kw">fn</span> <span class="ident">act_on_basis_borrow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_degree</span> : <span class="ident">i32</span>, <span class="ident">op_index</span> : <span class="ident">usize</span>, <span class="ident">mod_degree</span> : <span class="ident">i32</span>, <span class="ident">mod_index</span> : <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">FpVector</span> {
+    <span class="kw">fn</span> <span class="ident">borrow_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> { <span class="bool-val">true</span> }
+    <span class="kw">fn</span> <span class="ident">act_on_basis_borrow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_degree</span> : <span class="ident">i32</span>, <span class="ident">op_index</span> : <span class="ident">usize</span>, <span class="ident">mod_degree</span> : <span class="ident">i32</span>, <span class="ident">mod_index</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">FpVector</span> {
         <span class="self">self</span>.<span class="ident">action</span>(<span class="ident">op_degree</span>, <span class="ident">op_index</span>, <span class="ident">mod_degree</span>, <span class="ident">mod_index</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">BoundedModule</span> <span class="kw">for</span> <span class="ident">FiniteDimensionalModule</span> {
-    <span class="kw">fn</span> <span class="ident">max_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">i32</span> {
+    <span class="kw">fn</span> <span class="ident">max_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
         <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">max_degree</span>()
     }
 }
 
 <span class="kw">impl</span> <span class="ident">ZeroModule</span> <span class="kw">for</span> <span class="ident">FiniteDimensionalModule</span> {
-    <span class="kw">fn</span> <span class="ident">zero_module</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">min_degree</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">zero_module</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">min_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">algebra</span>, <span class="string">&quot;zero&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>))
     }
 }
 
 <span class="kw">impl</span> <span class="ident">FiniteDimensionalModule</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">name</span> : <span class="ident">String</span>, <span class="ident">graded_dimension</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">name</span> : <span class="ident">String</span>, <span class="ident">graded_dimension</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>();
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">graded_dimension</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="ident">degree_difference</span> <span class="op">=</span> <span class="ident">max_degree</span> <span class="op">-</span> <span class="ident">min_degree</span>;
@@ -695,7 +695,7 @@
         <span class="self">self</span>.<span class="ident">gen_names</span>[<span class="ident">degree</span>][<span class="ident">idx</span>] <span class="op">=</span> <span class="ident">name</span>;
     }
     
-    <span class="kw">fn</span> <span class="ident">module_gens_from_json</span>(<span class="ident">gens</span> : <span class="kw-2">&amp;</span><span class="ident">Value</span>) <span class="op">-&gt;</span> (<span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span>, <span class="ident">HashMap</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">module_gens_from_json</span>(<span class="ident">gens</span> : <span class="kw-2">&amp;</span><span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">HashMap</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="ident">gens</span> <span class="op">=</span> <span class="ident">gens</span>.<span class="ident">as_object</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="number">10000</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="op">-</span><span class="number">10000</span>;
@@ -725,15 +725,15 @@
             <span class="kw">let</span> <span class="ident">degree</span> <span class="op">=</span> <span class="ident">degree_value</span>.<span class="ident">as_i64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="ident">gen_names</span>[<span class="ident">degree</span>].<span class="ident">push</span>(<span class="ident">name</span>.<span class="ident">clone</span>());            
             <span class="ident">gen_to_idx</span>.<span class="ident">insert</span>(<span class="ident">name</span>, (<span class="ident">degree</span>, <span class="ident">graded_dimension</span>[<span class="ident">degree</span>]));
-            <span class="ident">graded_dimension</span>[<span class="ident">degree</span>] <span class="op">+=</span> <span class="number">1</span>;
+            <span class="ident">graded_dimension</span>[<span class="ident">degree</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         }
-        <span class="kw">return</span> (<span class="ident">graded_dimension</span>, <span class="ident">gen_names</span>, <span class="ident">gen_to_idx</span>);
+        (<span class="ident">graded_dimension</span>, <span class="ident">gen_names</span>, <span class="ident">gen_to_idx</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">allocate_actions</span>(<span class="ident">algebra</span> : <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">graded_dimension</span> : <span class="kw-2">&amp;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">allocate_actions</span>(<span class="ident">algebra</span> : <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">graded_dimension</span> : <span class="kw-2">&amp;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">graded_dimension</span>.<span class="ident">min_degree</span>();
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">graded_dimension</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">min_degree</span>, <span class="ident">max_degree</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">min_degree</span>, <span class="ident">max_degree</span>);
         <span class="comment">// Count number of triples (x, y, op) with |x| + |op| = |y|.</span>
         <span class="comment">// The amount of memory we need to allocate is:</span>
         <span class="comment">// # of input_degrees  * sizeof(***Vector)</span>
@@ -746,14 +746,14 @@
         <span class="comment">// (in_deg) -&gt; (out_deg) -&gt; (op_index) -&gt; (in_index) -&gt; (out_index) -&gt; value</span>
         <span class="comment">//  ****    -&gt; ***       -&gt; **Vector   -&gt; *Vector    -&gt; Vector -&gt; uint</span>
         <span class="kw">for</span> <span class="ident">input_degree</span> <span class="kw">in</span> <span class="ident">min_degree</span> .. <span class="ident">max_degree</span> {
-            <span class="kw">if</span> <span class="ident">graded_dimension</span>[<span class="ident">input_degree</span>] <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">graded_dimension</span>[<span class="ident">input_degree</span>] <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="ident">input_degree</span>));
                 <span class="kw">continue</span>;
             }
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">outputs_vec</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">input_degree</span>, <span class="ident">max_degree</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">outputs_vec</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">input_degree</span>, <span class="ident">max_degree</span>);
             <span class="comment">// We assume our algebra is connected, so we can manually fill in the first entry.</span>
             <span class="kw">let</span> <span class="ident">number_of_inputs</span> <span class="op">=</span> <span class="ident">graded_dimension</span>[<span class="ident">input_degree</span>];
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ops_vec</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">number_of_inputs</span>)];
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ops_vec</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">number_of_inputs</span>)];
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">number_of_inputs</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">algebra</span>.<span class="ident">prime</span>(), <span class="ident">number_of_inputs</span>);
                 <span class="ident">result</span>.<span class="ident">set_entry</span>(<span class="ident">i</span>, <span class="number">1</span>);
@@ -762,7 +762,7 @@
             <span class="ident">outputs_vec</span>.<span class="ident">push</span>(<span class="ident">ops_vec</span>);
 
             <span class="kw">for</span> <span class="ident">output_degree</span> <span class="kw">in</span> <span class="ident">input_degree</span> <span class="op">+</span> <span class="number">1</span> .. <span class="ident">max_degree</span> {
-                <span class="kw">if</span> <span class="ident">graded_dimension</span>[<span class="ident">output_degree</span>] <span class="op">==</span> <span class="number">0</span> {
+                <span class="kw">if</span> <span class="ident">graded_dimension</span>[<span class="ident">output_degree</span>] <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="ident">outputs_vec</span>.<span class="ident">push</span>(<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">0</span>));
                     <span class="kw">continue</span>;
                 }
@@ -770,23 +770,23 @@
                 <span class="kw">let</span> <span class="ident">number_of_operations</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">dimension</span>(<span class="ident">min_degree</span> <span class="op">+</span> <span class="ident">op_deg</span>, <span class="ident">min_degree</span> <span class="op">+</span> <span class="ident">input_degree</span>);
                 <span class="kw">let</span> <span class="ident">number_of_inputs</span> <span class="op">=</span> <span class="ident">graded_dimension</span>[<span class="ident">input_degree</span>];
                 <span class="kw">let</span> <span class="ident">number_of_outputs</span> <span class="op">=</span> <span class="ident">graded_dimension</span>[<span class="ident">output_degree</span>];
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ops_vec</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">number_of_operations</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ops_vec</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">number_of_operations</span>);
                 <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">number_of_operations</span> {
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">in_idx_vec</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">number_of_inputs</span>);
                     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">number_of_inputs</span> {
                         <span class="ident">in_idx_vec</span>.<span class="ident">push</span>(<span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">algebra</span>.<span class="ident">prime</span>(), <span class="ident">number_of_outputs</span>));
                     }
-                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">in_idx_vec</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="ident">number_of_inputs</span>);
+                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">in_idx_vec</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">number_of_inputs</span>);
                     <span class="ident">ops_vec</span>.<span class="ident">push</span>(<span class="ident">in_idx_vec</span>);
                 }
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">ops_vec</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="ident">number_of_operations</span>);
+                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">ops_vec</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">number_of_operations</span>);
                 <span class="ident">outputs_vec</span>.<span class="ident">push</span>(<span class="ident">ops_vec</span>);
             }
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">outputs_vec</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="ident">max_degree</span>);
+            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">outputs_vec</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">max_degree</span>);
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">outputs_vec</span>);
         }
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">result</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="ident">max_degree</span>);
-        <span class="kw">return</span> <span class="ident">result</span>;
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">result</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">max_degree</span>);
+        <span class="ident">result</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_action_vector</span>(
@@ -823,7 +823,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">operation_degree</span> : <span class="ident">i32</span>, <span class="ident">operation_idx</span> : <span class="ident">usize</span>,
         <span class="ident">input_degree</span> : <span class="ident">i32</span>, <span class="ident">input_idx</span> : <span class="ident">usize</span>
-    ) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">FpVector</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">FpVector</span> {
         <span class="kw">let</span> <span class="ident">output_degree</span> <span class="op">=</span> <span class="ident">input_degree</span> <span class="op">+</span> <span class="ident">operation_degree</span>;
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">actions</span>[<span class="ident">input_degree</span>][<span class="ident">output_degree</span>][<span class="ident">operation_idx</span>][<span class="ident">input_idx</span>]
     }
@@ -834,12 +834,12 @@
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">operation_degree</span> : <span class="ident">i32</span>, <span class="ident">operation_idx</span> : <span class="ident">usize</span>,
         <span class="ident">input_degree</span> : <span class="ident">i32</span>, <span class="ident">input_idx</span> : <span class="ident">usize</span>
-    ) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span> {
         <span class="kw">let</span> <span class="ident">output_degree</span> <span class="op">=</span> <span class="ident">input_degree</span> <span class="op">+</span> <span class="ident">operation_degree</span>;
-        <span class="kw">return</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">actions</span>[<span class="ident">input_degree</span>][<span class="ident">output_degree</span>][<span class="ident">operation_idx</span>][<span class="ident">input_idx</span>];
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">actions</span>[<span class="ident">input_degree</span>][<span class="ident">output_degree</span>][<span class="ident">operation_idx</span>][<span class="ident">input_idx</span>]
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Value</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">json</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">gens</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;gens&quot;</span>].<span class="ident">take</span>();
         <span class="kw">let</span> (<span class="ident">graded_dimension</span>, <span class="ident">gen_names</span>, <span class="ident">gen_to_idx</span>) <span class="op">=</span> <span class="self">Self</span>::<span class="ident">module_gens_from_json</span>(<span class="kw-2">&amp;</span><span class="ident">gens</span>);
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;name&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>().<span class="ident">to_string</span>();
@@ -868,7 +868,7 @@
         <span class="ident">result</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_validity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_deg</span> : <span class="ident">i32</span>, <span class="ident">output_deg</span> : <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(),<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span>{
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_validity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_deg</span> : <span class="ident">i32</span>, <span class="ident">output_deg</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(),<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span>{
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">output_deg</span> <span class="op">&gt;</span> <span class="ident">input_deg</span>);
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">algebra</span>();
@@ -938,14 +938,14 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimal_actions_to_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Value</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimal_actions_to_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Value</span> {
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">algebra</span>();
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>();
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">min_degree</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">actions</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">for</span> <span class="ident">input_degree</span> <span class="kw">in</span> <span class="ident">min_degree</span>..<span class="ident">max_degree</span> {
             <span class="kw">for</span> <span class="ident">output_degree</span> <span class="kw">in</span> (<span class="ident">input_degree</span> <span class="op">+</span> <span class="number">1</span>) .. <span class="ident">max_degree</span> {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">output_degree</span>) <span class="op">==</span> <span class="number">0</span> {
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">output_degree</span>) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="kw">continue</span>;
                 }
                 <span class="kw">let</span> <span class="ident">op_degree</span> <span class="op">=</span> <span class="ident">output_degree</span> <span class="op">-</span> <span class="ident">input_degree</span>;
@@ -959,7 +959,7 @@
                             <span class="string">&quot;op&quot;</span>: <span class="ident">algebra</span>.<span class="ident">json_from_basis</span>(<span class="ident">op_degree</span>, <span class="ident">op_idx</span>),
                             <span class="string">&quot;input_deg&quot;</span>: <span class="ident">input_degree</span>,
                             <span class="string">&quot;input_idx&quot;</span>: <span class="ident">input_idx</span>,
-                            <span class="string">&quot;output&quot;</span>: <span class="ident">vec</span>.<span class="ident">iter</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;&gt;</span>()
+                            <span class="string">&quot;output&quot;</span>: <span class="ident">vec</span>.<span class="ident">iter</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span><span class="op">&gt;</span>()
                         }));
                     }
                 }
@@ -968,7 +968,7 @@
         <span class="macro">json</span><span class="macro">!</span>(<span class="ident">actions</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_minimal_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Value</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_minimal_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Value</span> {
         <span class="macro">json</span><span class="macro">!</span>({
             <span class="string">&quot;p&quot;</span>: <span class="self">self</span>.<span class="ident">prime</span>(),
             <span class="string">&quot;algebra&quot;</span>: <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">algebra_type</span>(),
@@ -978,14 +978,14 @@
         })
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">actions_to_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Value</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">actions_to_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Value</span> {
         <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">algebra</span>();
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>();
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">min_degree</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">graded_dimension</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">actions</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">for</span> <span class="ident">input_degree</span> <span class="kw">in</span> <span class="ident">min_degree</span>..<span class="ident">max_degree</span> {
             <span class="kw">for</span> <span class="ident">output_degree</span> <span class="kw">in</span> (<span class="ident">input_degree</span> <span class="op">+</span> <span class="number">1</span>) .. <span class="ident">max_degree</span> {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">output_degree</span>) <span class="op">==</span> <span class="number">0</span> {
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">output_degree</span>) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="kw">continue</span>;
                 }
                 <span class="kw">let</span> <span class="ident">op_degree</span> <span class="op">=</span> <span class="ident">output_degree</span> <span class="op">-</span> <span class="ident">input_degree</span>;
@@ -994,7 +994,7 @@
                         <span class="kw">let</span> <span class="ident">vec</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">action</span>(<span class="ident">op_degree</span>, <span class="ident">op_idx</span>, <span class="ident">input_degree</span>, <span class="ident">input_idx</span>);
                         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">current_terms</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
                         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">vec</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                            <span class="kw">if</span> <span class="ident">v</span> <span class="op">==</span> <span class="number">0</span> {
+                            <span class="kw">if</span> <span class="ident">v</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                                 <span class="kw">continue</span>;
                             }
                             <span class="ident">current_terms</span>.<span class="ident">push</span>(<span class="macro">json</span><span class="macro">!</span>({<span class="string">&quot;gen&quot;</span> : <span class="self">self</span>.<span class="ident">basis_element_to_string</span>(<span class="ident">output_degree</span>, <span class="ident">i</span>), <span class="string">&quot;coeff&quot;</span> : <span class="ident">v</span>}));
