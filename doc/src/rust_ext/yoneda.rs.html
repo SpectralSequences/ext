@@ -670,6 +670,8 @@
 <span id="652">652</span>
 <span id="653">653</span>
 <span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>, <span class="ident">AdemAlgebra</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">AugmentedChainComplex</span>, <span class="ident">FiniteAugmentedChainComplex</span>, <span class="ident">BoundedChainComplex</span>, <span class="ident">ChainMap</span>};
@@ -694,6 +696,7 @@
         <span class="op">&lt;</span><span class="ident">CC</span> <span class="kw">as</span> <span class="ident">AugmentedChainComplex</span><span class="op">&gt;</span>::<span class="ident">TargetComplex</span>
     <span class="op">&gt;</span>;
 
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">single_match</span>)]</span>
 <span class="kw">fn</span> <span class="ident">rate_operation</span>(<span class="ident">algebra</span> : <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pref</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">algebra</span> {
@@ -788,6 +791,7 @@
         })
 }
 
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">cognitive_complexity</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">yoneda_representative_with_strategy</span><span class="op">&lt;</span><span class="ident">TCM</span>, <span class="ident">TC</span>, <span class="ident">CC</span>, <span class="ident">CMM</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>, <span class="ident">map</span> : <span class="ident">ChainMap</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">CMM</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">strategy</span> : <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Yoneda</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>
 <span class="kw">where</span> <span class="ident">TCM</span> : <span class="ident">BoundedModule</span>,
       <span class="ident">TC</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">Module</span><span class="op">=</span><span class="ident">TCM</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BoundedChainComplex</span>,
@@ -1231,7 +1235,7 @@
     };
 
     <span class="ident">matrix</span>.<span class="ident">set_slice</span>(<span class="ident">first_kernel_row</span>, <span class="ident">source_dimension</span>, <span class="ident">total_padded_degree</span> <span class="op">+</span> <span class="ident">padded_source_degree</span>, <span class="ident">total_cols</span>);
-    <span class="ident">matrix</span>.<span class="ident">into_slice</span>();
+    <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">into_slice</span>();
 
     <span class="kw">let</span> <span class="ident">first_image_row</span> <span class="op">=</span> <span class="ident">first_image_row</span> <span class="op">-</span> <span class="ident">first_kernel_row</span>;
 

@@ -399,7 +399,7 @@
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
             <span class="ident">bucket</span> : <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">TokenBucket</span>::<span class="ident">new</span>(<span class="ident">NUM_THREADS</span>)),
 
-            <span class="ident">sender</span> : <span class="ident">sender</span>,
+            <span class="ident">sender</span>,
             <span class="ident">resolution</span> : <span class="prelude-val">None</span>,
             <span class="ident">unit_resolution</span> : <span class="prelude-val">None</span>,
             <span class="ident">is_unit</span> : <span class="bool-val">false</span>,
@@ -544,7 +544,7 @@
         <span class="kw">let</span> <span class="ident">add_class</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="ident">s</span>: <span class="ident">u32</span>, <span class="ident">t</span>: <span class="ident">i32</span>, <span class="ident">num_gen</span>: <span class="ident">usize</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">Message</span> {
                 <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
-                <span class="ident">sseq</span> : <span class="ident">sseq</span>,
+                <span class="ident">sseq</span>,
                 <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">AddClass</span> {
                     <span class="ident">x</span> : <span class="ident">t</span> <span class="op">-</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">i32</span>,
                     <span class="ident">y</span> : <span class="ident">s</span> <span class="kw">as</span> <span class="ident">i32</span>,
@@ -566,16 +566,16 @@
             <span class="comment">// Product in Ext is not product in E_2</span>
             <span class="kw">if</span> (<span class="ident">left</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">mult_s</span> <span class="op">*</span> <span class="ident">source_t</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) <span class="op">|</span><span class="op">|</span>
                (<span class="op">!</span><span class="ident">left</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">mult_t</span> <span class="op">*</span> <span class="ident">source_s</span> <span class="op">%</span> <span class="number">2</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) {
-                <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">product</span>.<span class="ident">len</span>() {
-                    <span class="kw">for</span> <span class="ident">b</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">product</span>[<span class="ident">a</span>].<span class="ident">len</span>() {
-                        <span class="ident">product</span>[<span class="ident">a</span>][<span class="ident">b</span>] <span class="op">=</span> ((<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">*</span> <span class="ident">product</span>[<span class="ident">a</span>][<span class="ident">b</span>]) <span class="op">%</span> <span class="ident">p</span>;
+                <span class="kw">for</span> <span class="ident">prod_row</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">product</span> {
+                    <span class="kw">for</span> <span class="ident">prod_entry</span> <span class="kw">in</span> <span class="ident">prod_row</span> {
+                        <span class="kw-2">*</span><span class="ident">prod_entry</span> <span class="op">=</span> ((<span class="ident">p</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">*</span> <span class="kw-2">*</span><span class="ident">prod_entry</span>) <span class="op">%</span> <span class="ident">p</span>;
                     }
                 }
             }
 
             <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">Message</span> {
                 <span class="ident">recipients</span> : <span class="macro">vec</span><span class="macro">!</span>[],
-                <span class="ident">sseq</span> : <span class="ident">sseq</span>,
+                <span class="ident">sseq</span>,
                 <span class="ident">action</span> : <span class="ident">Action</span>::<span class="ident">from</span>(<span class="ident">AddProduct</span> {
                     <span class="ident">mult_x</span> : <span class="ident">mult_t</span> <span class="op">-</span> <span class="ident">mult_s</span>,
                     <span class="ident">mult_y</span> : <span class="ident">mult_s</span>,
@@ -613,7 +613,7 @@
     <span class="doccomment">///  * `sender` - The `Sender` object to send messages to.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">sender</span> : <span class="ident">Sender</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">SseqManager</span> {
-             <span class="ident">sender</span> : <span class="ident">sender</span>,
+             <span class="ident">sender</span>,
              <span class="ident">sseq</span> : <span class="prelude-val">None</span>,
              <span class="ident">unit_sseq</span> : <span class="prelude-val">None</span>
         }

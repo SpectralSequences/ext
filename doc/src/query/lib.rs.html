@@ -99,7 +99,7 @@
         <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;{} : &quot;</span>, <span class="ident">prompt</span>);
         <span class="ident">stdout</span>().<span class="ident">flush</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
-        <span class="ident">stdin</span>().<span class="ident">read_line</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">input</span>).<span class="ident">expect</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Error reading for prompt: {}&quot;</span>, <span class="ident">prompt</span>));
+        <span class="ident">stdin</span>().<span class="ident">read_line</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">input</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error reading for prompt: {}&quot;</span>, <span class="ident">prompt</span>));
         <span class="kw">let</span> <span class="ident">trimmed</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">trim</span>();
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span>
             <span class="ident">trimmed</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>()
@@ -129,9 +129,9 @@
         <span class="macro">print</span><span class="macro">!</span>(<span class="string">&quot;{} : &quot;</span>, <span class="ident">prompt</span>);
         <span class="ident">stdout</span>().<span class="ident">flush</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
-        <span class="ident">stdin</span>().<span class="ident">read_line</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">input</span>).<span class="ident">expect</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Error reading for prompt: {}&quot;</span>, <span class="ident">prompt</span>));
+        <span class="ident">stdin</span>().<span class="ident">read_line</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">input</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error reading for prompt: {}&quot;</span>, <span class="ident">prompt</span>));
         <span class="kw">let</span> <span class="ident">trimmed</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">trim</span>();
-        <span class="kw">if</span> <span class="ident">trimmed</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">trimmed</span>.<span class="ident">is_empty</span>() {
             <span class="kw">return</span> <span class="ident">default</span>;
         }
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span>
@@ -151,8 +151,8 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">query_yes_no</span>(<span class="ident">prompt</span> : <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
     <span class="ident">query</span>(<span class="ident">prompt</span>,
-        <span class="op">|</span><span class="ident">response</span> : <span class="ident">String</span><span class="op">|</span> <span class="kw">if</span> <span class="ident">response</span>.<span class="ident">starts_with</span>(<span class="string">&quot;y&quot;</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">response</span>.<span class="ident">starts_with</span>(<span class="string">&quot;n&quot;</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">response</span>.<span class="ident">starts_with</span>(<span class="string">&quot;y&quot;</span>))
+        <span class="op">|</span><span class="ident">response</span> : <span class="ident">String</span><span class="op">|</span> <span class="kw">if</span> <span class="ident">response</span>.<span class="ident">starts_with</span>(<span class="string">&#39;y&#39;</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">response</span>.<span class="ident">starts_with</span>(<span class="string">&#39;n&#39;</span>) {
+            <span class="prelude-val">Ok</span>(<span class="ident">response</span>.<span class="ident">starts_with</span>(<span class="string">&#39;y&#39;</span>))
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;unrecognized response &#39;{}&#39;. Should be &#39;(y)es&#39; or &#39;(n)o&#39;&quot;</span>, <span class="ident">response</span>))
         }

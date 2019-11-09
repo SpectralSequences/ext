@@ -717,7 +717,7 @@
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_valid_prime</span>(<span class="ident">p</span>));
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">INVERSE_TABLE</span>[<span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>]][<span class="ident">k</span> <span class="kw">as</span> <span class="ident">usize</span>];
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">result</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>);
-    <span class="kw">return</span> <span class="ident">result</span>;
+    <span class="ident">result</span>
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minus_one_to_the_n</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">i</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
@@ -811,17 +811,17 @@
 <span class="kw">fn</span> <span class="ident">binomial2</span>(<span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">k</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
     <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="ident">k</span> {
         <span class="number">0</span>
+    } <span class="kw">else</span> <span class="kw">if</span> (<span class="ident">n</span><span class="op">-</span><span class="ident">k</span>) <span class="op">&amp;</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="number">1</span>
     } <span class="kw">else</span> {
-        <span class="kw">if</span> (<span class="ident">n</span><span class="op">-</span><span class="ident">k</span>) <span class="op">&amp;</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="number">1</span>
-        } <span class="kw">else</span> {
-            <span class="number">0</span>
-        }
+        <span class="number">0</span>
     }
 }
 
 <span class="comment">//Mod p multinomial coefficient of l. If p is 2, more efficient to use Multinomial2.</span>
 <span class="comment">//This uses Lucas&#39;s theorem to reduce to n choose k for n, k &lt; p.</span>
+<span class="comment">// There is some cleaning up to be done here about the arrays. Suppress clippy for now</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">needless_range_loop</span>)]</span>
 <span class="kw">fn</span> <span class="ident">multinomial_odd</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">l</span> : <span class="kw-2">&amp;</span>[<span class="ident">u32</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span>{
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">total</span> <span class="op">=</span> <span class="number">0u32</span>;
     <span class="kw">for</span> <span class="ident">e</span> <span class="kw">in</span> <span class="ident">l</span> {

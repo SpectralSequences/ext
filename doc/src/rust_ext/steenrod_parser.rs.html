@@ -321,8 +321,6 @@
 <span id="303">303</span>
 <span id="304">304</span>
 <span id="305">305</span>
-<span id="306">306</span>
-<span id="307">307</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">nom</span>::{
   <span class="ident">IResult</span>,
@@ -556,14 +554,12 @@
     <span class="comment">// println!(&quot;hi&quot;);</span>
     <span class="kw">let</span> (<span class="ident">rest</span>, (<span class="ident">opt_pm</span>, <span class="ident">opt_algebra</span>, <span class="kw-2">mut</span> <span class="ident">result</span>)) <span class="op">=</span> <span class="ident">tuple</span>((<span class="ident">opt</span>(<span class="ident">alt</span>((<span class="ident">char</span>(<span class="string">&#39;+&#39;</span>), <span class="ident">char</span>(<span class="string">&#39;-&#39;</span>)))), <span class="ident">opt</span>(<span class="ident">pair</span>(<span class="ident">algebra_expr</span>, <span class="ident">char</span>(<span class="string">&#39;*&#39;</span>))), <span class="ident">module_factor</span>))(<span class="ident">i</span>)<span class="question-mark">?</span>;
     <span class="comment">// println!(&quot;{:?}, {:?}, {:?}&quot;, opt_pm, opt_algebra, result);</span>
-    <span class="kw">match</span> <span class="ident">opt_algebra</span> {
-        <span class="prelude-val">Some</span>((<span class="ident">algebra_term</span>, <span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">ModuleParseNode</span>::<span class="ident">Act</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">algebra_term</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">result</span>)),
-        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {}
-    };
-    <span class="kw">match</span> <span class="ident">opt_pm</span> {
-        <span class="prelude-val">Some</span>(<span class="string">&#39;-&#39;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">ModuleParseNode</span>::<span class="ident">Act</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">AlgebraParseNode</span>::<span class="ident">Scalar</span>(<span class="op">-</span><span class="number">1</span>)), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">result</span>)),
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
-    };
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">algebra_term</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="ident">opt_algebra</span> {
+        <span class="ident">result</span> <span class="op">=</span> <span class="ident">ModuleParseNode</span>::<span class="ident">Act</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">algebra_term</span>), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">result</span>));
+    }
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="string">&#39;-&#39;</span>) <span class="op">=</span> <span class="ident">opt_pm</span> {
+        <span class="ident">result</span> <span class="op">=</span> <span class="ident">ModuleParseNode</span>::<span class="ident">Act</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">AlgebraParseNode</span>::<span class="ident">Scalar</span>(<span class="op">-</span><span class="number">1</span>)), <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">result</span>));
+    }
     <span class="prelude-val">Ok</span>((<span class="ident">rest</span>,<span class="ident">result</span>))
 }
 
