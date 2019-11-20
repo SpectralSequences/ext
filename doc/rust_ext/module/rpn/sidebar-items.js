@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["_IMPL_DESERIALIZE_FOR_RPSpec",""]],"fn":[["coef_adem",""],["coef_milnor",""]],"struct":[["RPSpec",""],["RealProjectiveSpace","This is RP_min^max. THe cohomology is the subquotient of F_2[x, x^{-1}] given by elements of degree between min and max (inclusive)"]]});
