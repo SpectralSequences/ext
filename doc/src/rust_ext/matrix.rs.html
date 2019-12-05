@@ -1167,6 +1167,8 @@
 <span id="1149">1149</span>
 <span id="1150">1150</span>
 <span id="1151">1151</span>
+<span id="1152">1152</span>
+<span id="1153">1153</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -2184,18 +2186,20 @@
     <span class="doccomment">/// Applies a matrix to a vector.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Example</span>
+    <span class="doccomment">/// ```</span>
     <span class="doccomment">/// let p = 7;</span>
     <span class="doccomment">/// # use rust_ext::matrix::Matrix;</span>
+    <span class="doccomment">/// # use rust_ext::fp_vector::{FpVector, FpVectorT};</span>
     <span class="doccomment">/// # rust_ext::fp_vector::initialize_limb_bit_index_table(p);</span>
     <span class="doccomment">/// let input  = [vec![1, 3, 6],</span>
     <span class="doccomment">///               vec![0, 3, 4]];</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// let m = Matrix::from_vec(p, &amp;input);</span>
     <span class="doccomment">/// let mut v = FpVector::new(p, 2);</span>
-    <span class="doccomment">/// v.pack(vec![3, 1]);</span>
+    <span class="doccomment">/// v.pack(&amp;vec![3, 1]);</span>
     <span class="doccomment">/// let mut result = FpVector::new(p, 3);</span>
     <span class="doccomment">/// let mut desired_result = FpVector::new(p, 3);</span>
-    <span class="doccomment">/// result.pack(vec![3, 5, 1]);</span>
+    <span class="doccomment">/// desired_result.pack(&amp;vec![3, 5, 1]);</span>
     <span class="doccomment">/// m.apply(&amp;mut result, 1, &amp;v);</span>
     <span class="doccomment">/// assert_eq!(result, desired_result);</span>
     <span class="doccomment">/// ```</span>
