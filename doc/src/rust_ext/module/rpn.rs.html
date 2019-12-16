@@ -192,7 +192,9 @@
 <span id="174">174</span>
 <span id="175">175</span>
 <span id="176">176</span>
+<span id="177">177</span>
 </pre><div class="example-wrap"><pre class="rust ">
+
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>, <span class="ident">AdemAlgebra</span>, <span class="ident">adem_algebra</span>::<span class="ident">AdemBasisElement</span>, <span class="ident">MilnorAlgebra</span>, <span class="ident">milnor_algebra</span>::<span class="ident">MilnorBasisElement</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">ZeroModule</span>};
@@ -355,7 +357,7 @@
         <span class="kw">let</span> <span class="ident">clear_bottom</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">clear_bottom</span>.<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">min</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">min</span>;
         <span class="kw">if</span> <span class="ident">clear_bottom</span> {
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> (<span class="ident">spec</span>.<span class="ident">min</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">rem_euclid</span>(<span class="number">8</span>);
+            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> (<span class="ident">spec</span>.<span class="ident">min</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">%</span> <span class="number">8</span>; <span class="comment">//.rem_euclid(8);</span>
             <span class="kw">if</span> <span class="ident">x</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="ident">min</span> <span class="op">+</span><span class="op">=</span> <span class="number">8</span> <span class="op">-</span> <span class="ident">x</span>;
             }

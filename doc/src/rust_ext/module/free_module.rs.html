@@ -337,6 +337,31 @@
 <span id="319">319</span>
 <span id="320">320</span>
 <span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{ <span class="ident">Mutex</span>, <span class="ident">MutexGuard</span> };
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -361,7 +386,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FreeModuleTableEntry</span> {
     <span class="kw">pub</span> <span class="ident">num_gens</span> : <span class="ident">usize</span>,
     <span class="kw">pub</span> <span class="ident">basis_element_to_opgen</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">OperationGeneratorPair</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">generator_to_index</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">generator_to_index</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, 
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FreeModule</span> {
@@ -370,6 +395,7 @@
     <span class="kw">pub</span> <span class="ident">min_degree</span> : <span class="ident">i32</span>,
     <span class="kw">pub</span> <span class="ident">max_degree</span> : <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
     <span class="ident">gen_names</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">gen_deg_idx_to_internal_idx</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">table</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">FreeModuleTableEntry</span><span class="op">&gt;</span>
 }
 
@@ -430,12 +456,15 @@
 
 <span class="kw">impl</span> <span class="ident">FreeModule</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>, <span class="ident">name</span> : <span class="ident">String</span>, <span class="ident">min_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">gen_deg_idx_to_internal_idx</span> <span class="op">=</span> <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>);
+        <span class="ident">gen_deg_idx_to_internal_idx</span>.<span class="ident">push</span>(<span class="number">0</span>);
         <span class="self">Self</span> {
             <span class="ident">algebra</span>,
             <span class="ident">name</span>,
             <span class="ident">min_degree</span>,
             <span class="ident">max_degree</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">min_degree</span> <span class="op">-</span> <span class="number">1</span>),
             <span class="ident">gen_names</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
+            <span class="ident">gen_deg_idx_to_internal_idx</span>,
             <span class="ident">table</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>)
         }
     }
@@ -456,8 +485,8 @@
         <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">max_degree</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">=</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span> <span class="number">1</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">basis_element_to_opgen</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">OperationGeneratorPair</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">generator_to_index</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">min_degree</span>);
-        <span class="comment">// gen_to_idx goes gen_degree =&gt; gen_idx =&gt; start of block.</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">generator_to_index</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="comment">// gen_to_idx goes internal_gen_idx =&gt; start of block.</span>
         <span class="comment">// so gen_to_idx_size should be (number of possible degrees + 1) * sizeof(uint*) + number of gens * sizeof(uint).</span>
         <span class="comment">// The other part of the table goes idx =&gt; opgen</span>
         <span class="comment">// The size should be (number of basis elements in current degree) * sizeof(FreeModuleOperationGeneratorPair)</span>
@@ -465,11 +494,10 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">offset</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">for</span> <span class="ident">gen_deg</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">min_degree</span> .. <span class="ident">degree</span> {
             <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">number_of_gens_in_degree</span>(<span class="ident">gen_deg</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gentoidx_degree</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">num_gens</span>);
             <span class="kw">let</span> <span class="ident">op_deg</span> <span class="op">=</span> <span class="ident">degree</span> <span class="op">-</span> <span class="ident">gen_deg</span>;
             <span class="kw">let</span> <span class="ident">num_ops</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">dimension</span>(<span class="ident">op_deg</span>, <span class="ident">gen_deg</span>);
             <span class="kw">for</span> <span class="ident">gen_idx</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
-                <span class="ident">gentoidx_degree</span>.<span class="ident">push</span>(<span class="ident">offset</span>);
+                <span class="ident">generator_to_index</span>.<span class="ident">push</span>(<span class="ident">offset</span>);
                 <span class="kw">for</span> <span class="ident">op_idx</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_ops</span> {
                     <span class="ident">basis_element_to_opgen</span>.<span class="ident">push</span>(<span class="ident">OperationGeneratorPair</span> {
                         <span class="ident">generator_degree</span> : <span class="ident">gen_deg</span>,
@@ -480,7 +508,6 @@
                 }
                 <span class="ident">offset</span> <span class="op">+</span><span class="op">=</span> <span class="ident">num_ops</span>;
             }
-            <span class="ident">generator_to_index</span>.<span class="ident">push</span>(<span class="ident">gentoidx_degree</span>);
         }
         (<span class="ident">lock</span>,
             <span class="ident">FreeModuleTableEntry</span> {
@@ -508,18 +535,20 @@
             }
         }
         <span class="self">self</span>.<span class="ident">gen_names</span>.<span class="ident">push</span>(<span class="ident">gen_names</span>);
-        <span class="self">Self</span>::<span class="ident">add_generators_to_table</span>(<span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">table</span>, <span class="ident">num_gens</span>);
+        <span class="self">self</span>.<span class="ident">add_generators_to_table</span>(<span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">table</span>, <span class="ident">num_gens</span>);
         <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">push</span>(<span class="ident">table</span>);
         <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
     }
 
-    <span class="kw">fn</span> <span class="ident">add_generators_to_table</span>(<span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">table</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FreeModuleTableEntry</span>, <span class="ident">num_gens</span> : <span class="ident">usize</span>){
+    <span class="kw">fn</span> <span class="ident">add_generators_to_table</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">table</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FreeModuleTableEntry</span>, <span class="ident">num_gens</span> : <span class="ident">usize</span>){
         <span class="comment">// let old_num_gens = table.num_gens;</span>
         <span class="comment">// let new_num_gens = old_num_gens + new_generators;</span>
         <span class="ident">table</span>.<span class="ident">num_gens</span> <span class="op">=</span> <span class="ident">num_gens</span>;
         <span class="kw">let</span> <span class="ident">old_dimension</span> <span class="op">=</span> <span class="ident">table</span>.<span class="ident">basis_element_to_opgen</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">start_of_block</span> <span class="op">=</span> <span class="ident">old_dimension</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gen_to_idx</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">num_gens</span>);
+        <span class="kw">let</span> <span class="ident">internal_gen_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>[<span class="ident">degree</span>];
+        <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>.<span class="ident">push</span>(<span class="ident">internal_gen_idx</span> <span class="op">+</span> <span class="ident">num_gens</span>);
+        <span class="comment">// let mut gen_to_idx = Vec::with_capacity(num_gens);</span>
         <span class="kw">for</span> <span class="ident">gen_idx</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
             <span class="ident">table</span>.<span class="ident">basis_element_to_opgen</span>.<span class="ident">push</span>(<span class="ident">OperationGeneratorPair</span> {
                 <span class="ident">generator_degree</span> : <span class="ident">degree</span>,
@@ -527,16 +556,24 @@
                 <span class="ident">operation_degree</span> : <span class="number">0</span>,
                 <span class="ident">operation_index</span> : <span class="number">0</span>
             });
-            <span class="ident">gen_to_idx</span>.<span class="ident">push</span>(<span class="ident">start_of_block</span>);
+            <span class="ident">table</span>.<span class="ident">generator_to_index</span>.<span class="ident">push</span>(<span class="ident">start_of_block</span>);
             <span class="ident">start_of_block</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         }
-        <span class="ident">table</span>.<span class="ident">generator_to_index</span>.<span class="ident">push</span>(<span class="ident">gen_to_idx</span>);
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">generator_offset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">gen_deg</span> : <span class="ident">i32</span>, <span class="ident">gen_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">gen_deg</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>);
+        <span class="kw">let</span> <span class="ident">internal_gen_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>[<span class="ident">gen_deg</span>] <span class="op">+</span> <span class="ident">gen_idx</span>;
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">internal_gen_idx</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>[<span class="ident">gen_deg</span> <span class="op">+</span> <span class="number">1</span>]);
+        <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">degree</span>].<span class="ident">generator_to_index</span>[<span class="ident">internal_gen_idx</span>]
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">operation_generator_to_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_deg</span> : <span class="ident">i32</span>, <span class="ident">op_idx</span> : <span class="ident">usize</span>, <span class="ident">gen_deg</span> : <span class="ident">i32</span>, <span class="ident">gen_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">op_deg</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">gen_deg</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>);
-        <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">op_deg</span> <span class="op">+</span> <span class="ident">gen_deg</span>].<span class="ident">generator_to_index</span>[<span class="ident">gen_deg</span>][<span class="ident">gen_idx</span>] <span class="op">+</span> <span class="ident">op_idx</span>
+        <span class="kw">let</span> <span class="ident">internal_gen_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>[<span class="ident">gen_deg</span>] <span class="op">+</span> <span class="ident">gen_idx</span>;
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">internal_gen_idx</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>[<span class="ident">gen_deg</span> <span class="op">+</span> <span class="number">1</span>]);
+        <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">op_deg</span> <span class="op">+</span> <span class="ident">gen_deg</span>].<span class="ident">generator_to_index</span>[<span class="ident">internal_gen_idx</span>] <span class="op">+</span> <span class="ident">op_idx</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">operation_generator_pair_to_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">op_gen</span> : <span class="kw-2">&amp;</span><span class="ident">OperationGeneratorPair</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
@@ -579,6 +616,19 @@
             <span class="self">self</span>.<span class="ident">add_generators_immediate</span>(<span class="ident">i</span>, <span class="number">0</span>, <span class="prelude-val">None</span>)
         }
     }
+
+    <span class="comment">// Used by Yoneda. Gets nonempty dimensions.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_degrees_with_gens</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">max_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">max_degree</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>.<span class="ident">min_degree</span>() .. <span class="ident">max_degree</span> {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>[<span class="ident">i</span><span class="op">+</span><span class="number">1</span>] <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">gen_deg_idx_to_internal_idx</span>[<span class="ident">i</span>] {
+                <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">i</span>);
+            }
+        }
+        <span class="ident">result</span>
+    }
+
 }
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>;

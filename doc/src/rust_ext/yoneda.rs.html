@@ -672,6 +672,53 @@
 <span id="654">654</span>
 <span id="655">655</span>
 <span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
+<span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
+<span id="696">696</span>
+<span id="697">697</span>
+<span id="698">698</span>
+<span id="699">699</span>
+<span id="700">700</span>
+<span id="701">701</span>
+<span id="702">702</span>
+<span id="703">703</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>, <span class="ident">AdemAlgebra</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">AugmentedChainComplex</span>, <span class="ident">FiniteAugmentedChainComplex</span>, <span class="ident">BoundedChainComplex</span>, <span class="ident">ChainMap</span>};
@@ -851,10 +898,7 @@
         <span class="kw">let</span> (<span class="ident">target</span>, <span class="ident">source</span>) <span class="op">=</span> <span class="ident">split_mut_borrow</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">modules</span>, <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>);
         <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">cc</span>.<span class="ident">differential</span>(<span class="ident">s</span>);
         <span class="kw">if</span> <span class="ident">s</span> <span class="op">&lt;</span> <span class="ident">s_max</span> {
-            <span class="kw">let</span> <span class="ident">dims_with_gens</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">table</span>[<span class="ident">t_max</span>].<span class="ident">generator_to_index</span>.<span class="ident">iter_enum</span>()
-                .<span class="ident">filter</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">x</span>)<span class="op">|</span> <span class="op">!</span><span class="ident">x</span>.<span class="ident">is_empty</span>())
-                .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">i</span>)
-                .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+            <span class="kw">let</span> <span class="ident">degrees_with_gens</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">get_degrees_with_gens</span>(<span class="ident">t_max</span>);
 
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prev_differentials</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">t_min</span>, <span class="ident">t_max</span> <span class="op">+</span> <span class="number">1</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prev_subspaces</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">t_min</span>, <span class="ident">t_max</span> <span class="op">+</span> <span class="number">1</span>);
@@ -869,9 +913,7 @@
                 <span class="ident">prev_basis_list</span>.<span class="ident">push</span>(<span class="prelude-val">None</span>);
                 <span class="ident">dim_drop</span>.<span class="ident">push</span>(<span class="prelude-val">None</span>);
             }
-            <span class="lifetime">&#39;gen_loop</span>: <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">dims_with_gens</span>.<span class="ident">len</span>() {
-                <span class="kw">let</span> <span class="ident">gen_dim</span> <span class="op">=</span> <span class="ident">dims_with_gens</span>[<span class="ident">i</span>];
-
+            <span class="lifetime">&#39;gen_loop</span>: <span class="kw">for</span> (<span class="ident">i</span>, <span class="kw-2">&amp;</span><span class="ident">gen_dim</span>) <span class="kw">in</span> <span class="ident">degrees_with_gens</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                 <span class="comment">// Check if augmentation map is non-zero on the generator</span>
                 <span class="kw">if</span> <span class="ident">s</span> <span class="op">&lt;</span> <span class="ident">target_cc</span>.<span class="ident">max_s</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">target_cc</span>.<span class="ident">module</span>(<span class="ident">s</span>).<span class="ident">dimension</span>(<span class="ident">gen_dim</span>) <span class="op">&gt;</span> <span class="number">0</span> {
                     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">cc</span>.<span class="ident">chain_map</span>(<span class="ident">s</span>);
@@ -907,14 +949,13 @@
                     <span class="ident">prev_subspaces</span>[<span class="ident">t</span>] <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">source</span>.<span class="ident">subspaces</span>[<span class="ident">t</span>].<span class="ident">clone</span>());
                     <span class="ident">prev_basis_list</span>[<span class="ident">t</span>] <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">source</span>.<span class="ident">basis_list</span>[<span class="ident">t</span>].<span class="ident">clone</span>());
 
-                    <span class="kw">let</span> <span class="ident">offsets</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">table</span>[<span class="ident">t</span>].<span class="ident">generator_to_index</span>;
-                    <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">offsets</span>[<span class="ident">gen_dim</span>][<span class="number">0</span>];
+                    <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">generator_offset</span>(<span class="ident">t</span>, <span class="ident">gen_dim</span>, <span class="number">0</span>);
                     <span class="kw">let</span> <span class="ident">dim</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">dimension</span>(<span class="ident">t</span>);
 
-                    <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="ident">dims_with_gens</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">|</span><span class="op">|</span> <span class="ident">dims_with_gens</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">&gt;</span><span class="op">=</span> <span class="ident">offsets</span>.<span class="ident">len</span>() {
+                    <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">degrees_with_gens</span>.<span class="ident">get</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">t_</span><span class="op">|</span> <span class="ident">t_</span> <span class="op">&gt;</span> <span class="ident">t</span>) {
                         <span class="ident">dim</span>
                     } <span class="kw">else</span> {
-                        <span class="ident">offsets</span>[<span class="ident">dims_with_gens</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>]][<span class="number">0</span>]
+                        <span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">generator_offset</span>(<span class="ident">t</span>, <span class="ident">degrees_with_gens</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>], <span class="number">0</span>)
                     };
 
                     <span class="kw">let</span> <span class="ident">source_orig_dim</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">dimension</span>(<span class="ident">t</span>);
@@ -957,13 +998,12 @@
 
                 <span class="comment">// We are free to clear this basis element. Do it</span>
                 <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="ident">gen_dim</span> ..<span class="op">=</span> <span class="ident">t_max</span> {
-                    <span class="kw">let</span> <span class="ident">offsets</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">table</span>[<span class="ident">t</span>].<span class="ident">generator_to_index</span>;
-                    <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">offsets</span>[<span class="ident">gen_dim</span>][<span class="number">0</span>];
+                    <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">generator_offset</span>(<span class="ident">t</span>, <span class="ident">gen_dim</span>, <span class="number">0</span>);
 
-                    <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="ident">dims_with_gens</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span> <span class="op">|</span><span class="op">|</span> <span class="ident">dims_with_gens</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">&gt;</span><span class="op">=</span> <span class="ident">offsets</span>.<span class="ident">len</span>() {
+                    <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">degrees_with_gens</span>.<span class="ident">get</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">t_</span><span class="op">|</span> <span class="ident">t_</span> <span class="op">&gt;</span> <span class="ident">t</span>) {
                         <span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">dimension</span>(<span class="ident">t</span>)
                     } <span class="kw">else</span> {
-                        <span class="ident">offsets</span>[<span class="ident">dims_with_gens</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>]][<span class="number">0</span>]
+                        <span class="ident">source</span>.<span class="ident">module</span>.<span class="ident">module</span>.<span class="ident">generator_offset</span>(<span class="ident">t</span>, <span class="ident">degrees_with_gens</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>], <span class="number">0</span>)
                     };
 
                     <span class="kw">if</span> <span class="ident">prev_differentials</span>[<span class="ident">t</span>].<span class="ident">is_none</span>() {
@@ -1247,6 +1287,60 @@
     (<span class="ident">matrix</span>, <span class="ident">image_matrix</span>)
 }
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">CCC</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::<span class="ident">FiniteChainComplex</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution</span>::<span class="ident">Resolution</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution_homomorphism</span>::<span class="ident">ResolutionHomomorphism</span>;
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test</span>() {
+        <span class="kw">let</span> <span class="ident">algebra</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="number">2</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>)));
+        <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from</span>(<span class="ident">FDModule</span>::<span class="ident">new</span>(<span class="ident">algebra</span>, <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">BiVec</span>::<span class="ident">from_vec</span>(<span class="number">0</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]))));
+        <span class="kw">let</span> <span class="ident">chain_complex</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteChainComplex</span>::<span class="ident">ccdz</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>)));
+        <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">chain_complex</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+
+        <span class="kw">let</span> <span class="ident">x</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="number">30</span>;
+        <span class="kw">let</span> <span class="ident">s</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="number">6</span>;
+        <span class="kw">let</span> <span class="ident">idx</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
+
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">x</span>;
+        <span class="ident">resolution</span>.<span class="ident">resolve_through_bidegree</span>(<span class="ident">s</span>, <span class="ident">t</span>);
+
+        <span class="kw">let</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">yoneda_representative_element</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">inner</span>), <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">idx</span>));
+
+        <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">ResolutionHomomorphism</span>::<span class="ident">new</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">inner</span>), <span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">yoneda</span>), <span class="number">0</span>, <span class="number">0</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mat</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>);
+        <span class="ident">mat</span>[<span class="number">0</span>].<span class="ident">set_entry</span>(<span class="number">0</span>, <span class="number">1</span>);
+        <span class="ident">f</span>.<span class="ident">extend_step</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">mat</span>));
+
+        <span class="ident">f</span>.<span class="ident">extend</span>(<span class="ident">s</span>, <span class="ident">t</span>);
+        <span class="kw">let</span> <span class="ident">final_map</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">get_map</span>(<span class="ident">s</span>);
+        <span class="kw">let</span> <span class="ident">num_gens</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">inner</span>.<span class="ident">number_of_gens_in_bidegree</span>(<span class="ident">s</span>, <span class="ident">t</span>);
+        <span class="kw">for</span> <span class="ident">i_</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
+            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">final_map</span>.<span class="ident">output</span>(<span class="ident">t</span>, <span class="ident">i_</span>).<span class="ident">dimension</span>(), <span class="number">1</span>);
+            <span class="kw">if</span> <span class="ident">i_</span> <span class="op">=</span><span class="op">=</span> <span class="ident">idx</span> {
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">final_map</span>.<span class="ident">output</span>(<span class="ident">t</span>, <span class="ident">i_</span>).<span class="ident">entry</span>(<span class="number">0</span>), <span class="number">1</span>);
+            } <span class="kw">else</span> {
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">final_map</span>.<span class="ident">output</span>(<span class="ident">t</span>, <span class="ident">i_</span>).<span class="ident">entry</span>(<span class="number">0</span>), <span class="number">0</span>);
+            }
+        }
+
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">check</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">from_vec</span>(<span class="number">0</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">t</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>]);
+        <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> ..<span class="op">=</span> <span class="ident">s</span> {
+            <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">yoneda</span>.<span class="ident">module</span>(<span class="ident">s</span>);
+
+            <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="number">0</span> ..<span class="op">=</span> <span class="ident">t</span> {
+                <span class="ident">check</span>[<span class="ident">t</span>] <span class="op">+</span><span class="op">=</span> (<span class="kw">if</span> <span class="ident">s</span> <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="op">-</span><span class="number">1</span> }) <span class="op">*</span> <span class="ident">module</span>.<span class="ident">dimension</span>(<span class="ident">t</span>) <span class="kw">as</span> <span class="ident">i32</span>;
+            }
+        }
+        <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="number">0</span> ..<span class="op">=</span> <span class="ident">t</span> {
+            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">check</span>[<span class="ident">t</span>], <span class="ident">module</span>.<span class="ident">dimension</span>(<span class="ident">t</span>) <span class="kw">as</span> <span class="ident">i32</span>, <span class="string">&quot;Incorrect Euler characteristic at t = {}&quot;</span>, <span class="ident">t</span>);
+        }
+    }
+}
 <span class="comment">//static mut MEMOIZED_SIZE : Option&lt;once::OnceVec&lt;Vec&lt;u32&gt;&gt;&gt; = None;</span>
 <span class="comment">//unsafe fn compute_size(algebra : &amp;Arc&lt;AlgebraAny&gt;, deg : i32) {</span>
 <span class="comment">//    if MEMOIZED_SIZE.is_none() {</span>
