@@ -1169,6 +1169,10 @@
 <span id="1151">1151</span>
 <span id="1152">1152</span>
 <span id="1153">1153</span>
+<span id="1154">1154</span>
+<span id="1155">1155</span>
+<span id="1156">1156</span>
+<span id="1157">1157</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
@@ -1304,6 +1308,12 @@
         }
     }
 
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;prime-two&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+        <span class="number">2</span>
+    }
+
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;prime-two&quot;</span>))]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">p</span>
     }
@@ -1355,7 +1365,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vectors</span>.<span class="ident">iter_mut</span>() {
             <span class="ident">v</span>.<span class="ident">clear_slice</span>();
-        }        
+        }
         <span class="self">self</span>.<span class="ident">slice_row_start</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="self">self</span>.<span class="ident">slice_row_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">rows</span>;
         <span class="self">self</span>.<span class="ident">slice_col_start</span> <span class="op">=</span> <span class="number">0</span>;
@@ -1365,9 +1375,8 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_slice</span>(<span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">rows</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">rows</span>();
         <span class="self">self</span>.<span class="ident">columns</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">columns</span>();
-        <span class="self">self</span>.<span class="ident">vectors</span>.<span class="ident">drain</span>(<span class="number">0</span>..<span class="self">self</span>.<span class="ident">slice_row_start</span>);
-        <span class="self">self</span>.<span class="ident">slice_row_end</span> <span class="op">-</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">slice_row_start</span>;
         <span class="self">self</span>.<span class="ident">vectors</span>.<span class="ident">truncate</span>(<span class="self">self</span>.<span class="ident">slice_row_end</span>);
+        <span class="self">self</span>.<span class="ident">vectors</span>.<span class="ident">drain</span>(<span class="number">0</span>..<span class="self">self</span>.<span class="ident">slice_row_start</span>);
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">vectors</span> {
             <span class="ident">v</span>.<span class="ident">into_slice</span>();
         }
@@ -1375,9 +1384,8 @@
         <span class="self">self</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_vec</span>(<span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span> {
-        <span class="self">self</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">into_slice</span>();
-        <span class="self">self</span>.<span class="ident">vectors</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_vec</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">into_slice</span>().<span class="ident">vectors</span>
     }
 }
 

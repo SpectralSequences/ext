@@ -1330,6 +1330,31 @@
 <span id="1312">1312</span>
 <span id="1313">1313</span>
 <span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
+<span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
+<span id="1324">1324</span>
+<span id="1325">1325</span>
+<span id="1326">1326</span>
+<span id="1327">1327</span>
+<span id="1328">1328</span>
+<span id="1329">1329</span>
+<span id="1330">1330</span>
+<span id="1331">1331</span>
+<span id="1332">1332</span>
+<span id="1333">1333</span>
+<span id="1334">1334</span>
+<span id="1335">1335</span>
+<span id="1336">1336</span>
+<span id="1337">1337</span>
+<span id="1338">1338</span>
+<span id="1339">1339</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>;
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="ident">lazy_static</span>;
@@ -1342,6 +1367,14 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">MAX_XI_TAU</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">Bialgebra</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
+<span class="kw">use</span> <span class="ident">nom</span>::{
+    <span class="ident">IResult</span>,
+    <span class="ident">combinator</span>::<span class="ident">map</span>,
+    <span class="ident">branch</span>::<span class="ident">alt</span>,
+    <span class="ident">bytes</span>::<span class="ident">complete</span>::<span class="ident">tag</span>,
+    <span class="ident">character</span>::<span class="ident">complete</span>::{<span class="ident">char</span>, <span class="ident">digit1</span>, <span class="ident">space1</span>},
+    <span class="ident">sequence</span>::{<span class="ident">delimited</span>, <span class="ident">pair</span>},
+};
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 
 
@@ -1462,6 +1495,12 @@
         <span class="string">&quot;adem&quot;</span>
     }
 
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;prime-two&quot;</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+        <span class="number">2</span>
+    }
+
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;prime-two&quot;</span>))]</span>
     <span class="kw">fn</span> <span class="ident">prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">p</span>
     }
@@ -1482,12 +1521,12 @@
                 <span class="ident">ps</span> : <span class="macro">vec</span><span class="macro">!</span>[]
             }));
             <span class="ident">products</span>.<span class="ident">push</span>((<span class="string">&quot;h_0&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">AdemBasisElement</span> {
-                <span class="ident">degree</span> : (<span class="number">2</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">p</span><span class="op">-</span><span class="number">2</span>) <span class="kw">as</span> <span class="ident">i32</span>,
+                <span class="ident">degree</span> : (<span class="number">2</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">prime</span>()<span class="op">-</span><span class="number">2</span>) <span class="kw">as</span> <span class="ident">i32</span>,
                 <span class="ident">bocksteins</span> : <span class="number">0</span>,
                 <span class="ident">excess</span> : <span class="number">0</span>,
                 <span class="ident">ps</span> : <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]
             }));
-            <span class="ident">max_degree</span> <span class="op">=</span> (<span class="number">2</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">2</span>) <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="ident">max_degree</span> <span class="op">=</span> (<span class="number">2</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">prime</span>() <span class="op">-</span> <span class="number">2</span>) <span class="kw">as</span> <span class="ident">i32</span>;
         } <span class="kw">else</span> {
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">4</span> {
                 <span class="kw">let</span> <span class="ident">degree</span> <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">i</span>; <span class="comment">// degree is 2^hi</span>
@@ -1543,55 +1582,67 @@
 
     <span class="kw">fn</span> <span class="ident">json_to_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">json</span> : <span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">i32</span>, <span class="ident">usize</span>) {
         <span class="kw">let</span> <span class="ident">op</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_value</span>(<span class="ident">json</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sqs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">op</span>.<span class="ident">len</span>());
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">p</span>;
-        <span class="kw">let</span> <span class="ident">q</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">degree</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bocksteins</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">generic</span> {
-            <span class="ident">q</span> <span class="op">=</span> <span class="number">2</span><span class="kw-2">*</span><span class="ident">p</span><span class="op">-</span><span class="number">2</span>;
-            <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">sq</span>) <span class="kw">in</span> <span class="ident">op</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-                    <span class="ident">degree</span> <span class="op">+</span><span class="op">=</span> <span class="ident">sq</span>;
-                    <span class="ident">bocksteins</span> <span class="op">|</span><span class="op">=</span> <span class="ident">sq</span> <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="ident">i</span><span class="op">/</span><span class="number">2</span>);
-                } <span class="kw">else</span> {
-                    <span class="ident">degree</span> <span class="op">+</span><span class="op">=</span> <span class="ident">q</span> <span class="op">*</span> <span class="ident">sq</span>;
-                    <span class="ident">sqs</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">sq</span>);
-                }
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
+
+        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">generic</span> {
+            <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="number">2</span><span class="kw-2">*</span><span class="ident">p</span><span class="op">-</span><span class="number">2</span>;
+
+            <span class="comment">// The P^i are in the odd entries and the bocksteins are in the even ones.</span>
+            <span class="kw">let</span> <span class="ident">sqs</span> <span class="op">=</span> <span class="ident">op</span>.<span class="ident">iter</span>().<span class="ident">copied</span>().<span class="ident">skip</span>(<span class="number">1</span>).<span class="ident">step_by</span>(<span class="number">2</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">degree</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="ident">q</span> <span class="op">*</span> <span class="ident">sqs</span>.<span class="ident">iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bocksteins</span> <span class="op">=</span> <span class="number">0</span>;
+
+            <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">sq</span>) <span class="kw">in</span> <span class="ident">op</span>.<span class="ident">iter</span>().<span class="ident">step_by</span>(<span class="number">2</span>).<span class="ident">enumerate</span>() {
+                <span class="ident">degree</span> <span class="op">+</span><span class="op">=</span> <span class="ident">sq</span>;
+                <span class="ident">bocksteins</span> <span class="op">|</span><span class="op">=</span> <span class="ident">sq</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">i</span>;
+            }
+            <span class="ident">AdemBasisElement</span> {
+                <span class="ident">degree</span>: <span class="ident">degree</span> <span class="kw">as</span> <span class="ident">i32</span>,
+                <span class="ident">excess</span> : <span class="number">0</span>,
+                <span class="ident">bocksteins</span>,
+                <span class="ident">ps</span> : <span class="ident">sqs</span>,
             }
         } <span class="kw">else</span> {
-            <span class="ident">q</span> <span class="op">=</span> <span class="number">1</span>;
-            <span class="kw">for</span> <span class="ident">sq</span> <span class="kw">in</span> <span class="ident">op</span> {
-                <span class="ident">degree</span> <span class="op">+</span><span class="op">=</span> <span class="ident">q</span> <span class="op">*</span> <span class="ident">sq</span>;
-                <span class="ident">sqs</span>.<span class="ident">push</span>(<span class="ident">sq</span>);
+            <span class="ident">AdemBasisElement</span> {
+                <span class="ident">degree</span> : <span class="ident">op</span>.<span class="ident">iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>() <span class="kw">as</span> <span class="ident">i32</span>,
+                <span class="ident">excess</span> : <span class="number">0</span>,
+                <span class="ident">bocksteins</span>: <span class="number">0</span>,
+                <span class="ident">ps</span> : <span class="ident">op</span>,
             }
-        }
-        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">AdemBasisElement</span> {
-            <span class="ident">degree</span> : <span class="ident">degree</span> <span class="kw">as</span> <span class="ident">i32</span>,
-            <span class="ident">excess</span> : <span class="number">0</span>,
-            <span class="ident">bocksteins</span>,
-            <span class="ident">ps</span> : <span class="ident">sqs</span>
         };
-        (<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">basis_element_to_index_map</span>[<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>).<span class="ident">unwrap</span>())
+        (<span class="ident">b</span>.<span class="ident">degree</span>, <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>))
     }
 
+    <span class="kw">fn</span> <span class="ident">string_to_basis</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">str</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="ident">map</span>(<span class="ident">alt</span>((
+            <span class="ident">delimited</span>(<span class="ident">char</span>(<span class="string">&#39;P&#39;</span>), <span class="ident">digit1</span>, <span class="ident">space1</span>),
+            <span class="ident">delimited</span>(<span class="ident">tag</span>(<span class="string">&quot;Sq&quot;</span>), <span class="ident">digit1</span>, <span class="ident">space1</span>),
+        )), <span class="op">|</span><span class="ident">elt</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">i</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>::<span class="ident">from_str</span>(<span class="ident">elt</span>).<span class="ident">unwrap</span>();
+            <span class="self">self</span>.<span class="ident">beps_pn</span>(<span class="number">0</span>, <span class="ident">i</span>)
+        });
+
+        <span class="kw">let</span> <span class="ident">second</span> <span class="op">=</span> <span class="ident">map</span>(<span class="ident">pair</span>(<span class="ident">char</span>(<span class="string">&#39;b&#39;</span>), <span class="ident">space1</span>), <span class="op">|</span><span class="kw">_</span><span class="op">|</span> (<span class="number">1</span>, <span class="number">0</span>));
+
+        <span class="ident">alt</span>((<span class="ident">first</span>, <span class="ident">second</span>))(<span class="ident">input</span>)
+    }
 
     <span class="kw">fn</span> <span class="ident">json_from_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">index</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Value</span> {
         <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_from_index</span>(<span class="ident">degree</span>, <span class="ident">index</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out_sqs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">2</span><span class="kw-2">*</span><span class="ident">b</span>.<span class="ident">ps</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out_sqs</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bocksteins</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">bocksteins</span>;
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">generic</span> {
+            <span class="ident">out_sqs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">2</span><span class="kw-2">*</span><span class="ident">b</span>.<span class="ident">ps</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>);
             <span class="ident">out_sqs</span>.<span class="ident">push</span>(<span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">1</span>);
             <span class="ident">bocksteins</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
             <span class="kw">for</span> <span class="ident">sq</span> <span class="kw">in</span> <span class="ident">b</span>.<span class="ident">ps</span>.<span class="ident">iter</span>() {
                 <span class="ident">out_sqs</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">sq</span>);
                 <span class="ident">out_sqs</span>.<span class="ident">push</span>(<span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">1</span>);
-                <span class="ident">bocksteins</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;                
+                <span class="ident">bocksteins</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
             }
         } <span class="kw">else</span> {
-            <span class="kw">for</span> <span class="ident">sq</span> <span class="kw">in</span> <span class="ident">b</span>.<span class="ident">ps</span>.<span class="ident">iter</span>() {
-                <span class="ident">out_sqs</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">sq</span>);
-            }
+            <span class="ident">out_sqs</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">ps</span>.<span class="ident">clone</span>();
         }
         <span class="ident">serde_json</span>::<span class="ident">to_value</span>(<span class="ident">out_sqs</span>).<span class="ident">unwrap</span>()
     }
@@ -1741,7 +1792,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">generate_basis_even_degreen</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span> : <span class="ident">i32</span>){
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>() <span class="kw">as</span> <span class="ident">i32</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">basis</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="comment">// Put Sqn into the list.</span>
         <span class="ident">basis</span>.<span class="ident">push</span>(
@@ -1818,7 +1869,7 @@
     <span class="comment">// a bit flag that indicates where bocksteins are allowed to go.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
     <span class="kw">fn</span> <span class="ident">generate_basis_generic_degreen</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span> : <span class="ident">i32</span>){
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>() <span class="kw">as</span> <span class="ident">i32</span>;
         <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="number">2</span><span class="kw-2">*</span>(<span class="ident">p</span><span class="op">-</span><span class="number">1</span>);        
         <span class="kw">let</span> <span class="ident">residue</span> <span class="op">=</span> <span class="ident">n</span> <span class="op">%</span> <span class="ident">q</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">basis</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AdemBasisElement</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
@@ -1886,13 +1937,12 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">basis_table</span>[<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">idx</span>]
     }
 
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elt</span>: <span class="kw-2">&amp;</span><span class="ident">AdemBasisElement</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">basis_element_to_index_map</span>[<span class="ident">elt</span>.<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">get</span>(<span class="ident">elt</span>).<span class="ident">copied</span>()
+    }
+
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elt</span> : <span class="kw-2">&amp;</span><span class="ident">AdemBasisElement</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">idx</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index_map</span>[<span class="ident">elt</span>.<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">get</span>(<span class="ident">elt</span>) {
-            <span class="kw-2">*</span><span class="ident">idx</span>
-        } <span class="kw">else</span> {
-            <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Didn&#39;t find element: {:?}&quot;</span>, <span class="ident">elt</span>);
-            <span class="macro">panic</span><span class="macro">!</span>();
-        }
+        <span class="self">self</span>.<span class="ident">try_basis_element_to_index</span>(<span class="ident">elt</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Didn&#39;t find element: {:?}&quot;</span>, <span class="ident">elt</span>))
     }
 
     <span class="kw">fn</span> <span class="ident">tail_of_basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">elt</span> : <span class="ident">AdemBasisElement</span>, <span class="ident">idx</span> : <span class="ident">u32</span>, <span class="ident">q</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">AdemBasisElement</span>, <span class="ident">usize</span>) {
@@ -1936,7 +1986,7 @@
 
     <span class="kw">fn</span> <span class="ident">generate_multiplication_table_2_step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">table</span> : <span class="kw-2">&amp;</span>[<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>], <span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FpVector</span> {
         <span class="kw">let</span> <span class="ident">output_dimension</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">n</span>, <span class="op">-</span><span class="number">1</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">output_dimension</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">output_dimension</span>);
         <span class="kw">let</span> <span class="ident">cur_basis_elt</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_from_index</span>(<span class="ident">n</span><span class="op">-</span><span class="ident">x</span>, <span class="ident">idx</span>);
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>;        
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">working_elt</span> <span class="op">=</span> <span class="ident">cur_basis_elt</span>.<span class="ident">clone</span>();
@@ -1995,7 +2045,7 @@
             <span class="self">self</span>.<span class="ident">multiplication_table</span>.<span class="ident">push</span>(<span class="ident">Vec</span>::<span class="ident">new</span>());
             <span class="ident">next_degree</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         }
-        <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="number">2</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">-</span> <span class="number">2</span>;
+        <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="number">2</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">prime</span>() <span class="kw">as</span> <span class="ident">i32</span> <span class="op">-</span> <span class="number">2</span>;
         <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="ident">next_degree</span> ..<span class="op">=</span> <span class="ident">max_degree</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">2</span><span class="kw-2">*</span>(<span class="ident">n</span><span class="op">/</span><span class="ident">q</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">usize</span>);
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span> ..<span class="op">=</span> <span class="ident">n</span><span class="op">/</span><span class="ident">q</span> {
@@ -2029,13 +2079,13 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Note that x is always positive.</span>
     <span class="kw">fn</span> <span class="ident">generate_multiplication_table_generic_step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">table</span> : <span class="kw-2">&amp;</span>[<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>],  <span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">x</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FpVector</span> {
-        <span class="kw">let</span> <span class="ident">p</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span>; <span class="comment">// we use p for the i32 version and self.p for the u32 version</span>
+        <span class="kw">let</span> <span class="ident">p</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>() <span class="kw">as</span> <span class="ident">i32</span>; <span class="comment">// we use p for the i32 version and self.p for the u32 version</span>
         <span class="kw">let</span> <span class="ident">q</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="number">2</span><span class="kw-2">*</span><span class="ident">p</span> <span class="op">-</span> <span class="number">2</span>;
 
         <span class="kw">let</span> <span class="ident">x</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>;
 
         <span class="kw">let</span> <span class="ident">output_dimension</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dimension</span>(<span class="ident">n</span>, <span class="op">-</span><span class="number">1</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">output_dimension</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">output_dimension</span>);
 
         <span class="comment">// If x is just \beta, this is super easy.</span>
         <span class="kw">if</span> <span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
@@ -2070,7 +2120,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">working_elt</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_from_index</span>(<span class="ident">n</span> <span class="op">-</span> (<span class="ident">q</span> <span class="op">*</span> <span class="ident">i</span> <span class="kw">as</span> <span class="ident">i32</span>), <span class="ident">idx</span>).<span class="ident">clone</span>();
 
         <span class="kw">let</span> <span class="ident">b</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="ident">working_elt</span>.<span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">1</span>;
-        <span class="kw">if</span> <span class="ident">working_elt</span>.<span class="ident">ps</span>.<span class="ident">is_empty</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">p</span><span class="kw-2">*</span><span class="ident">working_elt</span>.<span class="ident">ps</span>[<span class="number">0</span>] <span class="op">+</span> <span class="ident">b</span> {
+        <span class="kw">if</span> <span class="ident">working_elt</span>.<span class="ident">ps</span>.<span class="ident">is_empty</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>()<span class="kw-2">*</span><span class="ident">working_elt</span>.<span class="ident">ps</span>[<span class="number">0</span>] <span class="op">+</span> <span class="ident">b</span> {
             <span class="ident">working_elt</span>.<span class="ident">ps</span>.<span class="ident">insert</span>(<span class="number">0</span>, <span class="ident">i</span>);
             <span class="ident">working_elt</span>.<span class="ident">bocksteins</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>;
             <span class="ident">working_elt</span>.<span class="ident">degree</span> <span class="op">=</span> <span class="ident">n</span>;
@@ -2089,8 +2139,8 @@
 
         <span class="kw">if</span> <span class="ident">b</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
             <span class="comment">// We use P^i P^j = \sum ... P^{i + j - k} P^k</span>
-            <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> ..<span class="op">=</span> <span class="ident">i</span><span class="op">/</span><span class="self">self</span>.<span class="ident">p</span> {
-                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">i</span>, <span class="ident">j</span>, <span class="ident">k</span>, <span class="number">0</span>, <span class="number">0</span>);
+            <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> ..<span class="op">=</span> <span class="ident">i</span><span class="op">/</span><span class="self">self</span>.<span class="ident">prime</span>() {
+                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">i</span>, <span class="ident">j</span>, <span class="ident">k</span>, <span class="number">0</span>, <span class="number">0</span>);
                 <span class="kw">if</span> <span class="ident">c</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="kw">continue</span>;
                 }
@@ -2106,13 +2156,13 @@
                 <span class="kw">let</span> <span class="ident">rest_reduced</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multiplication_table</span>[(<span class="ident">n</span> <span class="op">-</span> <span class="ident">q</span> <span class="op">*</span> (<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span> <span class="op">-</span> <span class="ident">k</span>) <span class="kw">as</span> <span class="ident">i32</span>) <span class="kw">as</span> <span class="ident">usize</span>][<span class="number">2</span> <span class="op">*</span> <span class="ident">k</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">tail_idx</span>];
                 <span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">coeff</span>) <span class="kw">in</span> <span class="ident">rest_reduced</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                     <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">table</span>[<span class="number">2</span> <span class="op">*</span> (<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span> <span class="op">-</span> <span class="ident">k</span>) <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">id</span>];
-                    <span class="ident">result</span>.<span class="ident">add</span>(<span class="ident">source</span>, (<span class="ident">c</span> <span class="op">*</span> <span class="ident">coeff</span>) <span class="op">%</span> <span class="self">self</span>.<span class="ident">p</span>);
+                    <span class="ident">result</span>.<span class="ident">add</span>(<span class="ident">source</span>, (<span class="ident">c</span> <span class="op">*</span> <span class="ident">coeff</span>) <span class="op">%</span> <span class="self">self</span>.<span class="ident">prime</span>());
                 }
             }
         } <span class="kw">else</span> {
             <span class="comment">// First treat the k = 0 case.</span>
             <span class="comment">// \beta P^{i + j - k} P^i</span>
-            <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">i</span>, <span class="ident">j</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);
+            <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">i</span>, <span class="ident">j</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);
             <span class="ident">working_elt</span>.<span class="ident">ps</span>[<span class="number">0</span>] <span class="op">=</span> <span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>;
             <span class="ident">working_elt</span>.<span class="ident">degree</span> <span class="op">=</span> <span class="ident">n</span>;
             <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">working_elt</span>);
@@ -2120,30 +2170,30 @@
 
             <span class="comment">// P^{i + j - k} \beta P^k. Check if there is \beta following P^k</span>
             <span class="kw">if</span> <span class="ident">working_elt</span>.<span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">i</span>, <span class="ident">j</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);
+                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">i</span>, <span class="ident">j</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);
                 <span class="ident">working_elt</span>.<span class="ident">bocksteins</span> <span class="op">^</span><span class="op">=</span> <span class="number">3</span>; <span class="comment">// flip the first two bits, so that it now ends with 10</span>
                 <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">working_elt</span>);
                 <span class="ident">result</span>.<span class="ident">add_basis_element</span>(<span class="ident">index</span>, <span class="ident">c</span>);
             }
 
-            <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">1</span> ..<span class="op">=</span> <span class="ident">i</span><span class="op">/</span><span class="self">self</span>.<span class="ident">p</span> {
+            <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">1</span> ..<span class="op">=</span> <span class="ident">i</span><span class="op">/</span><span class="self">self</span>.<span class="ident">prime</span>() {
                 <span class="comment">// \beta P^{i + j - k} P^k</span>
-                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">i</span>, <span class="ident">j</span>, <span class="ident">k</span>, <span class="number">1</span>, <span class="number">0</span>);
+                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">i</span>, <span class="ident">j</span>, <span class="ident">k</span>, <span class="number">1</span>, <span class="number">0</span>);
                 <span class="kw">if</span> <span class="ident">c</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="kw">let</span> <span class="ident">rest_reduced</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multiplication_table</span>[(<span class="ident">n</span> <span class="op">-</span> <span class="ident">q</span> <span class="op">*</span> (<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span> <span class="op">-</span> <span class="ident">k</span>) <span class="kw">as</span> <span class="ident">i32</span> <span class="op">-</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">usize</span>][<span class="number">2</span> <span class="op">*</span> <span class="ident">k</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">tail_idx</span>];
                     <span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">coeff</span>) <span class="kw">in</span> <span class="ident">rest_reduced</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                         <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">table</span>[<span class="number">1</span> <span class="op">+</span> <span class="number">2</span> <span class="op">*</span> (<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span> <span class="op">-</span> <span class="ident">k</span>) <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">id</span>];
-                        <span class="ident">result</span>.<span class="ident">add</span>(<span class="ident">source</span>, (<span class="ident">c</span> <span class="op">*</span> <span class="ident">coeff</span>) <span class="op">%</span> <span class="self">self</span>.<span class="ident">p</span>);
+                        <span class="ident">result</span>.<span class="ident">add</span>(<span class="ident">source</span>, (<span class="ident">c</span> <span class="op">*</span> <span class="ident">coeff</span>) <span class="op">%</span> <span class="self">self</span>.<span class="ident">prime</span>());
                     }
                 }
 
                 <span class="comment">// P^{i + j - k} \beta P^k</span>
-                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">p</span>, <span class="ident">i</span>, <span class="ident">j</span>, <span class="ident">k</span>, <span class="number">0</span>, <span class="number">1</span>);
+                <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">adem_relation_coefficient</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">i</span>, <span class="ident">j</span>, <span class="ident">k</span>, <span class="number">0</span>, <span class="number">1</span>);
                 <span class="kw">if</span> <span class="ident">c</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="kw">let</span> <span class="ident">rest_reduced</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multiplication_table</span>[(<span class="ident">n</span> <span class="op">-</span> <span class="ident">q</span> <span class="op">*</span> (<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span> <span class="op">-</span> <span class="ident">k</span>) <span class="kw">as</span> <span class="ident">i32</span>) <span class="kw">as</span> <span class="ident">usize</span>][<span class="number">1</span> <span class="op">+</span> <span class="number">2</span> <span class="op">*</span> <span class="ident">k</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">tail_idx</span>];
                     <span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">coeff</span>) <span class="kw">in</span> <span class="ident">rest_reduced</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                         <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">table</span>[<span class="number">2</span> <span class="op">*</span> (<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span> <span class="op">-</span> <span class="ident">k</span>) <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">id</span>];
-                        <span class="ident">result</span>.<span class="ident">add</span>(<span class="ident">source</span>, (<span class="ident">c</span> <span class="op">*</span> <span class="ident">coeff</span>) <span class="op">%</span> <span class="self">self</span>.<span class="ident">p</span>);
+                        <span class="ident">result</span>.<span class="ident">add</span>(<span class="ident">source</span>, (<span class="ident">c</span> <span class="op">*</span> <span class="ident">coeff</span>) <span class="op">%</span> <span class="self">self</span>.<span class="ident">prime</span>());
                     }
                 }
             }
@@ -2204,7 +2254,7 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_mono_admissible</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">monomial</span> : <span class="ident">AdemBasisElement</span>, <span class="ident">excess</span> : <span class="ident">i32</span>){
-        <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">generic</span> { <span class="number">2</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">p</span> <span class="op">-</span> <span class="number">2</span> } <span class="kw">else</span> { <span class="number">1</span> };
+        <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">generic</span> { <span class="number">2</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">prime</span>() <span class="op">-</span> <span class="number">2</span> } <span class="kw">else</span> { <span class="number">1</span> };
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">leading_degree</span> <span class="op">=</span> <span class="ident">monomial</span>.<span class="ident">degree</span> <span class="op">-</span> (<span class="ident">q</span> <span class="op">*</span> <span class="ident">monomial</span>.<span class="ident">ps</span>[<span class="ident">monomial</span>.<span class="ident">ps</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>]) <span class="kw">as</span> <span class="ident">i32</span>;
         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">monomial</span>.<span class="ident">ps</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span> <span class="op">-</span> <span class="number">2</span>;    
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">generic</span> {
@@ -2276,7 +2326,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">monomial</span> : <span class="ident">AdemBasisElement</span>,
         <span class="kw-2">mut</span> <span class="ident">idx</span> : <span class="ident">i32</span>, <span class="kw-2">mut</span> <span class="ident">leading_degree</span> : <span class="ident">i32</span>, <span class="ident">excess</span> : <span class="ident">i32</span>, <span class="ident">stop_early</span> : <span class="ident">bool</span>        
     ){
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">p</span>;
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="number">2</span><span class="kw-2">*</span><span class="ident">p</span><span class="op">-</span><span class="number">2</span>;
         <span class="comment">// Check for admissibility</span>
         <span class="kw">let</span> <span class="ident">b1</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">idx</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> { (<span class="ident">monomial</span>.<span class="ident">bocksteins</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">idx</span>) <span class="op">&amp;</span> <span class="number">1</span> } <span class="kw">else</span> { <span class="number">0</span> };
