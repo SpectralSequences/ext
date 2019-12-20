@@ -1584,7 +1584,7 @@
                 }
 
                 <span class="kw">let</span> <span class="ident">rem</span> <span class="op">=</span> (<span class="ident">d</span> <span class="op">-</span> <span class="ident">xi_degrees</span>[<span class="ident">i</span>]) <span class="kw">as</span> <span class="ident">usize</span>;
-                <span class="kw">for</span> <span class="ident">old</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ppart_table</span>[<span class="ident">rem</span>].<span class="ident">iter</span>() {
+                <span class="kw">for</span> <span class="ident">old</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ppart_table</span>[<span class="ident">rem</span>] {
                     <span class="comment">// ppart_table[rem] is arranged in increasing order of highest</span>
                     <span class="comment">// xi_i. If we get something too large, we may abort;</span>
                     <span class="kw">if</span> <span class="ident">old</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span> {
@@ -1667,7 +1667,7 @@
                     <span class="kw">break</span>;
                 }
 
-                <span class="kw">for</span> <span class="ident">p_part</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ppart_table</span>[(<span class="ident">d</span> <span class="op">-</span> (<span class="ident">q_part</span>.<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>))<span class="op">/</span><span class="ident">q</span>].<span class="ident">iter</span>() {
+                <span class="kw">for</span> <span class="ident">p_part</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ppart_table</span>[(<span class="ident">d</span> <span class="op">-</span> (<span class="ident">q_part</span>.<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>))<span class="op">/</span><span class="ident">q</span>] {
                     <span class="ident">new_table</span>.<span class="ident">push</span>( <span class="ident">MilnorBasisElement</span> { <span class="ident">p_part</span> : <span class="ident">p_part</span>.<span class="ident">clone</span>(), <span class="ident">q_part</span> : <span class="ident">q_part</span>.<span class="ident">q_part</span>, <span class="ident">degree</span> : <span class="ident">d</span> <span class="kw">as</span> <span class="ident">i32</span> } );
                 }
             }
@@ -1777,12 +1777,7 @@
     <span class="kw">fn</span> <span class="ident">multiply</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">res</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coef</span> : <span class="ident">u32</span>, <span class="ident">m1</span> : <span class="kw-2">&amp;</span><span class="ident">MilnorBasisElement</span>, <span class="ident">m2</span> : <span class="kw-2">&amp;</span><span class="ident">MilnorBasisElement</span>) {
         <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="ident">m1</span>.<span class="ident">degree</span> <span class="op">+</span> <span class="ident">m2</span>.<span class="ident">degree</span>;
 
-        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">generic</span> {
-            <span class="kw">for</span> (<span class="ident">c</span>, <span class="ident">p</span>) <span class="kw">in</span> <span class="ident">PPartMultiplier</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="kw-2">&amp;</span>(<span class="ident">m1</span>.<span class="ident">p_part</span>), <span class="kw-2">&amp;</span>(<span class="ident">m2</span>.<span class="ident">p_part</span>)) {
-                <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">from_p</span>(<span class="ident">p</span>, <span class="ident">target_dim</span>));
-                <span class="ident">res</span>.<span class="ident">add_basis_element</span>(<span class="ident">idx</span>, <span class="ident">c</span> <span class="op">*</span> <span class="ident">coef</span>);
-            }
-        } <span class="kw">else</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">generic</span> {
             <span class="kw">let</span> <span class="ident">m1f</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">multiply_qpart</span>(<span class="ident">m1</span>, <span class="ident">m2</span>.<span class="ident">q_part</span>);
             <span class="kw">for</span> (<span class="ident">cc</span>, <span class="ident">basis</span>) <span class="kw">in</span> <span class="ident">m1f</span> {
                 <span class="kw">let</span> <span class="ident">prod</span> <span class="op">=</span> <span class="ident">PPartMultiplier</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="kw-2">&amp;</span>(<span class="ident">basis</span>.<span class="ident">p_part</span>), <span class="kw-2">&amp;</span>(<span class="ident">m2</span>.<span class="ident">p_part</span>));
@@ -1795,6 +1790,11 @@
                     <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">new</span>);
                     <span class="ident">res</span>.<span class="ident">add_basis_element</span>(<span class="ident">idx</span>, <span class="ident">c</span> <span class="op">*</span> <span class="ident">cc</span> <span class="op">*</span> <span class="ident">coef</span>);
                 }
+            }
+        } <span class="kw">else</span> {
+            <span class="kw">for</span> (<span class="ident">c</span>, <span class="ident">p</span>) <span class="kw">in</span> <span class="ident">PPartMultiplier</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="kw-2">&amp;</span>(<span class="ident">m1</span>.<span class="ident">p_part</span>), <span class="kw-2">&amp;</span>(<span class="ident">m2</span>.<span class="ident">p_part</span>)) {
+                <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">from_p</span>(<span class="ident">p</span>, <span class="ident">target_dim</span>));
+                <span class="ident">res</span>.<span class="ident">add_basis_element</span>(<span class="ident">idx</span>, <span class="ident">c</span> <span class="op">*</span> <span class="ident">coef</span>);
             }
         }
     }
@@ -2037,9 +2037,9 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">use</span> <span class="ident">rstest</span>::<span class="ident">rstest_parametrize</span>;
+    <span class="kw">use</span> <span class="ident">rstest</span>::<span class="ident">rstest</span>;
 
-    <span class="attribute">#[<span class="ident">rstest_parametrize</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>,
+    <span class="attribute">#[<span class="ident">rstest</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>,
         <span class="ident">case</span>(<span class="number">2</span>, <span class="number">32</span>),
         <span class="ident">case</span>(<span class="number">3</span>, <span class="number">106</span>)    
     )]</span>
@@ -2058,7 +2058,7 @@
         }
     }
 
-    <span class="attribute">#[<span class="ident">rstest_parametrize</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>,
+    <span class="attribute">#[<span class="ident">rstest</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>,
         <span class="ident">case</span>(<span class="number">2</span>, <span class="number">32</span>),
         <span class="ident">case</span>(<span class="number">3</span>, <span class="number">106</span>)    
     )]</span>
@@ -2089,7 +2089,7 @@
     }
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">ModuleFailedRelationError</span>;
-    <span class="attribute">#[<span class="ident">rstest_parametrize</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>,
+    <span class="attribute">#[<span class="ident">rstest</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>,
         <span class="ident">case</span>(<span class="number">2</span>, <span class="number">32</span>),
         <span class="ident">case</span>(<span class="number">3</span>, <span class="number">106</span>)    
     )]</span>

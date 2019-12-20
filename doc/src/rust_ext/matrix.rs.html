@@ -1225,7 +1225,7 @@
     <span class="doccomment">/// but please only input rows that do have the same length.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_rows</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">vectors</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span>, <span class="ident">columns</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">vectors</span>.<span class="ident">len</span>();
-        <span class="kw">for</span> <span class="ident">row</span> <span class="kw">in</span> <span class="ident">vectors</span>.<span class="ident">iter</span>() {
+        <span class="kw">for</span> <span class="ident">row</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">vectors</span> {
             <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="ident">row</span>.<span class="ident">dimension</span>(), <span class="ident">columns</span>);
         }
 
@@ -1350,7 +1350,7 @@
     <span class="doccomment">/// assert_eq!(m[0].entry(0), 0);</span>
     <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">row_start</span> : <span class="ident">usize</span>, <span class="ident">row_end</span> : <span class="ident">usize</span>, <span class="ident">col_start</span> : <span class="ident">usize</span>, <span class="ident">col_end</span> : <span class="ident">usize</span>) {
-        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vectors</span>.<span class="ident">iter_mut</span>() {
+        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">vectors</span> {
             <span class="ident">v</span>.<span class="ident">set_slice</span>(<span class="ident">col_start</span>, <span class="ident">col_end</span>);
         }
         <span class="self">self</span>.<span class="ident">slice_row_start</span> <span class="op">=</span> <span class="ident">row_start</span>;
@@ -1361,7 +1361,7 @@
 
     <span class="doccomment">/// Un-slice the matrix.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_slice</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vectors</span>.<span class="ident">iter_mut</span>() {
+        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">vectors</span> {
             <span class="ident">v</span>.<span class="ident">clear_slice</span>();
         }
         <span class="self">self</span>.<span class="ident">slice_row_start</span> <span class="op">=</span> <span class="number">0</span>;
@@ -1809,7 +1809,7 @@
     <span class="doccomment">/// Sets the subspace to be the zero subspace.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_to_zero</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">matrix</span>.<span class="ident">set_to_zero</span>();
-        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">column_to_pivot_row</span>.<span class="ident">iter_mut</span>() {
+        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">column_to_pivot_row</span> {
             <span class="kw-2">*</span><span class="ident">x</span> <span class="op">=</span> <span class="op">-</span><span class="number">1</span>;
         }
     }

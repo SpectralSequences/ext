@@ -333,10 +333,10 @@
         <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_vector_a</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">tmp_vector_b</span>);
         <span class="ident">tmp_vector_b</span>.<span class="ident">set_to_zero</span>();
     }
-    <span class="kw">if</span> <span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-        <span class="ident">milnor_algebra</span>.<span class="ident">multiply_element_by_basis_element</span>(<span class="ident">result</span>, <span class="ident">coeff</span>, <span class="ident">total_degree</span>, <span class="kw-2">&amp;</span><span class="ident">tmp_vector_a</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="op">-</span><span class="number">1</span>);
-    } <span class="kw">else</span> {
+    <span class="kw">if</span> <span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
         <span class="ident">result</span>.<span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="ident">tmp_vector_a</span>, <span class="ident">coeff</span>);
+    } <span class="kw">else</span> {
+        <span class="ident">milnor_algebra</span>.<span class="ident">multiply_element_by_basis_element</span>(<span class="ident">result</span>, <span class="ident">coeff</span>, <span class="ident">total_degree</span>, <span class="kw-2">&amp;</span><span class="ident">tmp_vector_a</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="op">-</span><span class="number">1</span>);
     }
 }
 
@@ -486,7 +486,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">rstest</span>::<span class="ident">rstest_parametrize</span>;
+    <span class="kw">use</span> <span class="ident">rstest</span>::<span class="ident">rstest</span>;
     
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_cob_milnor_qs_to_adem</span>(){
@@ -510,7 +510,7 @@
     }
 
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
-    <span class="attribute">#[<span class="ident">rstest_parametrize</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>,
+    <span class="attribute">#[<span class="ident">rstest</span>(<span class="ident">p</span>, <span class="ident">max_degree</span>,
         <span class="ident">case</span>(<span class="number">2</span>, <span class="number">32</span>),
         <span class="ident">case</span>(<span class="number">3</span>, <span class="number">60</span>)<span class="comment">//106 // reduced size of test because we use a slow implementation</span>
     )]</span>    

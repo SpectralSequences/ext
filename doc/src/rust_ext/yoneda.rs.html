@@ -759,7 +759,7 @@
     }
     <span class="kw">let</span> <span class="ident">elt</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">basis_element_from_index</span>(<span class="ident">deg</span>, <span class="ident">idx</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pref</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">elt</span>.<span class="ident">ps</span>.<span class="ident">iter</span>() {
+    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">elt</span>.<span class="ident">ps</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">i</span>;
         <span class="kw">while</span> <span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
             <span class="ident">pref</span> <span class="op">+</span><span class="op">=</span> (<span class="ident">i</span> <span class="op">&amp;</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i32</span>;
@@ -1080,7 +1080,7 @@
 
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chosen_cols</span> : <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">HashSet</span>::<span class="ident">new</span>();
 
-            <span class="kw">for</span> <span class="ident">image</span> <span class="kw">in</span> <span class="ident">image_pivots</span>.<span class="ident">into_iter</span>() {
+            <span class="kw">for</span> <span class="ident">image</span> <span class="kw">in</span> <span class="ident">image_pivots</span> {
                 <span class="ident">chosen_cols</span>.<span class="ident">insert</span>(<span class="ident">image</span>);
             }
 
@@ -1224,7 +1224,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">offset</span> <span class="op">=</span> <span class="number">0</span>;
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target_idx</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">for</span> (<span class="ident">op_deg</span>, <span class="ident">op_idx</span>) <span class="kw">in</span> <span class="ident">generators</span>.<span class="ident">iter</span>() {
+        <span class="kw">for</span> (<span class="ident">op_deg</span>, <span class="ident">op_idx</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">generators</span> {
             <span class="ident">result</span>.<span class="ident">set_slice</span>(<span class="ident">offset</span>, <span class="ident">offset</span> <span class="op">+</span> <span class="ident">target_degrees</span>[<span class="ident">target_idx</span>]);
             <span class="ident">source</span>.<span class="ident">act_on_original_basis</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="number">1</span>, <span class="kw-2">*</span><span class="ident">op_deg</span>, <span class="kw-2">*</span><span class="ident">op_idx</span>, <span class="ident">t</span>, <span class="ident">i</span>);
             <span class="ident">result</span>.<span class="ident">clear_slice</span>();
