@@ -361,7 +361,6 @@
 <span id="343">343</span>
 <span id="344">344</span>
 <span id="345">345</span>
-<span id="346">346</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{ <span class="ident">Mutex</span>, <span class="ident">MutexGuard</span> };
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -445,12 +444,11 @@
         <span class="kw">let</span> <span class="ident">num_ops</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">dimension</span>(<span class="ident">module_operation_degree</span> <span class="op">+</span> <span class="ident">op_degree</span>, <span class="ident">generator_degree</span>);
         <span class="kw">let</span> <span class="ident">output_block_min</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">operation_generator_to_index</span>(<span class="ident">module_operation_degree</span> <span class="op">+</span> <span class="ident">op_degree</span>, <span class="number">0</span>, <span class="ident">generator_degree</span>, <span class="ident">generator_index</span>);
         <span class="kw">let</span> <span class="ident">output_block_max</span> <span class="op">=</span> <span class="ident">output_block_min</span> <span class="op">+</span> <span class="ident">num_ops</span>;
-        <span class="comment">// Writing into slice (can we take ownership? make new vector with 0&#39;s outside range and add separately? is it okay?)</span>
-        <span class="kw">let</span> <span class="ident">old_slice</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">slice</span>();
-        <span class="ident">result</span>.<span class="ident">set_slice</span>(<span class="ident">output_block_min</span>, <span class="ident">output_block_max</span>); 
+
         <span class="comment">// Now we multiply s * r and write the result to the appropriate position.</span>
-        <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">multiply_basis_elements</span>(<span class="ident">result</span>, <span class="ident">coeff</span>, <span class="ident">op_degree</span>, <span class="ident">op_index</span>, <span class="ident">module_operation_degree</span>, <span class="ident">module_operation_index</span>, <span class="ident">generator_degree</span>);
-        <span class="ident">result</span>.<span class="ident">restore_slice</span>(<span class="ident">old_slice</span>);
+        <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">multiply_basis_elements</span>(
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">result</span>.<span class="ident">borrow_slice</span>(<span class="ident">output_block_min</span>, <span class="ident">output_block_max</span>),
+            <span class="ident">coeff</span>, <span class="ident">op_degree</span>, <span class="ident">op_index</span>, <span class="ident">module_operation_degree</span>, <span class="ident">module_operation_index</span>, <span class="ident">generator_degree</span>);
     }
 }
 
