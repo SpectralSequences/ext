@@ -1044,13 +1044,6 @@
 <span id="1026">1026</span>
 <span id="1027">1027</span>
 <span id="1028">1028</span>
-<span id="1029">1029</span>
-<span id="1030">1030</span>
-<span id="1031">1031</span>
-<span id="1032">1032</span>
-<span id="1033">1033</span>
-<span id="1034">1034</span>
-<span id="1035">1035</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Weak</span>, <span class="ident">RwLock</span>, <span class="ident">Mutex</span>};
@@ -1059,7 +1052,7 @@
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>, <span class="ident">AugmentedMatrix3</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FiniteModule</span>, <span class="ident">FDModule</span>, <span class="ident">FreeModule</span>};
 <span class="kw">use</span> <span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
@@ -1222,6 +1215,7 @@
         <span class="kw">let</span> (<span class="ident">source_lock</span>, <span class="ident">source_module_table</span>) <span class="op">=</span> <span class="ident">source</span>.<span class="ident">construct_table</span>(<span class="ident">t</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chain_map_lock</span> <span class="op">=</span> <span class="ident">current_chain_map</span>.<span class="ident">lock</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">differential_lock</span> <span class="op">=</span> <span class="ident">current_differential</span>.<span class="ident">lock</span>();
+
         <span class="kw">let</span> <span class="ident">source_dimension</span> <span class="op">=</span> <span class="ident">FreeModule</span>::<span class="ident">dimension_with_table</span>(<span class="kw-2">&amp;</span><span class="ident">source_module_table</span>);
         <span class="kw">let</span> <span class="ident">target_cc_dimension</span> <span class="op">=</span> <span class="ident">target_cc</span>.<span class="ident">dimension</span>(<span class="ident">t</span>);
         <span class="kw">let</span> <span class="ident">target_res_dimension</span> <span class="op">=</span> <span class="ident">target_res</span>.<span class="ident">dimension</span>(<span class="ident">t</span>);
@@ -1232,40 +1226,30 @@
         <span class="comment">// This has size target_dimension x (2*target_dimension).</span>
         <span class="comment">// This latter matrix may be used to find a preimage of an element under the differential.</span>
 
-        <span class="comment">// Pad the target dimension so that it ends in an aligned position.</span>
-        <span class="kw">let</span> <span class="ident">padded_target_cc_dimension</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">padded_dimension</span>(<span class="ident">p</span>, <span class="ident">target_cc_dimension</span>);
-        <span class="kw">let</span> <span class="ident">padded_target_res_dimension</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">padded_dimension</span>(<span class="ident">p</span>, <span class="ident">target_res_dimension</span>);
-        <span class="kw">let</span> <span class="ident">padded_target_dimension</span> <span class="op">=</span> <span class="ident">padded_target_res_dimension</span> <span class="op">+</span> <span class="ident">padded_target_cc_dimension</span>;
         <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">source_dimension</span> <span class="op">+</span> <span class="ident">target_dimension</span>;
-        <span class="kw">let</span> <span class="ident">columns</span> <span class="op">=</span> <span class="ident">padded_target_dimension</span> <span class="op">+</span> <span class="ident">source_dimension</span> <span class="op">+</span> <span class="ident">rows</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">rows</span>, <span class="ident">columns</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">AugmentedMatrix3</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">rows</span>, <span class="kw-2">&amp;</span>[<span class="ident">target_cc_dimension</span>, <span class="ident">target_res_dimension</span>, <span class="ident">source_dimension</span> <span class="op">+</span> <span class="ident">rows</span>]);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pivots</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>;<span class="ident">matrix</span>.<span class="ident">columns</span>()];
         <span class="comment">// Get the map (d, f) : X_{s, t} -&gt; X_{s-1, t} (+) C_{s, t} into matrix</span>
 
-        <span class="ident">matrix</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">source_dimension</span>, <span class="number">0</span>, <span class="ident">target_cc_dimension</span>);
-        <span class="ident">current_chain_map</span>.<span class="ident">get_matrix_with_table</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="kw-2">&amp;</span><span class="ident">source_module_table</span>, <span class="ident">t</span>);
-        <span class="ident">matrix</span>.<span class="ident">clear_slice</span>();
+        <span class="ident">matrix</span>.<span class="ident">set_row_slice</span>(<span class="number">0</span>, <span class="ident">source_dimension</span>);
+        <span class="ident">current_chain_map</span>.<span class="ident">get_matrix_with_table</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">matrix</span>.<span class="ident">segment</span>(<span class="number">0</span>,<span class="number">0</span>), <span class="kw-2">&amp;</span><span class="ident">source_module_table</span>, <span class="ident">t</span>);
+        <span class="ident">current_differential</span>.<span class="ident">get_matrix_with_table</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">matrix</span>.<span class="ident">segment</span>(<span class="number">1</span>,<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="ident">source_module_table</span>, <span class="ident">t</span>);
+        <span class="ident">matrix</span>.<span class="ident">segment</span>(<span class="number">2</span>,<span class="number">2</span>).<span class="ident">set_identity</span>(<span class="ident">source_dimension</span>, <span class="number">0</span>, <span class="number">0</span>);
 
-        <span class="ident">matrix</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">source_dimension</span>, <span class="ident">padded_target_cc_dimension</span>, <span class="ident">padded_target_cc_dimension</span> <span class="op">+</span> <span class="ident">target_res_dimension</span>);
-        <span class="ident">current_differential</span>.<span class="ident">get_matrix_with_table</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="kw-2">&amp;</span><span class="ident">source_module_table</span>, <span class="ident">t</span>);
-        <span class="ident">matrix</span>.<span class="ident">clear_slice</span>();
-
-        <span class="comment">// Augment with the identity matrix.</span>
-        <span class="ident">matrix</span>.<span class="ident">set_identity</span>(<span class="ident">source_dimension</span>, <span class="number">0</span>, <span class="ident">padded_target_dimension</span>);
-
-        <span class="ident">matrix</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">source_dimension</span>, <span class="number">0</span>, <span class="ident">padded_target_dimension</span> <span class="op">+</span> <span class="ident">source_dimension</span>);
+        <span class="comment">// This slices the underling matrix. Be sure to revert this.</span>
+        <span class="ident">matrix</span>.<span class="ident">inner</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">source_dimension</span>, <span class="number">0</span>, <span class="ident">matrix</span>.<span class="ident">start</span>[<span class="number">2</span>] <span class="op">+</span> <span class="ident">source_dimension</span>);
         <span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pivots</span>);
-
-        <span class="kw">let</span> <span class="ident">new_kernel</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">compute_kernel</span>(<span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="ident">padded_target_dimension</span>);
-        <span class="kw">let</span> <span class="ident">first_new_row</span> <span class="op">=</span> <span class="ident">source_dimension</span>;
+        <span class="kw">let</span> <span class="ident">new_kernel</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">inner</span>.<span class="ident">compute_kernel</span>(<span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="ident">matrix</span>.<span class="ident">start</span>[<span class="number">2</span>]);
         <span class="ident">matrix</span>.<span class="ident">clear_slice</span>();
+
+        <span class="kw">let</span> <span class="ident">first_new_row</span> <span class="op">=</span> <span class="ident">source_dimension</span>;
 
         <span class="comment">// Now add generators to surject onto C_{s, t}.</span>
         <span class="comment">// (For now we are just adding the eventual images of the new generators into matrix, we will update</span>
         <span class="comment">// X_{s,t} and f later).</span>
         <span class="comment">// We record which pivots exactly we added so that we can walk over the added genrators in a moment and</span>
         <span class="comment">// work out what dX should to to each of them.</span>
-        <span class="kw">let</span> <span class="ident">new_generators</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">extend_to_surjection</span>(<span class="ident">first_new_row</span>, <span class="number">0</span>, <span class="ident">target_cc_dimension</span>, <span class="kw-2">&amp;</span><span class="ident">pivots</span>);
+        <span class="kw">let</span> <span class="ident">new_generators</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">inner</span>.<span class="ident">extend_to_surjection</span>(<span class="ident">first_new_row</span>, <span class="number">0</span>, <span class="ident">matrix</span>.<span class="ident">end</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="ident">pivots</span>);
         <span class="kw">let</span> <span class="ident">cc_new_gens</span> <span class="op">=</span> <span class="ident">new_generators</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res_new_gens</span> <span class="op">=</span> <span class="number">0</span>;
 
@@ -1278,57 +1262,59 @@
                 <span class="kw">let</span> <span class="ident">prev_chain_map</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_map</span>(<span class="ident">s</span> <span class="op">-</span> <span class="number">1</span>);
                 <span class="kw">let</span> <span class="ident">quasi_inverse</span> <span class="op">=</span> <span class="ident">prev_chain_map</span>.<span class="ident">quasi_inverse</span>(<span class="ident">t</span>);
 
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out_vec</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">target_res_dimension</span>);
                 <span class="kw">let</span> <span class="ident">dfx_dim</span> <span class="op">=</span> <span class="ident">complex_cur_differential</span>.<span class="ident">target</span>().<span class="ident">dimension</span>(<span class="ident">t</span>);
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dfx</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="ident">dfx_dim</span>);
+
+                <span class="ident">matrix</span>.<span class="ident">set_row_slice</span>(<span class="ident">first_new_row</span>, <span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">cc_new_gens</span>);
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix_</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">segment</span>(<span class="number">1</span>, <span class="number">1</span>);
                 <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">column</span>) <span class="kw">in</span> <span class="ident">new_generators</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
                     <span class="ident">complex_cur_differential</span>.<span class="ident">apply_to_basis_element</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dfx</span>, <span class="number">1</span>, <span class="ident">t</span>, <span class="ident">column</span>);
-                    <span class="ident">quasi_inverse</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">out_vec</span>, <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">dfx</span>);
-                    <span class="comment">// Now out_vec contains f^{-1}(dC(f(x))).</span>
-                    <span class="kw">let</span> <span class="ident">out_row</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>[<span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">i</span>];
-                    <span class="comment">// dX(x) goes into the column range [padded_target_cc_dimension, padded_target_cc_dimension + target_res_dimension] in the matrix</span>
-                    <span class="comment">// I think we are missing a sign here.</span>
-                    <span class="ident">out_row</span>.<span class="ident">set_slice</span>(<span class="ident">padded_target_cc_dimension</span>, <span class="ident">padded_target_cc_dimension</span> <span class="op">+</span> <span class="ident">target_res_dimension</span>);
-                    <span class="ident">out_row</span>.<span class="ident">assign</span>(<span class="kw-2">&amp;</span><span class="ident">out_vec</span>);
-                    <span class="ident">out_row</span>.<span class="ident">clear_slice</span>();
+                    <span class="ident">quasi_inverse</span>.<span class="ident">apply</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix_</span>[<span class="ident">i</span>], <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">dfx</span>);
                     <span class="ident">dfx</span>.<span class="ident">set_to_zero_pure</span>();
-                    <span class="ident">out_vec</span>.<span class="ident">set_to_zero_pure</span>();
 
                     <span class="comment">// Keep the rows we produced because we have to row reduce to re-compute</span>
                     <span class="comment">// the kernel later, but these rows are the images of the generators, so we</span>
                     <span class="comment">// still need them.</span>
-                    <span class="ident">middle_rows</span>.<span class="ident">push</span>(<span class="ident">out_row</span>.<span class="ident">clone</span>());
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">save_row</span> <span class="op">=</span> <span class="ident">matrix_</span>[<span class="ident">i</span>].<span class="ident">clone</span>();
+                    <span class="ident">save_row</span>.<span class="ident">clear_slice</span>();
+                    <span class="ident">middle_rows</span>.<span class="ident">push</span>(<span class="ident">save_row</span>);
                 }
+                <span class="ident">drop</span>(<span class="ident">matrix_</span>);
+                <span class="ident">matrix</span>.<span class="ident">clear_row_slice</span>();
                 <span class="comment">// Row reduce again since our activity may have changed the image of dX.</span>
                 <span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pivots</span>);
             }
             <span class="comment">// Now we add new generators to hit any cycles in old_kernel that we don&#39;t want in our homology.</span>
-             <span class="ident">res_new_gens</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">extend_image</span>(<span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">cc_new_gens</span>, <span class="ident">padded_target_cc_dimension</span>, <span class="ident">padded_target_cc_dimension</span> <span class="op">+</span> <span class="ident">target_res_dimension</span>, <span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="kw-2">&amp;</span><span class="ident">old_kernel</span>).<span class="ident">len</span>();
+            <span class="ident">res_new_gens</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">inner</span>.<span class="ident">extend_image</span>(<span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">cc_new_gens</span>, <span class="ident">matrix</span>.<span class="ident">start</span>[<span class="number">1</span>], <span class="ident">matrix</span>.<span class="ident">end</span>[<span class="number">1</span>], <span class="kw-2">&amp;</span><span class="ident">pivots</span>, <span class="kw-2">&amp;</span><span class="ident">old_kernel</span>).<span class="ident">len</span>();
+
+            <span class="comment">// Now restore the middle rows.</span>
+            <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">row</span>) <span class="kw">in</span> <span class="ident">middle_rows</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
+                <span class="ident">matrix</span>[<span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">i</span>] <span class="op">=</span> <span class="ident">row</span>;
+            }
         }
         <span class="kw">let</span> <span class="ident">num_new_gens</span> <span class="op">=</span> <span class="ident">cc_new_gens</span> <span class="op">+</span> <span class="ident">res_new_gens</span>;
         <span class="ident">source</span>.<span class="ident">add_generators</span>(<span class="ident">t</span>, <span class="ident">source_lock</span>, <span class="ident">source_module_table</span>, <span class="ident">num_new_gens</span>, <span class="prelude-val">None</span>);
 
-        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">row</span>) <span class="kw">in</span> <span class="ident">middle_rows</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
-            <span class="ident">matrix</span>[<span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">i</span>] <span class="op">=</span> <span class="ident">row</span>;
-        }
-        <span class="ident">current_chain_map</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="ident">first_new_row</span>, <span class="number">0</span>);
-        <span class="ident">current_differential</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">differential_lock</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">matrix</span>, <span class="ident">first_new_row</span>, <span class="ident">padded_target_cc_dimension</span>);
+        <span class="ident">matrix</span>.<span class="ident">set_row_slice</span>(<span class="ident">first_new_row</span>, <span class="ident">rows</span>);
+        <span class="ident">current_chain_map</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">matrix</span>.<span class="ident">segment</span>(<span class="number">0</span>, <span class="number">0</span>));
+        <span class="ident">current_differential</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">differential_lock</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">matrix</span>.<span class="ident">segment</span>(<span class="number">1</span>, <span class="number">1</span>));
+        <span class="ident">matrix</span>.<span class="ident">clear_row_slice</span>();
 
         <span class="comment">// Record the quasi-inverses for future use.</span>
         <span class="comment">// The part of the matrix that contains interesting information is occupied_rows x (target_dimension + source_dimension + kernel_size).</span>
         <span class="kw">let</span> <span class="ident">image_rows</span> <span class="op">=</span> <span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">num_new_gens</span>;
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">first_new_row</span> .. <span class="ident">image_rows</span> {
-            <span class="ident">matrix</span>[<span class="ident">i</span>].<span class="ident">set_entry</span>(<span class="ident">padded_target_dimension</span> <span class="op">+</span> <span class="ident">i</span>, <span class="number">1</span>);
+            <span class="ident">matrix</span>.<span class="ident">inner</span>[<span class="ident">i</span>].<span class="ident">set_entry</span>(<span class="ident">matrix</span>.<span class="ident">start</span>[<span class="number">2</span>] <span class="op">+</span> <span class="ident">i</span>, <span class="number">1</span>);
         }
-        <span class="ident">matrix</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">image_rows</span>, <span class="number">0</span>, <span class="ident">padded_target_dimension</span> <span class="op">+</span> <span class="ident">source_dimension</span> <span class="op">+</span> <span class="ident">num_new_gens</span>); 
+
+        <span class="comment">// From now on we only use the underlying matrix. We manipulate slice directly but don&#39;t</span>
+        <span class="comment">// drop matrix so that we can use matrix.start</span>
+        <span class="ident">matrix</span>.<span class="ident">inner</span>.<span class="ident">set_slice</span>(<span class="number">0</span>, <span class="ident">image_rows</span>, <span class="number">0</span>, <span class="ident">matrix</span>.<span class="ident">start</span>[<span class="number">2</span>] <span class="op">+</span> <span class="ident">source_dimension</span> <span class="op">+</span> <span class="ident">num_new_gens</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_pivots</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>;<span class="ident">matrix</span>.<span class="ident">columns</span>()];
         <span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">new_pivots</span>);
-        <span class="kw">let</span> (<span class="ident">cm_qi</span>, <span class="ident">res_qi</span>) <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">compute_quasi_inverses</span>(
-            <span class="kw-2">&amp;</span><span class="ident">new_pivots</span>, 
-            <span class="ident">padded_target_cc_dimension</span>, 
-            <span class="ident">padded_target_cc_dimension</span> <span class="op">+</span> <span class="ident">target_res_dimension</span>,
-            <span class="ident">padded_target_dimension</span>
-        );
+
+        <span class="comment">// Should this be a method on AugmentedMatrix3?</span>
+        <span class="kw">let</span> (<span class="ident">cm_qi</span>, <span class="ident">res_qi</span>) <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">compute_quasi_inverses</span>(<span class="kw-2">&amp;</span><span class="ident">new_pivots</span>);
 
         <span class="ident">current_chain_map</span>.<span class="ident">set_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">t</span>, <span class="ident">cm_qi</span>);
         <span class="ident">current_chain_map</span>.<span class="ident">set_kernel</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">t</span>, <span class="ident">Subspace</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">0</span>, <span class="number">0</span>)); <span class="comment">// Fill it up with something dummy so that compute_kernels_and... is happy</span>
