@@ -1108,6 +1108,7 @@
 <span id="1090">1090</span>
 <span id="1091">1091</span>
 <span id="1092">1092</span>
+<span id="1093">1093</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
@@ -1809,7 +1810,8 @@
     <span class="ident">rows</span> : <span class="ident">usize</span>,
     <span class="ident">cols</span> : <span class="ident">usize</span>,
     <span class="ident">diag_num</span> : <span class="ident">usize</span>,
-    <span class="ident">cont</span> : <span class="ident">bool</span>
+    <span class="ident">cont</span> : <span class="ident">bool</span>,
+    <span class="ident">diagonal</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 }
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
@@ -1829,6 +1831,7 @@
         <span class="kw">let</span> <span class="ident">rows</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>;
         <span class="kw">let</span> <span class="ident">cols</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>;
         <span class="kw">let</span> <span class="ident">diag_num</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">s</span>.<span class="ident">len</span>();
+        <span class="kw">let</span> <span class="ident">diagonal</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">rows</span>, <span class="ident">cols</span>));
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">M</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">cols</span>]; <span class="ident">rows</span>];
 
@@ -1837,7 +1840,7 @@
         }
         <span class="ident">M</span>[<span class="number">0</span>][<span class="number">1</span>..<span class="ident">cols</span>].<span class="ident">clone_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>[<span class="number">0</span>..(<span class="ident">cols</span> <span class="op">-</span> <span class="number">1</span>)]);
 
-        <span class="ident">PPartMultiplier</span> { <span class="ident">p</span>, <span class="ident">M</span>, <span class="ident">r</span>, <span class="ident">rows</span>, <span class="ident">cols</span>, <span class="ident">diag_num</span>, <span class="ident">cont</span> : <span class="bool-val">true</span> }
+        <span class="ident">PPartMultiplier</span> { <span class="ident">p</span>, <span class="ident">M</span>, <span class="ident">r</span>, <span class="ident">rows</span>, <span class="ident">cols</span>, <span class="ident">diag_num</span>, <span class="ident">diagonal</span>, <span class="ident">cont</span> : <span class="bool-val">true</span> }
     }
 
     <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -1892,18 +1895,17 @@
         }
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">coef</span> <span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_p</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">diagonal</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">max</span>(<span class="self">self</span>.<span class="ident">rows</span>, <span class="self">self</span>.<span class="ident">cols</span>));
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_p</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">diag_num</span>);
 
         <span class="kw">for</span> <span class="ident">diag_idx</span> <span class="kw">in</span> <span class="number">1</span>..<span class="op">=</span><span class="self">self</span>.<span class="ident">diag_num</span> {
             <span class="kw">let</span> <span class="ident">i_min</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">diag_idx</span> <span class="op">+</span> <span class="number">1</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">cols</span> { <span class="ident">diag_idx</span> <span class="op">+</span> <span class="number">1</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">cols</span> } <span class="kw">else</span> {<span class="number">0</span>} ;
             <span class="kw">let</span> <span class="ident">i_max</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">min</span>(<span class="number">1</span> <span class="op">+</span> <span class="ident">diag_idx</span>, <span class="self">self</span>.<span class="ident">rows</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="number">0</span>;
 
-            <span class="ident">diagonal</span>.<span class="ident">clear</span>();
+            <span class="self">self</span>.<span class="ident">diagonal</span>.<span class="ident">clear</span>();
 
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">i_min</span>..<span class="ident">i_max</span> {
-                <span class="ident">diagonal</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">M</span>[<span class="ident">i</span>][<span class="ident">diag_idx</span> <span class="op">-</span> <span class="ident">i</span>]);
+                <span class="self">self</span>.<span class="ident">diagonal</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">M</span>[<span class="ident">i</span>][<span class="ident">diag_idx</span> <span class="op">-</span> <span class="ident">i</span>]);
                 <span class="ident">sum</span> <span class="op">+</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">M</span>[<span class="ident">i</span>][<span class="ident">diag_idx</span> <span class="op">-</span> <span class="ident">i</span>];
             }
             <span class="ident">new_p</span>.<span class="ident">push</span>(<span class="ident">sum</span>);
@@ -1911,7 +1913,7 @@
             <span class="kw">if</span> <span class="ident">sum</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>  {
                 <span class="kw">continue</span>;
             }
-            <span class="ident">coef</span> <span class="kw-2">*</span><span class="op">=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">multinomial</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="kw-2">&amp;</span><span class="ident">diagonal</span>);
+            <span class="ident">coef</span> <span class="kw-2">*</span><span class="op">=</span> <span class="kw">crate</span>::<span class="ident">combinatorics</span>::<span class="ident">multinomial</span>(<span class="self">self</span>.<span class="ident">prime</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">diagonal</span>);
             <span class="ident">coef</span> <span class="op">%</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
             <span class="kw">if</span> <span class="ident">coef</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="self">self</span>.<span class="ident">cont</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">update</span>();

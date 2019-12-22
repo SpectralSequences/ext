@@ -1353,8 +1353,6 @@
 <span id="1335">1335</span>
 <span id="1336">1336</span>
 <span id="1337">1337</span>
-<span id="1338">1338</span>
-<span id="1339">1339</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>;
 <span class="kw">use</span> <span class="ident">lazy_static</span>::<span class="ident">lazy_static</span>;
@@ -1593,7 +1591,7 @@
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">degree</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="ident">q</span> <span class="op">*</span> <span class="ident">sqs</span>.<span class="ident">iter</span>().<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>();
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bocksteins</span> <span class="op">=</span> <span class="number">0</span>;
 
-            <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">sq</span>) <span class="kw">in</span> <span class="ident">op</span>.<span class="ident">iter</span>().<span class="ident">step_by</span>(<span class="number">2</span>).<span class="ident">enumerate</span>() {
+            <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">sq</span>) <span class="kw">in</span> <span class="ident">op</span>.<span class="ident">into_iter</span>().<span class="ident">step_by</span>(<span class="number">2</span>).<span class="ident">enumerate</span>() {
                 <span class="ident">degree</span> <span class="op">+</span><span class="op">=</span> <span class="ident">sq</span>;
                 <span class="ident">bocksteins</span> <span class="op">|</span><span class="op">=</span> <span class="ident">sq</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">i</span>;
             }
@@ -1831,9 +1829,7 @@
                     <span class="ident">bocksteins</span> <span class="kw-2">&amp;</span><span class="op">=</span> <span class="op">!</span>(<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="ident">prev_elt_p_len</span> <span class="op">+</span><span class="number">1</span>));
                 }
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ps</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">prev_elt_p_len</span> <span class="op">+</span> <span class="number">1</span>);
-                <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">prev_elt</span>.<span class="ident">ps</span> {
-                    <span class="ident">ps</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">k</span>);
-                }
+                <span class="ident">ps</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">prev_elt</span>.<span class="ident">ps</span>);
                 <span class="ident">ps</span>.<span class="ident">push</span>(<span class="ident">last</span> <span class="kw">as</span> <span class="ident">u32</span>);
                 <span class="ident">basis</span>.<span class="ident">push</span>(<span class="ident">AdemBasisElement</span> {
                     <span class="ident">degree</span>,
@@ -1906,7 +1902,7 @@
                     <span class="ident">excess</span> <span class="op">+</span><span class="op">=</span> (<span class="ident">bocksteins</span> <span class="op">&amp;</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i32</span>; <span class="comment">// leading bockstein increases excess by 1</span>
                     <span class="kw">let</span> <span class="ident">nonleading_bocksteins</span> <span class="op">=</span> <span class="ident">bocksteins</span> <span class="op">&amp;</span> ((<span class="number">1</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">P</span>.<span class="ident">ps</span>.<span class="ident">len</span>()) <span class="op">-</span> <span class="number">1</span>) <span class="op">&amp;</span> <span class="op">!</span><span class="number">1</span>;
                     <span class="ident">excess</span> <span class="op">-</span><span class="op">=</span> <span class="ident">nonleading_bocksteins</span>.<span class="ident">count_ones</span>() <span class="kw">as</span> <span class="ident">i32</span>; <span class="comment">// remaining bocksteins reduce excess by 1</span>
-                    <span class="kw">let</span> <span class="ident">ps</span> <span class="op">=</span> <span class="ident">P</span>.<span class="ident">ps</span>.<span class="ident">to_vec</span>();
+                    <span class="kw">let</span> <span class="ident">ps</span> <span class="op">=</span> <span class="ident">P</span>.<span class="ident">ps</span>.<span class="ident">clone</span>();
                     <span class="ident">basis</span>.<span class="ident">push</span>(<span class="ident">AdemBasisElement</span> {
                         <span class="ident">degree</span>,
                         <span class="ident">excess</span>,
@@ -2447,7 +2443,7 @@
             <span class="kw">let</span> <span class="ident">rest_degree</span> <span class="op">=</span> <span class="ident">b_new</span>.<span class="ident">degree</span>;
             <span class="kw">let</span> <span class="ident">rest_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">basis_element_to_index</span>(<span class="kw-2">&amp;</span><span class="ident">b_new</span>);
             <span class="kw">return</span> <span class="macro">vec</span><span class="macro">!</span>[(<span class="number">1</span>, (<span class="ident">first_degree</span>, <span class="ident">first_idx</span>), (<span class="ident">rest_degree</span>, <span class="ident">rest_idx</span>))];
-        } 
+        }
         <span class="kw">if</span> <span class="ident">b</span>.<span class="ident">bocksteins</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">ps</span>.<span class="ident">len</span>() <span class="op">!</span><span class="op">=</span> <span class="number">1</span> {
             <span class="kw">let</span> <span class="ident">first_degree</span> <span class="op">=</span> (<span class="ident">b</span>.<span class="ident">ps</span>[<span class="number">0</span>] <span class="op">*</span> <span class="number">2</span> <span class="op">*</span> (<span class="ident">p</span><span class="op">-</span><span class="number">1</span>)) <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="kw">let</span> <span class="ident">rest_degree</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">degree</span> <span class="op">-</span> <span class="ident">first_degree</span>;
