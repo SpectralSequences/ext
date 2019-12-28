@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["FreeModule",""],["FreeModuleTableEntry",""],["OperationGeneratorPair",""]]});
+initSidebarItems({"struct":[["AdmissibleMatrix",""],["FreeModule",""],["FreeModuleTableEntry",""],["OperationGeneratorPair",""]]});
