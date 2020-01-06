@@ -588,12 +588,17 @@
 <span id="570">570</span>
 <span id="571">571</span>
 <span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{ <span class="ident">Mutex</span>, <span class="ident">MutexGuard</span>, <span class="ident">Arc</span> };
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">parking_lot</span>::{<span class="ident">Mutex</span>, <span class="ident">MutexGuard</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">json</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>;
-
 
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="ident">once</span>::<span class="ident">OnceBiVec</span>;
@@ -619,7 +624,7 @@
     <span class="kw">pub</span> <span class="ident">algebra</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">name</span> : <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">min_degree</span> : <span class="ident">i32</span>,
-    <span class="kw">pub</span> <span class="ident">max_degree</span> : <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
+    <span class="ident">lock</span> : <span class="ident">Mutex</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
     <span class="ident">gen_names</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">gen_deg_idx_to_internal_idx</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">table</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">FreeModuleTableEntry</span><span class="op">&gt;</span>
@@ -700,11 +705,15 @@
             <span class="ident">algebra</span>,
             <span class="ident">name</span>,
             <span class="ident">min_degree</span>,
-            <span class="ident">max_degree</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">min_degree</span> <span class="op">-</span> <span class="number">1</span>),
+            <span class="ident">lock</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
             <span class="ident">gen_names</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
             <span class="ident">gen_deg_idx_to_internal_idx</span>,
             <span class="ident">table</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>)
         }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lock</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MutexGuard</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">lock</span>.<span class="ident">lock</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_computed_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
@@ -718,10 +727,7 @@
         <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">degree</span>].<span class="ident">num_gens</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_table</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">FreeModuleTableEntry</span>) {
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>);
-        <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">max_degree</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">=</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span> <span class="number">1</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_table</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FreeModuleTableEntry</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">basis_element_to_opgen</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">OperationGeneratorPair</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">generator_to_index</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="comment">// gen_to_idx goes internal_gen_idx =&gt; start of block.</span>
@@ -747,22 +753,20 @@
                 <span class="ident">offset</span> <span class="op">+</span><span class="op">=</span> <span class="ident">num_ops</span>;
             }
         }
-        (<span class="ident">lock</span>,
-            <span class="ident">FreeModuleTableEntry</span> {
-                <span class="ident">num_gens</span> : <span class="number">0</span>,
-                <span class="ident">basis_element_to_opgen</span>,
-                <span class="ident">generator_to_index</span>
-            }
-        )
+        <span class="ident">FreeModuleTableEntry</span> {
+            <span class="ident">num_gens</span> : <span class="number">0</span>,
+            <span class="ident">basis_element_to_opgen</span>,
+            <span class="ident">generator_to_index</span>
+        }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dimension_with_table</span>(<span class="ident">table</span> : <span class="kw-2">&amp;</span><span class="ident">FreeModuleTableEntry</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="ident">table</span>.<span class="ident">basis_element_to_opgen</span>.<span class="ident">len</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_generators</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="kw-2">mut</span> <span class="ident">lock</span> : <span class="ident">MutexGuard</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">table</span> : <span class="ident">FreeModuleTableEntry</span>, <span class="ident">num_gens</span> : <span class="ident">usize</span>, <span class="ident">names</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>){
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_generators</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">lock</span>: <span class="kw-2">&amp;</span><span class="ident">MutexGuard</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">table</span> : <span class="ident">FreeModuleTableEntry</span>, <span class="ident">num_gens</span> : <span class="ident">usize</span>, <span class="ident">names</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>){
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>);
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">=</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span> <span class="number">1</span>);
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">eq</span>(<span class="ident">lock_api</span>::<span class="ident">MutexGuard</span>::<span class="ident">mutex</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">lock</span>));
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gen_names</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">names_vec</span>) <span class="op">=</span> <span class="ident">names</span> {
             <span class="ident">gen_names</span> <span class="op">=</span> <span class="ident">names_vec</span>;
@@ -775,7 +779,6 @@
         <span class="self">self</span>.<span class="ident">gen_names</span>.<span class="ident">push</span>(<span class="ident">gen_names</span>);
         <span class="self">self</span>.<span class="ident">add_generators_to_table</span>(<span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">table</span>, <span class="ident">num_gens</span>);
         <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">push</span>(<span class="ident">table</span>);
-        <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
     }
 
     <span class="kw">fn</span> <span class="ident">add_generators_to_table</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">table</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FreeModuleTableEntry</span>, <span class="ident">num_gens</span> : <span class="ident">usize</span>){
@@ -843,15 +846,19 @@
         <span class="ident">Value</span>::<span class="ident">from</span>(<span class="ident">result</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_generators_immediate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">num_gens</span> : <span class="ident">usize</span>, <span class="ident">gen_names</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>){
-        <span class="kw">let</span> (<span class="ident">lock</span>, <span class="ident">table</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">construct_table</span>(<span class="ident">degree</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_generators_immediate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span>: <span class="ident">i32</span>, <span class="ident">num_gens</span> : <span class="ident">usize</span>, <span class="ident">gen_names</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>){
+        <span class="self">self</span>.<span class="ident">add_num_generators</span>(<span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">lock</span>(), <span class="ident">num_gens</span>, <span class="ident">gen_names</span>);
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_num_generators</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span>: <span class="ident">i32</span>, <span class="ident">lock</span>: <span class="kw-2">&amp;</span><span class="ident">MutexGuard</span><span class="op">&lt;</span>()<span class="op">&gt;</span>, <span class="ident">num_gens</span> : <span class="ident">usize</span>, <span class="ident">gen_names</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>){
+        <span class="kw">let</span> <span class="ident">table</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">construct_table</span>(<span class="ident">degree</span>);
         <span class="self">self</span>.<span class="ident">add_generators</span>(<span class="ident">degree</span>, <span class="ident">lock</span>, <span class="ident">table</span>, <span class="ident">num_gens</span>, <span class="ident">gen_names</span>);
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extend_by_zero</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>){
-        <span class="kw">let</span> <span class="ident">old_max_degree</span> <span class="op">=</span> { <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">max_degree</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() };
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">old_max_degree</span> <span class="op">+</span> <span class="number">1</span> ..<span class="op">=</span> <span class="ident">degree</span> {
-            <span class="self">self</span>.<span class="ident">add_generators_immediate</span>(<span class="ident">i</span>, <span class="number">0</span>, <span class="prelude-val">None</span>)
+        <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>();
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">len</span>() ..<span class="op">=</span> <span class="ident">degree</span> {
+            <span class="self">self</span>.<span class="ident">add_num_generators</span>(<span class="ident">i</span>, <span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="number">0</span>, <span class="prelude-val">None</span>)
         }
     }
 
@@ -891,9 +898,11 @@
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FreeModule</span>::<span class="ident">new</span>(<span class="ident">algebra</span>, <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">min_degree</span>);
 
         <span class="kw">let</span> <span class="ident">num_gens</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Load</span>::<span class="ident">load</span>(<span class="ident">buffer</span>, <span class="kw-2">&amp;</span>(<span class="ident">min_degree</span>, ()))<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">lock</span>();
         <span class="kw">for</span> (<span class="ident">degree</span>, <span class="ident">num</span>) <span class="kw">in</span> <span class="ident">num_gens</span>.<span class="ident">iter_enum</span>() {
-            <span class="ident">result</span>.<span class="ident">add_generators_immediate</span>(<span class="ident">degree</span>, <span class="kw-2">*</span><span class="ident">num</span>, <span class="prelude-val">None</span>);
+            <span class="ident">result</span>.<span class="ident">add_num_generators</span>(<span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="kw-2">*</span><span class="ident">num</span>, <span class="prelude-val">None</span>);
         }
+        <span class="ident">drop</span>(<span class="ident">lock</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
     }
 }
@@ -1127,13 +1136,14 @@
         <span class="kw">let</span> <span class="ident">A</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AlgebraAny</span>::<span class="ident">from</span>(<span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="number">2</span>, <span class="bool-val">false</span>)));
         <span class="ident">A</span>.<span class="ident">compute_basis</span>(<span class="number">10</span>);
         <span class="kw">let</span> <span class="ident">M</span> <span class="op">=</span> <span class="ident">FreeModule</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">A</span>), <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(), <span class="number">0</span>);
-        <span class="kw">let</span> (<span class="ident">lock</span>, <span class="ident">table</span>) <span class="op">=</span> <span class="ident">M</span>.<span class="ident">construct_table</span>(<span class="number">0</span>);
-        <span class="ident">M</span>.<span class="ident">add_generators</span>(<span class="number">0</span>, <span class="ident">lock</span>, <span class="ident">table</span>, <span class="number">1</span>, <span class="prelude-val">None</span>);
-        <span class="kw">let</span> (<span class="ident">lock</span>, <span class="ident">table</span>) <span class="op">=</span> <span class="ident">M</span>.<span class="ident">construct_table</span>(<span class="number">1</span>);
-        <span class="ident">M</span>.<span class="ident">add_generators</span>(<span class="number">1</span>, <span class="ident">lock</span>, <span class="ident">table</span>, <span class="number">1</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">M</span>.<span class="ident">lock</span>();
+        <span class="kw">let</span> <span class="ident">table</span> <span class="op">=</span> <span class="ident">M</span>.<span class="ident">construct_table</span>(<span class="number">0</span>);
+        <span class="ident">M</span>.<span class="ident">add_generators</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">table</span>, <span class="number">1</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">table</span> <span class="op">=</span> <span class="ident">M</span>.<span class="ident">construct_table</span>(<span class="number">1</span>);
+        <span class="ident">M</span>.<span class="ident">add_generators</span>(<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">table</span>, <span class="number">1</span>, <span class="prelude-val">None</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..<span class="number">10</span>{
-            <span class="kw">let</span> (<span class="ident">lock</span>, <span class="ident">table</span>) <span class="op">=</span> <span class="ident">M</span>.<span class="ident">construct_table</span>(<span class="ident">i</span>);
-            <span class="ident">M</span>.<span class="ident">add_generators</span>(<span class="ident">i</span>, <span class="ident">lock</span>, <span class="ident">table</span>, <span class="number">0</span>, <span class="prelude-val">None</span>);
+            <span class="kw">let</span> <span class="ident">table</span> <span class="op">=</span> <span class="ident">M</span>.<span class="ident">construct_table</span>(<span class="ident">i</span>);
+            <span class="ident">M</span>.<span class="ident">add_generators</span>(<span class="ident">i</span>, <span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">table</span>, <span class="number">0</span>, <span class="prelude-val">None</span>);
         }
         <span class="kw">let</span> <span class="ident">output_deg</span> <span class="op">=</span> <span class="number">6</span>;
         <span class="kw">let</span> <span class="ident">output_dim</span> <span class="op">=</span> <span class="ident">M</span>.<span class="ident">dimension</span>(<span class="ident">output_deg</span>);

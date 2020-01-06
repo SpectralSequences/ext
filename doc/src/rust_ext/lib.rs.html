@@ -647,8 +647,6 @@
 <span id="629">629</span>
 <span id="630">630</span>
 <span id="631">631</span>
-<span id="632">632</span>
-<span id="633">633</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">many_single_char_names</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">unreadable_literal</span>)]</span>
@@ -695,7 +693,8 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="ident">BufReader</span>, <span class="ident">BufWriter</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">parking_lot</span>::<span class="ident">RwLock</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::<span class="ident">Instant</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 
@@ -810,7 +809,7 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_resolve</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct</span>(<span class="ident">config</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>();
 
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>))]</span>
     <span class="ident">res</span>.<span class="ident">resolve_through_degree</span>(<span class="ident">config</span>.<span class="ident">max_degree</span>);
@@ -830,7 +829,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_yoneda</span>(<span class="ident">config</span> : <span class="kw-2">&amp;</span><span class="ident">Config</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct</span>(<span class="ident">config</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">chain_complex</span>.<span class="ident">module</span>(<span class="number">0</span>);
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>();
     <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">min_degree</span>();
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">resolution</span>.<span class="ident">prime</span>();
 
@@ -925,7 +924,7 @@
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;type&quot; : &quot;finite dimensional module&quot;,&quot;name&quot;: &quot;$S_2$&quot;, &quot;file_name&quot;: &quot;S_2&quot;, &quot;p&quot;: 2, &quot;generic&quot;: false, &quot;gens&quot;: {&quot;x0&quot;: 0}, &quot;adem_actions&quot;: []}&quot;#</span>;
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">k</span>).<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct_from_json</span>(<span class="ident">k</span>, <span class="string">&quot;adem&quot;</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>();
 
     <span class="kw">let</span> <span class="ident">saved_resolution</span>;
 
@@ -1076,9 +1075,8 @@
             <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span> ..<span class="op">=</span> <span class="number">2</span> <span class="op">*</span> <span class="ident">s</span> <span class="op">-</span> <span class="ident">i</span> {
                 <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">s</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="kw">let</span> <span class="ident">map</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">delta</span>[<span class="number">0</span>][<span class="number">0</span>];
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">lock</span>();
+                    <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">lock</span>();
                     <span class="ident">map</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">Matrix</span>::<span class="ident">from_vec</span>(<span class="ident">p</span>, <span class="kw-2">&amp;</span>[<span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]]));
-                    <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                     <span class="ident">map</span>.<span class="ident">extend_by_zero</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="number">2</span> <span class="op">*</span> <span class="ident">t</span>);
                     <span class="kw">continue</span>;
                 }
@@ -1115,7 +1113,7 @@
                 <span class="kw">let</span> <span class="ident">fun</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
                     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
                     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">token</span> <span class="op">=</span> <span class="ident">bucket</span>.<span class="ident">take_token</span>();
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">lock</span>();
+                    <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">map</span>.<span class="ident">lock</span>();
 
                     <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="number">0</span> ..<span class="op">=</span> <span class="number">2</span> <span class="op">*</span> <span class="ident">t</span> {
                         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
@@ -1130,7 +1128,6 @@
 
                         <span class="kw">if</span> <span class="ident">fx_dim</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="ident">fdx_dim</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> <span class="op">|</span><span class="op">|</span> <span class="ident">num_gens</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                             <span class="ident">map</span>.<span class="ident">extend_by_zero</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">t</span>);
-                            <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 
                             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
                             {
@@ -1164,7 +1161,6 @@
                             <span class="ident">result</span>.<span class="ident">set_to_zero_pure</span>();
                         }
                         <span class="ident">map</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="ident">output_matrix</span>);
-                        <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 
                         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
                         {
@@ -1223,7 +1219,7 @@
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="string">r#&quot;{&quot;type&quot; : &quot;finite dimensional module&quot;,&quot;name&quot;: &quot;$S_2$&quot;, &quot;file_name&quot;: &quot;S_2&quot;, &quot;p&quot;: 2, &quot;generic&quot;: false, &quot;gens&quot;: {&quot;x0&quot;: 0}, &quot;adem_actions&quot;: []}&quot;#</span>;
     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">k</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct_from_json</span>(<span class="ident">k</span>, <span class="string">&quot;adem&quot;</span>.<span class="ident">to_string</span>())<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>();
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">2</span>;
 
     <span class="kw">let</span> <span class="ident">x</span> : <span class="ident">i32</span> <span class="op">=</span> <span class="number">30</span>;

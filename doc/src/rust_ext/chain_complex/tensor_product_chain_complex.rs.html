@@ -494,6 +494,7 @@
 <span id="476">476</span>
 <span id="477">477</span>
 <span id="478">478</span>
+<span id="479">479</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">AlgebraAny</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>, <span class="ident">QuasiInverse</span>};
@@ -502,7 +503,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">AugmentedChainComplex</span>, <span class="ident">ChainComplex</span>, <span class="ident">FiniteAugmentedChainComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">CCC</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Mutex</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">parking_lot</span>::<span class="ident">Mutex</span>;
 
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 <span class="kw">use</span> <span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
@@ -607,7 +609,7 @@
         <span class="self">self</span>.<span class="ident">left_cc</span>.<span class="ident">compute_through_bidegree</span>(<span class="ident">s</span>, <span class="ident">t</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">right_cc</span>.<span class="ident">min_degree</span>());
         <span class="self">self</span>.<span class="ident">right_cc</span>.<span class="ident">compute_through_bidegree</span>(<span class="ident">s</span>, <span class="ident">t</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">left_cc</span>.<span class="ident">min_degree</span>());
 
-        <span class="kw">let</span> <span class="ident">_lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">_lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>.<span class="ident">lock</span>();
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span> ..<span class="op">=</span> <span class="ident">s</span> {
             <span class="kw">let</span> <span class="ident">new_module_list</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TensorModule</span><span class="op">&lt;</span><span class="ident">CC1</span>::<span class="ident">Module</span>, <span class="ident">CC2</span>::<span class="ident">Module</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
@@ -732,7 +734,7 @@
             <span class="kw">return</span>;
         }
 
-        <span class="kw">let</span> <span class="ident">_lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">_lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>.<span class="ident">lock</span>();
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">next_degree</span> ..<span class="op">=</span> <span class="ident">degree</span> {
             <span class="self">self</span>.<span class="ident">calculate_quasi_inverse</span>(<span class="ident">i</span>);
@@ -947,7 +949,7 @@
 
         <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_str</span>(<span class="ident">k</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">bundle</span> <span class="op">=</span> <span class="ident">construct_from_json</span>(<span class="ident">k</span>, <span class="string">&quot;adem&quot;</span>.<span class="ident">to_string</span>()).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">resolution</span> <span class="op">=</span> <span class="ident">bundle</span>.<span class="ident">resolution</span>.<span class="ident">read</span>();
         <span class="ident">resolution</span>.<span class="ident">resolve_through_bidegree</span>(<span class="number">2</span> <span class="op">*</span> <span class="ident">s</span>, <span class="number">2</span> <span class="op">*</span> <span class="ident">t</span>);
 
         <span class="kw">let</span> <span class="ident">yoneda</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">yoneda_representative_element</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">resolution</span>.<span class="ident">inner</span>), <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">i</span>));

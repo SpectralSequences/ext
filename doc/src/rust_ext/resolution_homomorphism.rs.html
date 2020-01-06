@@ -164,9 +164,6 @@
 <span id="146">146</span>
 <span id="147">147</span>
 <span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Weak</span>, <span class="ident">Arc</span>};
 
@@ -227,8 +224,7 @@
         <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">compute_through_bidegree</span>(<span class="ident">source_homological_degree</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">homological_degree_shift</span>, <span class="ident">source_degree</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">internal_degree_shift</span>);
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">homological_degree_shift</span> ..<span class="op">=</span> <span class="ident">source_homological_degree</span> {
             <span class="kw">let</span> <span class="ident">f_cur</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_map_ensure_length</span>(<span class="ident">i</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">homological_degree_shift</span>);
-            <span class="kw">let</span> <span class="ident">start_degree</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">f_cur</span>.<span class="ident">lock</span>();
-            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="ident">start_degree</span> <span class="op">+</span> <span class="number">1</span> ..<span class="op">=</span> <span class="ident">source_degree</span> {
+            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="ident">f_cur</span>.<span class="ident">next_degree</span>() ..<span class="op">=</span> <span class="ident">source_degree</span> {
                 <span class="self">self</span>.<span class="ident">extend_step</span>(<span class="ident">i</span>, <span class="ident">j</span>, <span class="prelude-val">None</span>);
             }
         }
@@ -240,15 +236,13 @@
         <span class="self">self</span>.<span class="ident">target</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">compute_through_bidegree</span>(<span class="ident">output_homological_degree</span>, <span class="ident">output_internal_degree</span>);
 
         <span class="kw">let</span> <span class="ident">f_cur</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_map_ensure_length</span>(<span class="ident">output_homological_degree</span>);
-        <span class="kw">let</span> <span class="ident">computed_degree</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">f_cur</span>.<span class="ident">lock</span>();
-        <span class="kw">if</span> <span class="ident">input_internal_degree</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">computed_degree</span> {
+        <span class="kw">if</span> <span class="ident">input_internal_degree</span> <span class="op">&lt;</span> <span class="ident">f_cur</span>.<span class="ident">next_degree</span>() {
             <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">extra_images</span>.<span class="ident">is_none</span>());
             <span class="kw">return</span>;
         }
         <span class="kw">let</span> <span class="ident">outputs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">extend_step_helper</span>(<span class="ident">input_homological_degree</span>, <span class="ident">input_internal_degree</span>, <span class="ident">extra_images</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">f_cur</span>.<span class="ident">lock</span>();
+        <span class="kw">let</span> <span class="ident">lock</span> <span class="op">=</span> <span class="ident">f_cur</span>.<span class="ident">lock</span>();
         <span class="ident">f_cur</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">lock</span>, <span class="ident">input_internal_degree</span>, <span class="kw-2">&amp;</span><span class="ident">outputs</span>);
-        <span class="kw-2">*</span><span class="ident">lock</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
     }
 
     <span class="kw">fn</span> <span class="ident">extend_step_helper</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_homological_degree</span> : <span class="ident">u32</span>, <span class="ident">input_internal_degree</span> : <span class="ident">i32</span>, <span class="kw-2">mut</span> <span class="ident">extra_images</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Matrix</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Matrix</span> {

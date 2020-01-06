@@ -1042,9 +1042,12 @@
 <span id="1024">1024</span>
 <span id="1025">1025</span>
 <span id="1026">1026</span>
+<span id="1027">1027</span>
+<span id="1028">1028</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Weak</span>, <span class="ident">RwLock</span>, <span class="ident">Mutex</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Weak</span>};
+<span class="kw">use</span> <span class="ident">parking_lot</span>::{<span class="ident">RwLock</span>, <span class="ident">Mutex</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashSet</span>;
 
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
@@ -1191,7 +1194,7 @@
             <span class="self">self</span>.<span class="ident">zero_module</span>.<span class="ident">extend_by_zero</span>(<span class="ident">t</span>);
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">old_kernel</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">kernels</span>[<span class="ident">t</span>].<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">old_kernel</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">kernels</span>[<span class="ident">t</span>].<span class="ident">lock</span>();
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
 
         <span class="comment">//                           current_chain_map</span>
@@ -1212,9 +1215,11 @@
         <span class="kw">let</span> <span class="ident">target_cc</span> <span class="op">=</span> <span class="ident">complex</span>.<span class="ident">module</span>(<span class="ident">s</span>);
         <span class="kw">let</span> <span class="ident">target_res</span> <span class="op">=</span> <span class="ident">current_differential</span>.<span class="ident">target</span>(); <span class="comment">// This is self.module(s - 1) unless s = 0.</span>
 
-        <span class="kw">let</span> (<span class="ident">source_lock</span>, <span class="ident">source_module_table</span>) <span class="op">=</span> <span class="ident">source</span>.<span class="ident">construct_table</span>(<span class="ident">t</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">chain_map_lock</span> <span class="op">=</span> <span class="ident">current_chain_map</span>.<span class="ident">lock</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">differential_lock</span> <span class="op">=</span> <span class="ident">current_differential</span>.<span class="ident">lock</span>();
+        <span class="kw">let</span> <span class="ident">source_lock</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">lock</span>();
+        <span class="kw">let</span> <span class="ident">source_module_table</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">construct_table</span>(<span class="ident">t</span>);
+
+        <span class="kw">let</span> <span class="ident">chain_map_lock</span> <span class="op">=</span> <span class="ident">current_chain_map</span>.<span class="ident">lock</span>();
+        <span class="kw">let</span> <span class="ident">differential_lock</span> <span class="op">=</span> <span class="ident">current_differential</span>.<span class="ident">lock</span>();
 
         <span class="comment">// The Homomorphism matrix has size source_dimension x target_dimension, but we are going to augment it with an</span>
         <span class="comment">// identity matrix so that gives a matrix with dimensions source_dimension x (target_dimension + source_dimension).</span>
@@ -1289,7 +1294,8 @@
             }
         }
         <span class="kw">let</span> <span class="ident">num_new_gens</span> <span class="op">=</span> <span class="ident">cc_new_gens</span> <span class="op">+</span> <span class="ident">res_new_gens</span>;
-        <span class="ident">source</span>.<span class="ident">add_generators</span>(<span class="ident">t</span>, <span class="ident">source_lock</span>, <span class="ident">source_module_table</span>, <span class="ident">num_new_gens</span>, <span class="prelude-val">None</span>);
+        <span class="ident">source</span>.<span class="ident">add_generators</span>(<span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="ident">source_lock</span>, <span class="ident">source_module_table</span>, <span class="ident">num_new_gens</span>, <span class="prelude-val">None</span>);
+        <span class="ident">drop</span>(<span class="ident">source_lock</span>);
 
         <span class="ident">matrix</span>.<span class="ident">set_row_slice</span>(<span class="ident">first_new_row</span>, <span class="ident">rows</span>);
         <span class="ident">current_chain_map</span>.<span class="ident">add_generators_from_matrix_rows</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">matrix</span>.<span class="ident">segment</span>(<span class="number">0</span>, <span class="number">0</span>));
@@ -1316,8 +1322,6 @@
         <span class="ident">current_chain_map</span>.<span class="ident">set_kernel</span>(<span class="kw-2">&amp;</span><span class="ident">chain_map_lock</span>, <span class="ident">t</span>, <span class="ident">Subspace</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">0</span>, <span class="number">0</span>)); <span class="comment">// Fill it up with something dummy so that compute_kernels_and... is happy</span>
         <span class="ident">current_differential</span>.<span class="ident">set_quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="ident">differential_lock</span>, <span class="ident">t</span>, <span class="ident">res_qi</span>);
         <span class="ident">current_differential</span>.<span class="ident">set_kernel</span>(<span class="kw-2">&amp;</span><span class="ident">differential_lock</span>, <span class="ident">t</span>, <span class="ident">Subspace</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">0</span>, <span class="number">0</span>));
-        <span class="kw-2">*</span><span class="ident">chain_map_lock</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="kw-2">*</span><span class="ident">differential_lock</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 
         <span class="kw-2">*</span><span class="ident">old_kernel</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">new_kernel</span>);
     }
@@ -1519,8 +1523,8 @@
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_bidegree_concurrent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">max_s</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">max_t</span> : <span class="ident">i32</span>, <span class="ident">bucket</span> : <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TokenBucket</span><span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_s</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_s</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>();
 
         <span class="comment">// We want the computed area to always be a rectangle.</span>
         <span class="ident">max_t</span> <span class="op">=</span> <span class="ident">max</span>(<span class="ident">max_t</span>, <span class="kw-2">*</span><span class="ident">next_t</span> <span class="op">-</span> <span class="number">1</span>);
@@ -1534,7 +1538,7 @@
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">unit_res</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span> {
             <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">read</span>();
             <span class="comment">// Avoid a deadlock</span>
             <span class="kw">if</span> <span class="op">!</span><span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">unit_res</span>.<span class="ident">inner</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>) {
                 <span class="ident">unit_res</span>.<span class="ident">resolve_through_bidegree_concurrent</span>(<span class="self">self</span>.<span class="ident">max_product_homological_degree</span>, <span class="ident">max_t</span> <span class="op">-</span> <span class="ident">min_degree</span>, <span class="ident">bucket</span>);
@@ -1586,8 +1590,8 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_through_bidegree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">max_s</span> : <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">max_t</span> : <span class="ident">i32</span>) {
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_s</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_s</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>();
 
         <span class="comment">// We want the computed area to always be a rectangle.</span>
         <span class="ident">max_t</span> <span class="op">=</span> <span class="ident">max</span>(<span class="ident">max_t</span>, <span class="kw-2">*</span><span class="ident">next_t</span> <span class="op">-</span> <span class="number">1</span>);
@@ -1601,7 +1605,7 @@
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">unit_res</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span> {
             <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">upgrade</span>().<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">read</span>();
             <span class="comment">// Avoid a deadlock</span>
             <span class="kw">if</span> <span class="op">!</span><span class="ident">ptr_eq</span>(<span class="kw-2">&amp;</span><span class="ident">unit_res</span>.<span class="ident">inner</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>) {
                 <span class="ident">unit_res</span>.<span class="ident">resolve_through_bidegree</span>(<span class="self">self</span>.<span class="ident">max_product_homological_degree</span>, <span class="ident">max_t</span> <span class="op">-</span> <span class="ident">min_degree</span>);
@@ -1694,11 +1698,11 @@
     }
 
     <span class="kw">fn</span> <span class="ident">max_computed_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
-        <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">-</span> <span class="number">1</span>
+        <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>() <span class="op">-</span> <span class="number">1</span>
     }
 
     <span class="kw">fn</span> <span class="ident">max_computed_homological_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-        <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">-</span> <span class="number">1</span>
+        <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>() <span class="op">-</span> <span class="number">1</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">graded_dimension_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
@@ -1742,11 +1746,11 @@
     <span class="doccomment">/// `self`, but `add_product` takes in a mutable borrow.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">catch_up_products</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">let</span> <span class="ident">new_product</span> <span class="op">=</span> [<span class="self">self</span>.<span class="ident">product_list</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">clone</span>()];
-        <span class="kw">let</span> <span class="ident">next_s</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">next_s</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>();
         <span class="kw">if</span> <span class="ident">next_s</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>();
             <span class="kw">let</span> <span class="ident">max_s</span> <span class="op">=</span> <span class="ident">next_s</span> <span class="op">-</span> <span class="number">1</span>;
-            <span class="kw">let</span> <span class="ident">max_t</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">-</span> <span class="number">1</span>;
+            <span class="kw">let</span> <span class="ident">max_t</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>() <span class="op">-</span> <span class="number">1</span>;
 
             <span class="self">self</span>.<span class="ident">construct_maps_to_unit</span>(<span class="ident">max_s</span>, <span class="ident">max_t</span>);
 
@@ -1827,7 +1831,7 @@
             <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>[<span class="ident">source_s</span>][<span class="ident">source_t</span>][<span class="ident">k</span>];
 
             <span class="kw">let</span> <span class="ident">unit_res_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">upgrade</span>().<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="ident">unit_res_</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">unit_res</span> <span class="op">=</span> <span class="ident">unit_res_</span>.<span class="ident">read</span>();
             <span class="kw">let</span> <span class="ident">output_module</span> <span class="op">=</span> <span class="ident">unit_res</span>.<span class="ident">module</span>(<span class="ident">elt</span>.<span class="ident">s</span>);
 
             <span class="kw">for</span> <span class="ident">l</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">target_dim</span> {
@@ -1870,7 +1874,7 @@
                     <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">num_gens</span> {
                         <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">ResolutionHomomorphism</span>::<span class="ident">new</span>(
                             <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;(hom_deg : {}, int_deg : {}, idx : {})&quot;</span>, <span class="ident">new_s</span>, <span class="ident">new_t</span>, <span class="ident">j</span>),
-                            <span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>), <span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">inner</span>),
+                            <span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>), <span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">upgrade</span>().<span class="ident">unwrap</span>().<span class="ident">read</span>().<span class="ident">inner</span>),
                             <span class="ident">new_s</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="ident">new_t</span>
                             );
                         <span class="ident">unit_vector</span>[<span class="ident">j</span>].<span class="ident">set_entry</span>(<span class="number">0</span>, <span class="number">1</span>);
@@ -2040,7 +2044,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">Save</span> <span class="kw">for</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">save</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buffer</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">Write</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">algebra_dim</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">min_degree</span>() <span class="op">-</span> <span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">algebra_dim</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">min_degree</span>() <span class="op">-</span> <span class="number">1</span>;
         <span class="ident">algebra_dim</span>.<span class="ident">save</span>(<span class="ident">buffer</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">save</span>(<span class="ident">buffer</span>)
     }
@@ -2063,8 +2067,8 @@
 
         <span class="ident">result</span>.<span class="ident">inner</span>.<span class="ident">zero_module</span>.<span class="ident">extend_by_zero</span>(<span class="ident">next_t</span> <span class="op">-</span> <span class="number">1</span>);
 
-        <span class="kw-2">*</span><span class="ident">result</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">=</span> <span class="ident">next_s</span> <span class="kw">as</span> <span class="ident">u32</span>;
-        <span class="kw-2">*</span><span class="ident">result</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>() <span class="op">=</span> <span class="ident">next_t</span>;
+        <span class="kw-2">*</span><span class="ident">result</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>() <span class="op">=</span> <span class="ident">next_s</span> <span class="kw">as</span> <span class="ident">u32</span>;
+        <span class="kw-2">*</span><span class="ident">result</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>() <span class="op">=</span> <span class="ident">next_t</span>;
 
         <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
     }

@@ -156,8 +156,10 @@
 <span id="138">138</span>
 <span id="139">139</span>
 <span id="140">140</span>
+<span id="141">141</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Mutex</span>, <span class="ident">Arc</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">parking_lot</span>::<span class="ident">Mutex</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">fp_vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>, <span class="ident">QuasiInverse</span>};
@@ -207,7 +209,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">compute_kernels_and_quasi_inverses_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) {
-        <span class="kw">let</span> <span class="ident">_lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">_lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>.<span class="ident">lock</span>();
 
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">min</span>(<span class="ident">degree</span> <span class="op">+</span> <span class="number">1</span>, <span class="self">self</span>.<span class="ident">matrices</span>.<span class="ident">len</span>());
         <span class="kw">let</span> <span class="ident">next_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">kernels</span>.<span class="ident">len</span>();
