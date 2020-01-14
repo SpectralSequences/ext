@@ -2,6 +2,7 @@ var ALIASES = {};
 ALIASES["bivec"] = {};
 ALIASES["compressor"] = {};
 ALIASES["ext_websocket"] = {};
+ALIASES["fp"] = {};
 ALIASES["once"] = {};
 ALIASES["query"] = {};
 ALIASES["rust_ext"] = {};
