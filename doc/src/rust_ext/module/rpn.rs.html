@@ -357,7 +357,7 @@
         <span class="kw">let</span> <span class="ident">clear_bottom</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">clear_bottom</span>.<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">min</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">min</span>;
         <span class="kw">if</span> <span class="ident">clear_bottom</span> {
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> (<span class="ident">spec</span>.<span class="ident">min</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">%</span> <span class="number">8</span>; <span class="comment">//.rem_euclid(8);</span>
+            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> (<span class="ident">spec</span>.<span class="ident">min</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">rem_euclid</span>(<span class="number">8</span>);
             <span class="kw">if</span> <span class="ident">x</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="ident">min</span> <span class="op">+</span><span class="op">=</span> <span class="number">8</span> <span class="op">-</span> <span class="ident">x</span>;
             }
