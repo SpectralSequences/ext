@@ -1795,7 +1795,7 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_unit_resolution</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">unit_res</span> : <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>.<span class="ident">is_empty</span>() {
             <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot change unit resolution after you start computing products&quot;</span>);
         }
         <span class="self">self</span>.<span class="ident">unit_resolution</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">unit_res</span>);

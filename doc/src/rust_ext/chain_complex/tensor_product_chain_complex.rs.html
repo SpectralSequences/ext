@@ -624,7 +624,7 @@
             <span class="ident">module</span>.<span class="ident">compute_basis</span>(<span class="ident">t</span>);
         }
 
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">differentials</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">differentials</span>.<span class="ident">is_empty</span>() {
             <span class="self">self</span>.<span class="ident">differentials</span>.<span class="ident">push</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">TensorChainMap</span> {
                 <span class="ident">left_cc</span>: <span class="self">self</span>.<span class="ident">left_cc</span>(),
                 <span class="ident">right_cc</span>: <span class="self">self</span>.<span class="ident">right_cc</span>(),

@@ -214,9 +214,9 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">maps</span>[<span class="ident">output_homological_degree</span> <span class="kw">as</span> <span class="ident">usize</span>]
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_chain_maps</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">CC2</span>::<span class="ident">Module</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">maps</span>.<span class="ident">into_vec</span>()
-    }
+    <span class="comment">// pub fn into_chain_maps(self) -&gt; Vec&lt;FreeModuleHomomorphism&lt;CC2::Module&gt;&gt; {</span>
+    <span class="comment">//     self.maps.into_vec()</span>
+    <span class="comment">// }</span>
 
     <span class="doccomment">/// Extend the resolution homomorphism such that it is defined on degrees</span>
     <span class="doccomment">/// (`source_homological_degree`, `source_degree`).</span>

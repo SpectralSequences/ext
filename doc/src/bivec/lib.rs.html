@@ -216,7 +216,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">min_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">BiVec</span> {
+        <span class="self">Self</span> {
             <span class="ident">data</span> : <span class="ident">Vec</span>::<span class="ident">new</span>(),
             <span class="ident">min_degree</span>
         }
@@ -231,7 +231,7 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_capacity</span>(<span class="ident">min_degree</span> : <span class="ident">i32</span>, <span class="ident">capacity</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">capacity</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">min_degree</span>);
-        <span class="ident">BiVec</span> {
+        <span class="self">Self</span> {
             <span class="ident">data</span> : <span class="ident">Vec</span>::<span class="ident">with_capacity</span>((<span class="ident">capacity</span> <span class="op">-</span> <span class="ident">min_degree</span>) <span class="kw">as</span> <span class="ident">usize</span>),
             <span class="ident">min_degree</span>
         }
