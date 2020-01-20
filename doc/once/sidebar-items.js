@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["OnceBiVec",""],["OnceVec",""]]});
+initSidebarItems({"constant":[["USIZE_LEN",""]],"struct":[["OnceBiVec",""],["OnceVec",""]]});
