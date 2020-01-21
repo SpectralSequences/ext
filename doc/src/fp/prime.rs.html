@@ -490,6 +490,16 @@
 <span id="472">472</span>
 <span id="473">473</span>
 <span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NUM_PRIMES</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_PRIME</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="number">19</span>;
@@ -500,9 +510,20 @@
     (<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>) <span class="op">&lt;</span> <span class="ident">MAX_PRIME</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">!</span><span class="op">=</span> <span class="ident">NOT_A_PRIME</span>
 }
 
+<span class="doccomment">/// This function checks that the prime is valid. Afterwards, it tells the compiler that p is</span>
+<span class="doccomment">/// positive via unreachable_unchecked to enable some optimizations.</span>
+<span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">assert_valid_prime</span>(<span class="ident">p</span>: <span class="ident">u32</span>) {
+    <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>;
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span> <span class="op">&lt;</span> <span class="ident">MAX_PRIME</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span>] <span class="op">!</span><span class="op">=</span> <span class="ident">NOT_A_PRIME</span>);
+    <span class="kw">if</span> <span class="ident">p</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">hint</span>::<span class="ident">unreachable_unchecked</span>() }
+    }
+}
+
 <span class="comment">// Uses a the lookup table we initialized.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">k</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_valid_prime</span>(<span class="ident">p</span>));
+    <span class="ident">assert_valid_prime</span>(<span class="ident">p</span>);
     <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">INVERSE_TABLE</span>[<span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>]][<span class="ident">k</span> <span class="kw">as</span> <span class="ident">usize</span>];
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">result</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>);
     <span class="ident">result</span>
@@ -596,9 +617,8 @@
 <span class="comment">//Mod p multinomial coefficient of l. If p is 2, more efficient to use Multinomial2.</span>
 <span class="comment">//This uses Lucas&#39;s theorem to reduce to n choose k for n, k &lt; p.</span>
 <span class="kw">fn</span> <span class="ident">multinomial_odd</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">l</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u32</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-    <span class="comment">// When reducing mod p, the compiler checks if p is zero. The PRIME_TO_INDEX_MAP check ensures</span>
-    <span class="comment">// that p != 0, but the compiler does not know that, so repeats the check in every loop.</span>
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">is_valid_prime</span>(<span class="ident">p</span>));
+    <span class="ident">assert_valid_prime</span>(<span class="ident">p</span>);
+
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="ident">l</span>.<span class="ident">iter</span>().<span class="ident">sum</span>();
     <span class="kw">if</span> <span class="ident">n</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
         <span class="kw">return</span> <span class="number">1</span>;
@@ -636,7 +656,7 @@
 
 <span class="comment">//Mod p binomial coefficient n choose k. If p is 2, more efficient to use Binomial2.</span>
 <span class="kw">fn</span> <span class="ident">binomial_odd</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">n</span> : <span class="ident">i32</span>, <span class="ident">k</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">is_valid_prime</span>(<span class="ident">p</span>));
+    <span class="ident">assert_valid_prime</span>(<span class="ident">p</span>);
     <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;</span> <span class="ident">k</span> <span class="op">|</span><span class="op">|</span> <span class="ident">k</span> <span class="op">&lt;</span> <span class="number">0</span> {
         <span class="kw">return</span> <span class="number">0</span>;
     }
