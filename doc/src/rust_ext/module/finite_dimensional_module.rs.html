@@ -951,12 +951,12 @@
                 <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">action</span>[<span class="string">&quot;op&quot;</span>].<span class="ident">take</span>();
                 <span class="kw">let</span> (<span class="ident">degree</span>, <span class="ident">idx</span>) <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">json_to_basis</span>(<span class="ident">op</span>);
                 <span class="kw">let</span> <span class="ident">input_name</span> <span class="op">=</span> <span class="ident">action</span>[<span class="string">&quot;input&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
-                <span class="kw">let</span> (<span class="ident">input_degree</span>, <span class="ident">input_idx</span>) <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="kw-2">&amp;</span><span class="ident">input_name</span>.<span class="ident">to_string</span>()];
+                <span class="kw">let</span> (<span class="ident">input_degree</span>, <span class="ident">input_idx</span>) <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="ident">input_name</span>];
                 <span class="kw">let</span> <span class="ident">output_vec</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">action_mut</span>(<span class="ident">degree</span>, <span class="ident">idx</span>, <span class="ident">input_degree</span>, <span class="ident">input_idx</span>);
                 <span class="kw">let</span> <span class="ident">outputs</span> <span class="op">=</span> <span class="ident">action</span>[<span class="string">&quot;output&quot;</span>].<span class="ident">as_array</span>().<span class="ident">unwrap</span>();
                 <span class="kw">for</span> <span class="ident">basis_elt</span> <span class="kw">in</span> <span class="ident">outputs</span> {
                     <span class="kw">let</span> <span class="ident">output_name</span> <span class="op">=</span> <span class="ident">basis_elt</span>[<span class="string">&quot;gen&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
-                    <span class="kw">let</span> <span class="ident">output_idx</span> <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="kw-2">&amp;</span><span class="ident">output_name</span>.<span class="ident">to_string</span>()].<span class="number">1</span>;
+                    <span class="kw">let</span> <span class="ident">output_idx</span> <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="ident">output_name</span>].<span class="number">1</span>;
                     <span class="kw">let</span> <span class="ident">output_coeff</span> <span class="op">=</span> <span class="ident">basis_elt</span>[<span class="string">&quot;coeff&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
                     <span class="ident">output_vec</span>.<span class="ident">set_entry</span>(<span class="ident">output_idx</span>, <span class="ident">output_coeff</span>);
                 }
@@ -975,7 +975,7 @@
 
         <span class="kw">let</span> (<span class="ident">entry</span>, ((<span class="ident">op_deg</span>, <span class="ident">op_idx</span>), <span class="ident">gen</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="ident">lhs</span>(<span class="ident">entry_</span>).<span class="ident">unwrap</span>();
 
-        <span class="kw">let</span> (<span class="ident">input_deg</span>, <span class="ident">input_idx</span>) <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="kw-2">&amp;</span><span class="ident">gen</span>.<span class="ident">trim</span>().<span class="ident">to_string</span>()];
+        <span class="kw">let</span> (<span class="ident">input_deg</span>, <span class="ident">input_idx</span>) <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="ident">gen</span>.<span class="ident">trim</span>()];
         <span class="kw">let</span> <span class="ident">row</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">action_mut</span>(<span class="ident">op_deg</span>, <span class="ident">op_idx</span>, <span class="ident">input_deg</span>, <span class="ident">input_idx</span>);
 
         <span class="comment">// Need explicit type here</span>
@@ -985,7 +985,7 @@
             <span class="kw">let</span> (<span class="kw">_</span>, (<span class="ident">coef</span>, <span class="ident">gen</span>)) <span class="op">=</span> <span class="self">Self</span>::<span class="ident">parse_element</span>(<span class="ident">value</span>)
                 .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Invalid action: {}&quot;</span>, <span class="ident">entry_</span>));
 
-            <span class="kw">let</span> (<span class="ident">deg</span>, <span class="ident">idx</span>) <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="kw-2">&amp;</span><span class="ident">gen</span>.<span class="ident">to_string</span>()];
+            <span class="kw">let</span> (<span class="ident">deg</span>, <span class="ident">idx</span>) <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="ident">gen</span>];
             <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">deg</span> <span class="op">=</span><span class="op">=</span> <span class="ident">input_deg</span> <span class="op">+</span> <span class="ident">op_deg</span>, <span class="string">&quot;Invalid action: {}&quot;</span>, <span class="ident">entry_</span>);
 
             <span class="ident">row</span>.<span class="ident">add_basis_element</span>(<span class="ident">idx</span>, <span class="ident">coef</span>);
