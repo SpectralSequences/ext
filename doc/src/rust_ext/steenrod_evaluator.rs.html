@@ -16,7 +16,7 @@
     });
 </script>
 
-<style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rust_ext/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rust_ext/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -391,7 +391,9 @@
 <span id="373">373</span>
 <span id="374">374</span>
 <span id="375">375</span>
+<span id="376">376</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">prime</span>::<span class="ident">ValidPrime</span>;
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AdemAlgebra</span>, <span class="ident">MilnorAlgebra</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">adem_algebra</span>::<span class="ident">AdemBasisElement</span>;
@@ -408,9 +410,9 @@
 }
 
 <span class="kw">impl</span> <span class="ident">SteenrodCalculator</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">p</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">p</span> : <span class="ident">ValidPrime</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
-            <span class="ident">adem_algebra</span> : <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="number">2</span>, <span class="bool-val">false</span>),
+            <span class="ident">adem_algebra</span> : <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="kw-2">*</span><span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="number">2</span>, <span class="bool-val">false</span>),
             <span class="ident">milnor_algebra</span> : <span class="ident">MilnorAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>)
         }
     }
@@ -497,7 +499,7 @@
                 }
             }
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="number">1</span>);
-            <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="ident">result</span>.<span class="ident">set_entry</span>(<span class="number">0</span>, (((<span class="ident">x</span> <span class="op">%</span> <span class="ident">p</span>) <span class="op">+</span> <span class="ident">p</span>) <span class="op">%</span> <span class="ident">p</span>) <span class="kw">as</span> <span class="ident">u32</span>);
             <span class="prelude-val">Ok</span>((<span class="number">0</span>, <span class="ident">result</span>))
         }
@@ -510,7 +512,7 @@
     <span class="ident">output_degree</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>, <span class="ident">basis_elt</span> : <span class="ident">AlgebraBasisElt</span>
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">FpVector</span>), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">adem_algebra</span>.<span class="ident">prime</span>();
-    <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">adem_algebra</span>.<span class="ident">generic</span> { <span class="number">2</span> <span class="op">*</span> <span class="ident">p</span> <span class="op">-</span> <span class="number">2</span> } <span class="kw">else</span> { <span class="number">1</span> };
+    <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">adem_algebra</span>.<span class="ident">generic</span> { <span class="number">2</span> <span class="op">*</span> (<span class="kw-2">*</span><span class="ident">p</span>) <span class="op">-</span> <span class="number">2</span> } <span class="kw">else</span> { <span class="number">1</span> };
     <span class="kw">let</span> <span class="ident">degree</span> : <span class="ident">i32</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span>;
     <span class="kw">match</span> <span class="ident">basis_elt</span> {
@@ -532,7 +534,7 @@
             <span class="ident">change_of_basis</span>::<span class="ident">adem_plist</span>(<span class="ident">adem_algebra</span>, <span class="ident">milnor_algebra</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="number">1</span>, <span class="ident">degree</span>, <span class="ident">p_list</span>);
         }
         <span class="ident">AlgebraBasisElt</span>::<span class="ident">P</span>(<span class="ident">x</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">adem_algebra</span>.<span class="ident">generic</span> { <span class="number">2</span> <span class="op">*</span> <span class="ident">adem_algebra</span>.<span class="ident">prime</span>() <span class="op">-</span> <span class="number">2</span>} <span class="kw">else</span> {<span class="number">1</span>};
+            <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">adem_algebra</span>.<span class="ident">generic</span> { <span class="number">2</span> <span class="op">*</span> <span class="kw-2">*</span><span class="ident">adem_algebra</span>.<span class="ident">prime</span>() <span class="op">-</span> <span class="number">2</span>} <span class="kw">else</span> {<span class="number">1</span>};
             <span class="ident">adem_algebra</span>.<span class="ident">compute_basis</span>((<span class="ident">x</span> <span class="op">*</span> <span class="ident">q</span>) <span class="kw">as</span> <span class="ident">i32</span>);
             <span class="ident">milnor_algebra</span>.<span class="ident">compute_basis</span>((<span class="ident">x</span> <span class="op">*</span> <span class="ident">q</span>) <span class="kw">as</span> <span class="ident">i32</span>);
             <span class="kw">let</span> <span class="ident">tuple</span> <span class="op">=</span> <span class="ident">adem_algebra</span>.<span class="ident">beps_pn</span>(<span class="number">0</span>, <span class="ident">x</span>);
@@ -666,7 +668,7 @@
 
 <span class="kw">fn</span> <span class="ident">evaluate_p_or_b_list</span>(<span class="ident">adem_algebra</span> : <span class="kw-2">&amp;</span><span class="ident">AdemAlgebra</span>, <span class="ident">list</span> : <span class="kw-2">&amp;</span>[<span class="ident">BocksteinOrSq</span>]) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">i32</span>, <span class="ident">FpVector</span>) {
     <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">adem_algebra</span>.<span class="ident">prime</span>();
-    <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">adem_algebra</span>.<span class="ident">generic</span> { <span class="number">2</span><span class="kw-2">*</span><span class="ident">p</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">-</span> <span class="number">2</span>} <span class="kw">else</span> { <span class="number">1</span> };
+    <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">adem_algebra</span>.<span class="ident">generic</span> { <span class="number">2</span><span class="kw-2">*</span>(<span class="kw-2">*</span><span class="ident">p</span>) <span class="kw">as</span> <span class="ident">i32</span> <span class="op">-</span> <span class="number">2</span>} <span class="kw">else</span> { <span class="number">1</span> };
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_vector_a</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">scratch_vector</span>(<span class="ident">p</span>, <span class="number">1</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp_vector_b</span> <span class="op">=</span> <span class="ident">FpVector</span>::<span class="ident">scratch_vector</span>(<span class="ident">p</span>, <span class="number">1</span>);
     <span class="kw">let</span> <span class="ident">first_elt</span> <span class="op">=</span> <span class="ident">bockstein_or_sq_to_adem_basis_elt</span>(<span class="kw-2">&amp;</span><span class="ident">list</span>[<span class="number">0</span>], <span class="ident">q</span>);
@@ -729,9 +731,9 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_evaluate</span>(){
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">2</span>;
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">ValidPrime</span>::<span class="ident">new</span>(<span class="number">2</span>);
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">30</span>;
-        <span class="kw">let</span> <span class="ident">adem</span> <span class="op">=</span> <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="number">2</span>, <span class="bool-val">false</span>);
+        <span class="kw">let</span> <span class="ident">adem</span> <span class="op">=</span> <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="kw-2">*</span><span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="number">2</span>, <span class="bool-val">false</span>);
         <span class="kw">let</span> <span class="ident">milnor</span> <span class="op">=</span> <span class="ident">MilnorAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>);<span class="comment">//, p != 2</span>
         <span class="ident">adem</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span>);
         <span class="ident">milnor</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span>);
@@ -749,9 +751,9 @@
             <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{} ==&gt; {}&quot;</span>, <span class="ident">input</span>, <span class="ident">adem</span>.<span class="ident">element_to_string</span>(<span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="ident">result</span>));
             <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">adem</span>.<span class="ident">element_to_string</span>(<span class="ident">degree</span>, <span class="kw-2">&amp;</span><span class="ident">result</span>), <span class="kw-2">*</span><span class="ident">output</span>);
         }
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="number">3</span>;
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">ValidPrime</span>::<span class="ident">new</span>(<span class="number">3</span>);
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="number">30</span>;
-        <span class="kw">let</span> <span class="ident">adem</span> <span class="op">=</span> <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="number">2</span>, <span class="bool-val">false</span>);
+        <span class="kw">let</span> <span class="ident">adem</span> <span class="op">=</span> <span class="ident">AdemAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="kw-2">*</span><span class="ident">p</span> <span class="op">!</span><span class="op">=</span> <span class="number">2</span>, <span class="bool-val">false</span>);
         <span class="kw">let</span> <span class="ident">milnor</span> <span class="op">=</span> <span class="ident">MilnorAlgebra</span>::<span class="ident">new</span>(<span class="ident">p</span>);<span class="comment">//, p != 2</span>
         <span class="ident">adem</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span>);
         <span class="ident">milnor</span>.<span class="ident">compute_basis</span>(<span class="ident">max_degree</span>);
