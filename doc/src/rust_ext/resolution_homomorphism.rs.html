@@ -176,14 +176,14 @@
 <span class="kw">use</span> <span class="ident">once</span>::<span class="ident">OnceVec</span>;
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">vector</span>::{ <span class="ident">FpVector</span>, <span class="ident">FpVectorT</span> };
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">matrix</span>::<span class="ident">Matrix</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FreeModule</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">Module</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">FreeModuleHomomorphism</span>, <span class="ident">ModuleHomomorphism</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">AugmentedChainComplex</span>, <span class="ident">ChainComplex</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">AugmentedChainComplex</span>, <span class="ident">FreeChainComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution</span>::<span class="ident">ResolutionInner</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">CCC</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ResolutionHomomorphism</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">CC2</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">CC1</span>: <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">Module</span><span class="op">=</span><span class="ident">FreeModule</span>, <span class="ident">Homomorphism</span><span class="op">=</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="kw">where</span> <span class="ident">CC1</span>: <span class="ident">FreeChainComplex</span>,
       <span class="ident">CC2</span>: <span class="ident">AugmentedChainComplex</span>
 {
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
@@ -196,7 +196,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">CC2</span><span class="op">&gt;</span> <span class="ident">ResolutionHomomorphism</span><span class="op">&lt;</span><span class="ident">CC1</span>, <span class="ident">CC2</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">CC1</span>: <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">Module</span><span class="op">=</span><span class="ident">FreeModule</span>, <span class="ident">Homomorphism</span><span class="op">=</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="kw">where</span> <span class="ident">CC1</span>: <span class="ident">FreeChainComplex</span>,
       <span class="ident">CC2</span>: <span class="ident">AugmentedChainComplex</span>
 {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(

@@ -167,6 +167,12 @@
 <span id="149">149</span>
 <span id="150">150</span>
 <span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">hom_complex</span>;
 <span class="kw">mod</span> <span class="ident">finite_chain_complex</span>;
@@ -189,7 +195,13 @@
     <span class="ident">Cohomological</span>
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ResolutionComplex</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FreeChainComplex</span> : <span class="ident">ChainComplex</span><span class="op">&lt;</span>
+    <span class="ident">Module</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">FreeModule</span>,
+    <span class="ident">Homomorphism</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::<span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">FreeModule</span><span class="op">&gt;</span>
+<span class="op">&gt;</span> {}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> <span class="ident">FreeChainComplex</span> <span class="kw">for</span> <span class="ident">CC</span> <span class="kw">where</span>
+    <span class="ident">CC</span>: <span class="ident">ChainComplex</span><span class="op">&lt;</span>
     <span class="ident">Module</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">FreeModule</span>, 
     <span class="ident">Homomorphism</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::<span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">FreeModule</span><span class="op">&gt;</span>
 <span class="op">&gt;</span> {}
