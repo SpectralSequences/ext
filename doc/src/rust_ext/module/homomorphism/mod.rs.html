@@ -143,6 +143,10 @@
 <span id="125">125</span>
 <span id="126">126</span>
 <span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -268,8 +272,12 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span> : <span class="ident">Module</span>, <span class="ident">T</span> : <span class="ident">Module</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span> : <span class="ident">Module</span>, <span class="ident">T</span> : <span class="ident">Module</span><span class="op">&gt;</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">S</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">zero_homomorphism</span>(<span class="ident">s</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">t</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">degree_shift</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>;
+}
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IdentityHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span> : <span class="ident">Module</span><span class="op">&gt;</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">S</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">S</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">identity_homomorphism</span>(<span class="ident">s</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>;
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "rust_ext";</script><script src="../../../../aliases.js"></script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

@@ -594,6 +594,18 @@
 <span id="576">576</span>
 <span id="577">577</span>
 <span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 <span class="kw">use</span> <span class="ident">parking_lot</span>::{<span class="ident">Mutex</span>, <span class="ident">MutexGuard</span>};
@@ -648,7 +660,7 @@
         <span class="kw">if</span> <span class="ident">degree</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">min_degree</span> {
             <span class="kw">return</span> <span class="number">0</span>;
         }
-        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">len</span>(), <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Free Module {} not computed through degree {}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>(), <span class="ident">degree</span>));
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">degree</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">len</span>(), <span class="string">&quot;Free Module {} not computed through degree {}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>(), <span class="ident">degree</span>);
         <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">degree</span>].<span class="ident">basis_element_to_opgen</span>.<span class="ident">len</span>()
     }
 
@@ -671,7 +683,6 @@
         <span class="kw">let</span> <span class="ident">module_operation_index</span> <span class="op">=</span> <span class="ident">operation_generator</span>.<span class="ident">operation_index</span>;
         <span class="kw">let</span> <span class="ident">generator_degree</span> <span class="op">=</span> <span class="ident">operation_generator</span>.<span class="ident">generator_degree</span>; 
         <span class="kw">let</span> <span class="ident">generator_index</span>  <span class="op">=</span> <span class="ident">operation_generator</span>.<span class="ident">generator_index</span>;
-
 
         <span class="comment">// Now all of the output elements are going to be of the form s * x. Find where such things go in the output vector.</span>
         <span class="kw">let</span> <span class="ident">num_ops</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">dimension</span>(<span class="ident">module_operation_degree</span> <span class="op">+</span> <span class="ident">op_degree</span>, <span class="ident">generator_degree</span>);
@@ -875,6 +886,19 @@
         <span class="ident">result</span>
     }
 
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_max_generator_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">max</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>;
+        <span class="comment">// Ideally, we should use rev() here. However, the iterator involves a</span>
+        <span class="comment">// flatten().take(), and Flatten doesn&#39;t implement ExactSizeIterator (since the sum</span>
+        <span class="comment">// of lengths can overflow) and Take&lt;T&gt; doesn&#39;t implement DoubleEndedIterator</span>
+        <span class="comment">// unless T implements ExactSizeIterator.</span>
+        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">table</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">iter_enum</span>() {
+            <span class="kw">if</span> <span class="ident">table</span>.<span class="ident">num_gens</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                <span class="ident">max</span> <span class="op">=</span> <span class="ident">i</span>;
+            }
+        }
+        <span class="ident">max</span>
+    }
 }
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>;
