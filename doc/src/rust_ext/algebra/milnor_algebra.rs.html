@@ -1146,6 +1146,17 @@
 <span id="1128">1128</span>
 <span id="1129">1129</span>
 <span id="1130">1130</span>
+<span id="1131">1131</span>
+<span id="1132">1132</span>
+<span id="1133">1133</span>
+<span id="1134">1134</span>
+<span id="1135">1135</span>
+<span id="1136">1136</span>
+<span id="1137">1137</span>
+<span id="1138">1138</span>
+<span id="1139">1139</span>
+<span id="1140">1140</span>
+<span id="1141">1141</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
@@ -1475,7 +1486,7 @@
     }
 
     <span class="comment">// Same implementation as AdemAlgebra</span>
-    <span class="kw">fn</span> <span class="ident">string_to_basis</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">str</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">string_to_generator</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">IResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">str</span>, (<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="ident">map</span>(<span class="ident">alt</span>((
             <span class="ident">delimited</span>(<span class="ident">char</span>(<span class="string">&#39;P&#39;</span>), <span class="ident">digit1</span>, <span class="ident">space1</span>),
             <span class="ident">delimited</span>(<span class="ident">tag</span>(<span class="string">&quot;Sq&quot;</span>), <span class="ident">digit1</span>, <span class="ident">space1</span>),
@@ -1489,11 +1500,22 @@
         <span class="ident">alt</span>((<span class="ident">first</span>, <span class="ident">second</span>))(<span class="ident">input</span>)
     }
 
+    <span class="kw">fn</span> <span class="ident">generator_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span>: <span class="ident">i32</span>, <span class="ident">_idx</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">generic</span> {
+            <span class="kw">if</span> <span class="ident">degree</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+                <span class="string">&quot;b&quot;</span>.<span class="ident">to_string</span>()
+            } <span class="kw">else</span> {
+                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;P{}&quot;</span>, <span class="ident">degree</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">/</span> (<span class="number">2</span> <span class="op">*</span> (<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">prime</span>()) <span class="op">-</span> <span class="number">2</span>))
+            }
+        } <span class="kw">else</span> {
+            <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Sq{}&quot;</span>, <span class="ident">degree</span>)
+        }
+    }
+
     <span class="kw">fn</span> <span class="ident">basis_element_to_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>, <span class="ident">idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">basis_table</span>[<span class="ident">degree</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">idx</span>])
     }
 
-    <span class="doccomment">/// We pick our generators to be Q_0 and all the P(...). This has room for improvement...</span>
     <span class="kw">fn</span> <span class="ident">generators</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">degree</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="macro">vec</span><span class="macro">!</span>[];

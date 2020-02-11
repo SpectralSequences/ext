@@ -693,7 +693,7 @@
 
         <span class="kw">let</span> <span class="ident">source_right_dim</span> <span class="op">=</span> <span class="ident">source_module</span>.<span class="ident">right</span>.<span class="ident">dimension</span>(<span class="ident">right_t</span>);
         <span class="kw">let</span> <span class="ident">right_index</span> <span class="op">=</span> <span class="ident">inner_index</span> <span class="op">%</span> <span class="ident">source_right_dim</span>;
-        <span class="kw">let</span> <span class="ident">left_index</span> <span class="op">=</span> (<span class="ident">inner_index</span> <span class="op">-</span> <span class="ident">right_index</span>) <span class="op">/</span> <span class="ident">source_right_dim</span>;
+        <span class="kw">let</span> <span class="ident">left_index</span> <span class="op">=</span> <span class="ident">inner_index</span> <span class="op">/</span> <span class="ident">source_right_dim</span>;
 
         <span class="kw">let</span> <span class="ident">old_slice</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">slice</span>();
         <span class="comment">// Now calculate 1 (x) d</span>
