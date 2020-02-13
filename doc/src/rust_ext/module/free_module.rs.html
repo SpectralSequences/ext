@@ -962,7 +962,7 @@
             <span class="kw">return</span>;
         }
         <span class="kw">if</span> <span class="ident">op_degree</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="ident">result</span>.<span class="ident">add</span>(<span class="ident">input</span>, <span class="number">1</span>);
+            <span class="kw-2">*</span><span class="ident">result</span> <span class="op">+</span><span class="op">=</span> <span class="ident">input</span>;
         }
         <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">basis_element_from_index</span>(<span class="ident">op_degree</span>, <span class="ident">op_index</span>);
         <span class="kw">let</span> <span class="ident">p_part</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">op</span>.<span class="ident">p_part</span>;

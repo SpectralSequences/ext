@@ -2032,7 +2032,7 @@
                 <span class="comment">// Since we&#39;re doing the first squares in decreasing order and x + y - j &gt; x, </span>
                 <span class="comment">// we already calculated this.</span>
                 <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">table</span>[(<span class="ident">x</span> <span class="op">+</span> <span class="ident">y</span> <span class="op">-</span> <span class="ident">j</span>) <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">i</span>];
-                <span class="ident">result</span>.<span class="ident">add</span>(<span class="ident">source</span>, <span class="number">1</span>);
+                <span class="ident">result</span> <span class="op">+</span><span class="op">=</span> <span class="ident">source</span>;
             }
         }
         <span class="ident">result</span>
