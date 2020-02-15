@@ -496,6 +496,12 @@
 <span id="478">478</span>
 <span id="479">479</span>
 <span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">AlgebraAny</span>;
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>, <span class="ident">QuasiInverse</span>};
@@ -812,7 +818,10 @@
 
             <span class="comment">// Compute d (x) 1</span>
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target_offset</span> <span class="op">=</span> <span class="number">0</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">row_count</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>.<span class="ident">modules</span>[<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>] { <span class="ident">m</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">m</span>.<span class="ident">left</span>.<span class="ident">dimension</span>(<span class="ident">left_t</span>) <span class="op">*</span> <span class="ident">m</span>.<span class="ident">right</span>.<span class="ident">dimension</span>(<span class="ident">right_t</span>) };
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">row_count</span> <span class="op">=</span> {
+                <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>.<span class="ident">modules</span>[<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>];
+                <span class="ident">m</span>.<span class="ident">left</span>.<span class="ident">dimension</span>(<span class="ident">left_t</span>) <span class="op">*</span> <span class="ident">m</span>.<span class="ident">right</span>.<span class="ident">dimension</span>(<span class="ident">right_t</span>)
+            };
             <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">1</span> ..<span class="op">=</span> <span class="self">self</span>.<span class="ident">source_s</span> {
                 <span class="kw">let</span> <span class="ident">source_module</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>.<span class="ident">modules</span>[<span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>]; <span class="comment">// C_s (x) D_{source_s - s}</span>
                 <span class="kw">let</span> <span class="ident">target_module</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target</span>.<span class="ident">modules</span>[<span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>]; <span class="comment">// C_{s - 1} (x) D_{source_s - s}</span>
@@ -862,7 +871,10 @@
                             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">entries</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
                             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">offset</span> <span class="op">=</span> <span class="number">0</span>;
                             <span class="kw">for</span> <span class="ident">s_</span> <span class="kw">in</span> <span class="number">0</span> ..<span class="op">=</span> <span class="self">self</span>.<span class="ident">source_s</span> <span class="kw">as</span> <span class="ident">usize</span> {
-                                <span class="kw">let</span> <span class="ident">dim</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>.<span class="ident">modules</span>[<span class="ident">s_</span>] { <span class="ident">m</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">m</span>.<span class="ident">left</span>.<span class="ident">dimension</span>(<span class="ident">left_t</span>) <span class="op">*</span> <span class="ident">m</span>.<span class="ident">right</span>.<span class="ident">dimension</span>(<span class="ident">right_t</span>) };
+                                <span class="kw">let</span> <span class="ident">dim</span> <span class="op">=</span> {
+                                    <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">source</span>.<span class="ident">modules</span>[<span class="ident">s_</span>];
+                                    <span class="ident">m</span>.<span class="ident">left</span>.<span class="ident">dimension</span>(<span class="ident">left_t</span>) <span class="op">*</span> <span class="ident">m</span>.<span class="ident">right</span>.<span class="ident">dimension</span>(<span class="ident">right_t</span>)
+                                };
                                 <span class="kw">if</span> <span class="ident">dim</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="kw">continue</span>; }
 
                                 <span class="ident">matrix</span>[<span class="ident">row</span>].<span class="ident">set_slice</span>(<span class="ident">padded_target_dim</span> <span class="op">+</span> <span class="ident">offset</span>, <span class="ident">padded_target_dim</span> <span class="op">+</span> <span class="ident">offset</span> <span class="op">+</span> <span class="ident">dim</span>);
