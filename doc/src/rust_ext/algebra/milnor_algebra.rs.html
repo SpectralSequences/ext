@@ -1625,7 +1625,7 @@
             } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">profile</span>.<span class="ident">truncated</span> {
                 <span class="ident">profile_list</span>.<span class="ident">push</span>(<span class="number">0</span>);
             } <span class="kw">else</span> {
-                <span class="ident">profile_list</span>.<span class="ident">push</span>(<span class="op">!</span><span class="number">0</span>); <span class="comment">// A super large number.</span>
+                <span class="ident">profile_list</span>.<span class="ident">push</span>(<span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span>);
             }
         }
         <span class="kw">for</span> <span class="ident">d</span> <span class="kw">in</span> (<span class="ident">old_deg</span> <span class="op">+</span> <span class="number">1</span>) ..<span class="op">=</span> <span class="ident">new_deg</span> {
