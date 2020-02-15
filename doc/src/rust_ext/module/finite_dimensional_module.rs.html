@@ -961,7 +961,7 @@
                     <span class="kw">let</span> <span class="ident">output_name</span> <span class="op">=</span> <span class="ident">basis_elt</span>[<span class="string">&quot;gen&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
                     <span class="kw">let</span> <span class="ident">output_idx</span> <span class="op">=</span> <span class="ident">gen_to_idx</span>[<span class="ident">output_name</span>].<span class="number">1</span>;
                     <span class="kw">let</span> <span class="ident">output_coeff</span> <span class="op">=</span> <span class="ident">basis_elt</span>[<span class="string">&quot;coeff&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
-                    <span class="ident">output_vec</span>.<span class="ident">set_entry</span>(<span class="ident">output_idx</span>, <span class="ident">output_coeff</span>);
+                    <span class="ident">output_vec</span>.<span class="ident">add_basis_element</span>(<span class="ident">output_idx</span>, <span class="ident">output_coeff</span>);
                 }
             }
         }
