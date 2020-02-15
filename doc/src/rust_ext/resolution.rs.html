@@ -1043,6 +1043,23 @@
 <span id="1025">1025</span>
 <span id="1026">1026</span>
 <span id="1027">1027</span>
+<span id="1028">1028</span>
+<span id="1029">1029</span>
+<span id="1030">1030</span>
+<span id="1031">1031</span>
+<span id="1032">1032</span>
+<span id="1033">1033</span>
+<span id="1034">1034</span>
+<span id="1035">1035</span>
+<span id="1036">1036</span>
+<span id="1037">1037</span>
+<span id="1038">1038</span>
+<span id="1039">1039</span>
+<span id="1040">1040</span>
+<span id="1041">1041</span>
+<span id="1042">1042</span>
+<span id="1043">1043</span>
+<span id="1044">1044</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Weak</span>};
@@ -1256,6 +1273,7 @@
         <span class="comment">// work out what dX should to to each of them.</span>
         <span class="kw">let</span> <span class="ident">new_generators</span> <span class="op">=</span> <span class="ident">matrix</span>.<span class="ident">inner</span>.<span class="ident">extend_to_surjection</span>(<span class="ident">first_new_row</span>, <span class="number">0</span>, <span class="ident">matrix</span>.<span class="ident">end</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="ident">pivots</span>);
         <span class="kw">let</span> <span class="ident">cc_new_gens</span> <span class="op">=</span> <span class="ident">new_generators</span>.<span class="ident">len</span>();
+
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res_new_gens</span> <span class="op">=</span> <span class="number">0</span>;
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">middle_rows</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">cc_new_gens</span>);
@@ -1278,7 +1296,7 @@
                     <span class="comment">// Keep the rows we produced because we have to row reduce to re-compute</span>
                     <span class="comment">// the kernel later, but these rows are the images of the generators, so we</span>
                     <span class="comment">// still need them.</span>
-                    <span class="ident">middle_rows</span>.<span class="ident">push</span>(<span class="ident">matrix</span>[<span class="ident">i</span>].<span class="ident">clone</span>());
+                    <span class="ident">middle_rows</span>.<span class="ident">push</span>(<span class="ident">matrix</span>[<span class="ident">first_new_row</span> <span class="op">+</span> <span class="ident">i</span>].<span class="ident">clone</span>());
                 }
                 <span class="comment">// Row reduce again since our activity may have changed the image of dX.</span>
                 <span class="ident">matrix</span>.<span class="ident">row_reduce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pivots</span>);
@@ -1701,6 +1719,22 @@
 
     <span class="kw">fn</span> <span class="ident">max_computed_homological_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
         <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_s</span>.<span class="ident">lock</span>() <span class="op">-</span> <span class="number">1</span>
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">graded_dimension_vec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">min_degree</span>();
+        <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">max_computed_degree</span>();
+        <span class="kw">let</span> <span class="ident">max_hom_deg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">max_computed_homological_degree</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">max_hom_deg</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>);
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">0</span> ..<span class="op">=</span> <span class="ident">max_hom_deg</span>).<span class="ident">rev</span>() {
+            <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">module</span>(<span class="ident">i</span>);
+            <span class="ident">result</span>.<span class="ident">push</span>(
+                (<span class="ident">min_degree</span> <span class="op">+</span> <span class="ident">i</span> <span class="kw">as</span> <span class="ident">i32</span> ..<span class="op">=</span> <span class="ident">max_degree</span>)
+                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">j</span><span class="op">|</span> <span class="ident">module</span>.<span class="ident">number_of_gens_in_degree</span>(<span class="ident">j</span>))
+                    .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+            );
+        }
+        <span class="ident">result</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">graded_dimension_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
