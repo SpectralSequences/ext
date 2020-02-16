@@ -1302,6 +1302,7 @@
 <span id="1284">1284</span>
 <span id="1285">1285</span>
 <span id="1286">1286</span>
+<span id="1287">1287</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">prime</span>::{<span class="self">self</span>, <span class="ident">ValidPrime</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>, <span class="ident">FpVectorSlice</span>};
@@ -1600,8 +1601,9 @@
         <span class="self">self</span>.<span class="ident">vectors</span>.<span class="ident">swap</span>(<span class="ident">i</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">slice_row_start</span>, <span class="ident">j</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">slice_row_start</span>);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">row_op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target</span> : <span class="ident">usize</span>, <span class="ident">source</span> : <span class="ident">usize</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>){
-    <span class="kw">unsafe</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">row_op</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target</span> : <span class="ident">usize</span>, <span class="ident">source</span> : <span class="ident">usize</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>) {
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">target</span> <span class="op">!</span><span class="op">=</span> <span class="ident">source</span>);
+        <span class="kw">unsafe</span> {
             <span class="comment">// Can&#39;t take two mutable borrows from one vector, so instead just cast</span>
             <span class="comment">// them to their raw pointers to do the swap</span>
             <span class="kw">let</span> <span class="ident">ptarget</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FpVector</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[<span class="ident">target</span>];
