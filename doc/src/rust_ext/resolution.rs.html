@@ -1055,29 +1055,21 @@
 <span id="1037">1037</span>
 <span id="1038">1038</span>
 <span id="1039">1039</span>
-<span id="1040">1040</span>
-<span id="1041">1041</span>
-<span id="1042">1042</span>
-<span id="1043">1043</span>
-<span id="1044">1044</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::{<span class="ident">min</span>, <span class="ident">max</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Weak</span>};
 <span class="kw">use</span> <span class="ident">parking_lot</span>::{<span class="ident">RwLock</span>, <span class="ident">Mutex</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashSet</span>;
 
-<span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
-
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">prime</span>::<span class="ident">ValidPrime</span>;
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>, <span class="ident">AugmentedMatrix3</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">AlgebraAny</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FiniteModule</span>, <span class="ident">FDModule</span>, <span class="ident">FreeModule</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">Algebra</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">FreeModule</span>};
 <span class="kw">use</span> <span class="ident">once</span>::{<span class="ident">OnceVec</span>, <span class="ident">OnceBiVec</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">FreeModuleHomomorphism</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">AugmentedChainComplex</span>, <span class="ident">FiniteChainComplex</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">ChainComplex</span>, <span class="ident">AugmentedChainComplex</span>, <span class="ident">UnitChainComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">resolution_homomorphism</span>::{<span class="ident">ResolutionHomomorphism</span>, <span class="ident">ResolutionHomomorphismToUnit</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">CCC</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;concurrent&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">thread</span>, <span class="ident">sync</span>::<span class="ident">mpsc</span>};
@@ -1093,10 +1085,10 @@
 <span class="doccomment">/// Send + Sync. In particular, we don&#39;t need the callback functions to be Send + Sync.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ResolutionInner</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> {
     <span class="ident">complex</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>,
-    <span class="ident">modules</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">zero_module</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span>,
+    <span class="ident">modules</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">CC</span>::<span class="ident">Module</span> <span class="kw">as</span> <span class="ident">Module</span><span class="op">&gt;</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">zero_module</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">CC</span>::<span class="ident">Module</span> <span class="kw">as</span> <span class="ident">Module</span><span class="op">&gt;</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">chain_maps</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">differentials</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">differentials</span> : <span class="ident">OnceVec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">CC</span>::<span class="ident">Module</span> <span class="kw">as</span> <span class="ident">Module</span><span class="op">&gt;</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">kernels</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
 }
 
@@ -1243,7 +1235,7 @@
         <span class="comment">// Later we&#39;re going to write into this same matrix an isomorphism source/image + new vectors --&gt; kernel</span>
         <span class="comment">// This has size target_dimension x (2*target_dimension).</span>
         <span class="comment">// This latter matrix may be used to find a preimage of an element under the differential.</span>
-        <span class="kw">let</span> <span class="ident">source_dimension</span> <span class="op">=</span> <span class="ident">FreeModule</span>::<span class="ident">dimension_with_table</span>(<span class="kw-2">&amp;</span><span class="ident">source_module_table</span>);
+        <span class="kw">let</span> <span class="ident">source_dimension</span> <span class="op">=</span> <span class="ident">FreeModule</span>::<span class="op">&lt;</span><span class="ident">CC</span>::<span class="ident">Algebra</span><span class="op">&gt;</span>::<span class="ident">dimension_with_table</span>(<span class="kw-2">&amp;</span><span class="ident">source_module_table</span>);
         <span class="kw">let</span> <span class="ident">target_cc_dimension</span> <span class="op">=</span> <span class="ident">target_cc</span>.<span class="ident">dimension</span>(<span class="ident">t</span>);
         <span class="kw">let</span> <span class="ident">target_res_dimension</span> <span class="op">=</span> <span class="ident">target_res</span>.<span class="ident">dimension</span>(<span class="ident">t</span>);
 
@@ -1371,10 +1363,11 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">ChainComplex</span> <span class="kw">for</span> <span class="ident">ResolutionInner</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Module</span> <span class="op">=</span> <span class="ident">FreeModule</span>;
-    <span class="kw">type</span> <span class="ident">Homomorphism</span> <span class="op">=</span> <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">CC</span>::<span class="ident">Algebra</span>;
+    <span class="kw">type</span> <span class="ident">Module</span> <span class="op">=</span> <span class="ident">FreeModule</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Algebra</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Homomorphism</span> <span class="op">=</span> <span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Algebra</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">complex</span>().<span class="ident">algebra</span>()
     }
 
@@ -1470,7 +1463,7 @@
 <span class="doccomment">///  * `kernels` - For each *internal* degree, store the kernel of the most recently calculated</span>
 <span class="doccomment">///  chain map as returned by `generate_old_kernel_and_compute_new_kernel`, to be used if we run</span>
 <span class="doccomment">///  resolve_through_degree again.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">UnitChainComplex</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="ident">inner</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ResolutionInner</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="ident">next_s</span> : <span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
@@ -1481,8 +1474,8 @@
     <span class="ident">filtration_one_products</span> : <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">String</span>, <span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>,
 
     <span class="comment">// Products</span>
-    <span class="kw">pub</span> <span class="ident">unit_resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">unit_resolution_owner</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">unit_resolution</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">unit_resolution_owner</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">product_names</span> : <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">product_list</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Cocycle</span><span class="op">&gt;</span>,
     <span class="comment">// s -&gt; t -&gt; idx -&gt; resolution homomorphism to unit resolution. We don&#39;t populate this</span>
@@ -1494,7 +1487,7 @@
     <span class="kw">pub</span> <span class="ident">self_maps</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SelfMap</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span><span class="op">&gt;</span>
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">UnitChainComplex</span><span class="op">&gt;</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
         <span class="ident">complex</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>,
         <span class="ident">add_class</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AddClassFn</span><span class="op">&gt;</span>,
@@ -1766,9 +1759,7 @@
 }
 
 <span class="comment">// Product algorithms</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> <span class="kw">where</span>
-    <span class="ident">CC</span> : <span class="ident">ChainComplex</span>
-{
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span>: <span class="ident">UnitChainComplex</span><span class="op">&gt;</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
     <span class="doccomment">/// This function computes the products between the element most recently added to product_list</span>
     <span class="doccomment">/// and the parts of Ext that have already been computed. This function should be called right</span>
     <span class="doccomment">/// after `add_product`, unless `resolve_through_degree`/`resolve_through_bidegree` has never been</span>
@@ -1818,15 +1809,14 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">construct_unit_resolution</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">unit_resolution</span>.<span class="ident">is_none</span>() {
-            <span class="kw">let</span> <span class="ident">unit_module</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteModule</span>::<span class="ident">from</span>(<span class="ident">FDModule</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">algebra</span>(), <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;unit&quot;</span>), <span class="ident">BiVec</span>::<span class="ident">from_vec</span>(<span class="number">0</span>, <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]))));
-            <span class="kw">let</span> <span class="ident">ccdz</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">FiniteChainComplex</span>::<span class="ident">ccdz</span>(<span class="ident">unit_module</span>));
+            <span class="kw">let</span> <span class="ident">ccdz</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">CC</span>::<span class="ident">unit_chain_complex</span>(<span class="self">self</span>.<span class="ident">algebra</span>()));
             <span class="kw">let</span> <span class="ident">unit_resolution</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">Resolution</span>::<span class="ident">new</span>(<span class="ident">ccdz</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)));
             <span class="self">self</span>.<span class="ident">unit_resolution</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Arc</span>::<span class="ident">downgrade</span>(<span class="kw-2">&amp;</span><span class="ident">unit_resolution</span>));
             <span class="self">self</span>.<span class="ident">unit_resolution_owner</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">unit_resolution</span>);
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_unit_resolution</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">unit_res</span> : <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CCC</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_unit_resolution</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">unit_res</span> : <span class="ident">Weak</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">chain_maps_to_unit_resolution</span>.<span class="ident">is_empty</span>() {
             <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Cannot change unit resolution after you start computing products&quot;</span>);
         }
@@ -1943,7 +1933,7 @@
 }
 
 <span class="comment">// Self map algorithms</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">UnitChainComplex</span><span class="op">&gt;</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The return value is whether the self map was actually added. If the self map is already</span>
     <span class="doccomment">/// present, we do nothing.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_self_map</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>, <span class="ident">name</span> : <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">map_data</span> : <span class="ident">Matrix</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
@@ -2000,9 +1990,9 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">UnitChainComplex</span><span class="op">&gt;</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">CC</span>::<span class="ident">Module</span> <span class="kw">as</span> <span class="ident">Module</span><span class="op">&gt;</span>::<span class="ident">Algebra</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">complex</span>().<span class="ident">algebra</span>()
     }
 
@@ -2010,7 +2000,7 @@
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">prime</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">homological_degree</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">homological_degree</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">CC</span>::<span class="ident">Module</span> <span class="kw">as</span> <span class="ident">Module</span><span class="op">&gt;</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">module</span>(<span class="ident">homological_degree</span>)
     }
 
@@ -2018,7 +2008,7 @@
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">complex</span>().<span class="ident">min_degree</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">differential</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">differential</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">CC</span>::<span class="ident">Module</span> <span class="kw">as</span> <span class="ident">Module</span><span class="op">&gt;</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">differential</span>(<span class="ident">s</span>)
     }
 }
@@ -2058,7 +2048,7 @@
 
         <span class="ident">result</span>.<span class="ident">differentials</span>.<span class="ident">push</span>(<span class="ident">Load</span>::<span class="ident">load</span>(<span class="ident">buffer</span>, <span class="kw-2">&amp;</span>(<span class="ident">result</span>.<span class="ident">module</span>(<span class="number">0</span>), <span class="ident">result</span>.<span class="ident">zero_module</span>(), <span class="number">0</span>))<span class="question-mark">?</span>);
         <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">1</span> .. <span class="ident">max_s</span> <span class="kw">as</span> <span class="ident">u32</span> {
-            <span class="kw">let</span> <span class="ident">d</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Load</span>::<span class="ident">load</span>(<span class="ident">buffer</span>, <span class="kw-2">&amp;</span>(<span class="ident">result</span>.<span class="ident">module</span>(<span class="ident">s</span>), <span class="ident">result</span>.<span class="ident">module</span>(<span class="ident">s</span> <span class="op">-</span> <span class="number">1</span>), <span class="number">0</span>))<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="ident">d</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FreeModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">FreeModule</span><span class="op">&lt;</span><span class="ident">CC</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Load</span>::<span class="ident">load</span>(<span class="ident">buffer</span>, <span class="kw-2">&amp;</span>(<span class="ident">result</span>.<span class="ident">module</span>(<span class="ident">s</span>), <span class="ident">result</span>.<span class="ident">module</span>(<span class="ident">s</span> <span class="op">-</span> <span class="number">1</span>), <span class="number">0</span>))<span class="question-mark">?</span>;
             <span class="ident">result</span>.<span class="ident">differentials</span>.<span class="ident">push</span>(<span class="ident">d</span>);
         }
 
@@ -2074,7 +2064,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">Save</span> <span class="kw">for</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">UnitChainComplex</span><span class="op">&gt;</span> <span class="ident">Save</span> <span class="kw">for</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">save</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buffer</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">Write</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">algebra_dim</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">next_t</span>.<span class="ident">lock</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">min_degree</span>() <span class="op">-</span> <span class="number">1</span>;
         <span class="ident">algebra_dim</span>.<span class="ident">save</span>(<span class="ident">buffer</span>)<span class="question-mark">?</span>;
@@ -2082,7 +2072,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">ChainComplex</span><span class="op">&gt;</span> <span class="ident">Load</span> <span class="kw">for</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CC</span> : <span class="ident">UnitChainComplex</span><span class="op">&gt;</span> <span class="ident">Load</span> <span class="kw">for</span> <span class="ident">Resolution</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">AuxData</span> <span class="op">=</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">load</span>(<span class="ident">buffer</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">Read</span>, <span class="ident">cc</span> : <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">AuxData</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {

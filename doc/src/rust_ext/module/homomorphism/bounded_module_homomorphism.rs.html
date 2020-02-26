@@ -199,27 +199,59 @@
 <span id="181">181</span>
 <span id="182">182</span>
 <span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 <span class="kw">use</span> <span class="ident">parking_lot</span>::<span class="ident">Mutex</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
-<span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
-<span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">Subspace</span>, <span class="ident">QuasiInverse</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">BoundedModule</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">ZeroHomomorphism</span>, <span class="ident">IdentityHomomorphism</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">Algebra</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">IdentityHomomorphism</span>, <span class="ident">ModuleHomomorphism</span>, <span class="ident">ZeroHomomorphism</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">BoundedModule</span>, <span class="ident">Module</span>};
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
+<span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">matrix</span>::{<span class="ident">Matrix</span>, <span class="ident">QuasiInverse</span>, <span class="ident">Subspace</span>};
+<span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="ident">once</span>::<span class="ident">OnceBiVec</span>;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span> : <span class="ident">BoundedModule</span>, <span class="ident">T</span> : <span class="ident">Module</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">lock</span> : <span class="ident">Mutex</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">degree_shift</span> : <span class="ident">i32</span>,
-    <span class="kw">pub</span> <span class="ident">matrices</span> : <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Matrix</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">quasi_inverses</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">QuasiInverse</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">kernels</span> : <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">BoundedModule</span>, <span class="ident">T</span>: <span class="ident">Module</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">S</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="ident">lock</span>: <span class="ident">Mutex</span><span class="op">&lt;</span>()<span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">source</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">target</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">degree_shift</span>: <span class="ident">i32</span>,
+    <span class="kw">pub</span> <span class="ident">matrices</span>: <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Matrix</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">quasi_inverses</span>: <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">QuasiInverse</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">kernels</span>: <span class="ident">OnceBiVec</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span>,
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span> : <span class="ident">BoundedModule</span>, <span class="ident">T</span> : <span class="ident">Module</span><span class="op">&gt;</span> <span class="ident">ModuleHomomorphism</span> <span class="kw">for</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">BoundedModule</span>, <span class="ident">T</span>: <span class="ident">Module</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">S</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">ModuleHomomorphism</span>
+    <span class="kw">for</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
+{
     <span class="kw">type</span> <span class="ident">Source</span> <span class="op">=</span> <span class="ident">S</span>;
     <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">T</span>;
 
@@ -235,29 +267,35 @@
         <span class="self">self</span>.<span class="ident">degree_shift</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">apply_to_basis_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>, <span class="ident">coeff</span> : <span class="ident">u32</span>, <span class="ident">input_degree</span> : <span class="ident">i32</span>, <span class="ident">input_idx</span> : <span class="ident">usize</span>) {
+    <span class="kw">fn</span> <span class="ident">apply_to_basis_element</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FpVector</span>,
+        <span class="ident">coeff</span>: <span class="ident">u32</span>,
+        <span class="ident">input_degree</span>: <span class="ident">i32</span>,
+        <span class="ident">input_idx</span>: <span class="ident">usize</span>,
+    ) {
         <span class="kw">let</span> <span class="ident">output_degree</span> <span class="op">=</span> <span class="ident">input_degree</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">degree_shift</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">matrix</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">matrices</span>.<span class="ident">get</span>(<span class="ident">output_degree</span>) {
             <span class="ident">result</span>.<span class="ident">shift_add</span>(<span class="kw-2">&amp;</span><span class="ident">matrix</span>[<span class="ident">input_idx</span>], <span class="ident">coeff</span>);
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">QuasiInverse</span> {
+    <span class="kw">fn</span> <span class="ident">quasi_inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">QuasiInverse</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">quasi_inverses</span>[<span class="ident">degree</span>]
     }
 
-    <span class="kw">fn</span> <span class="ident">kernel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Subspace</span> {
+    <span class="kw">fn</span> <span class="ident">kernel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Subspace</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">kernels</span>[<span class="ident">degree</span>]
     }
 
-    <span class="kw">fn</span> <span class="ident">compute_kernels_and_quasi_inverses_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span> : <span class="ident">i32</span>) {
+    <span class="kw">fn</span> <span class="ident">compute_kernels_and_quasi_inverses_through_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">degree</span>: <span class="ident">i32</span>) {
         <span class="kw">let</span> <span class="ident">_lock</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lock</span>.<span class="ident">lock</span>();
 
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">min</span>(<span class="ident">degree</span> <span class="op">+</span> <span class="number">1</span>, <span class="self">self</span>.<span class="ident">matrices</span>.<span class="ident">len</span>());
         <span class="kw">let</span> <span class="ident">next_degree</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">kernels</span>.<span class="ident">len</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">next_degree</span>, <span class="self">self</span>.<span class="ident">quasi_inverses</span>.<span class="ident">len</span>());
 
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">next_degree</span> .. <span class="ident">max_degree</span> {
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">next_degree</span>..<span class="ident">max_degree</span> {
             <span class="kw">let</span> (<span class="ident">kernel</span>, <span class="ident">qi</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">kernel_and_quasi_inverse</span>(<span class="ident">i</span>);
             <span class="self">self</span>.<span class="ident">kernels</span>.<span class="ident">push</span>(<span class="ident">kernel</span>);
             <span class="self">self</span>.<span class="ident">quasi_inverses</span>.<span class="ident">push</span>(<span class="ident">qi</span>);
@@ -265,21 +303,31 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span> : <span class="ident">BoundedModule</span>, <span class="ident">T</span> : <span class="ident">Module</span><span class="op">&gt;</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_matrices</span>(<span class="ident">source</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">target</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">degree_shift</span>: <span class="ident">i32</span>, <span class="ident">matrices</span>: <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Matrix</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">A</span>: <span class="ident">Algebra</span>,
+    <span class="ident">S</span>: <span class="ident">BoundedModule</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">A</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">Module</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">A</span><span class="op">&gt;</span>,
+{
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_matrices</span>(
+        <span class="ident">source</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
+        <span class="ident">target</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">degree_shift</span>: <span class="ident">i32</span>,
+        <span class="ident">matrices</span>: <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Matrix</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">min_degree</span>();
         <span class="ident">BoundedModuleHomomorphism</span> {
             <span class="ident">source</span>,
             <span class="ident">target</span>,
             <span class="ident">degree_shift</span>,
             <span class="ident">matrices</span>,
-            <span class="ident">lock</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
-            <span class="ident">quasi_inverses</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
-            <span class="ident">kernels</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>)
+            <span class="ident">lock</span>: <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
+            <span class="ident">quasi_inverses</span>: <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
+            <span class="ident">kernels</span>: <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from</span><span class="op">&lt;</span><span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">S</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">f</span> : <span class="kw-2">&amp;</span><span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from</span><span class="op">&lt;</span><span class="ident">F</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">S</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">source</span>();
         <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">target</span>();
         <span class="kw">let</span> <span class="ident">degree_shift</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">degree_shift</span>();
@@ -293,7 +341,7 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrices</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">min_degree</span>, <span class="ident">max_degree</span> <span class="op">+</span> <span class="number">1</span>);
 
-        <span class="kw">for</span> <span class="ident">target_deg</span> <span class="kw">in</span> <span class="ident">min_degree</span> ..<span class="op">=</span> <span class="ident">max_degree</span> {
+        <span class="kw">for</span> <span class="ident">target_deg</span> <span class="kw">in</span> <span class="ident">min_degree</span>..<span class="op">=</span><span class="ident">max_degree</span> {
             <span class="kw">let</span> <span class="ident">source_deg</span> <span class="op">=</span> <span class="ident">target_deg</span> <span class="op">+</span> <span class="ident">degree_shift</span>;
             <span class="kw">let</span> <span class="ident">source_dim</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">dimension</span>(<span class="ident">source_deg</span>);
             <span class="kw">let</span> <span class="ident">target_dim</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">dimension</span>(<span class="ident">target_deg</span>);
@@ -307,66 +355,76 @@
             <span class="ident">source</span>,
             <span class="ident">target</span>,
             <span class="ident">degree_shift</span>,
-            <span class="ident">lock</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
+            <span class="ident">lock</span>: <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
             <span class="ident">matrices</span>,
-            <span class="ident">quasi_inverses</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
-            <span class="ident">kernels</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>)
+            <span class="ident">quasi_inverses</span>: <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
+            <span class="ident">kernels</span>: <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
         }
     }
 
     <span class="doccomment">/// This function replaces the source of the BoundedModuleHomomorphism and does nothing else.</span>
     <span class="doccomment">/// This is useful for changing the type of the source (but not the mathematical module</span>
     <span class="doccomment">/// itself). This is intended to be used in conjunction with `BoundedModule::to_fd_module`</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_source</span><span class="op">&lt;</span><span class="ident">S_</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_source</span><span class="op">&lt;</span><span class="ident">S_</span>: <span class="ident">BoundedModule</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">A</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+        <span class="self">self</span>,
+        <span class="ident">source</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S_</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S_</span>, <span class="ident">T</span><span class="op">&gt;</span> {
         <span class="ident">BoundedModuleHomomorphism</span> {
             <span class="ident">source</span>,
-            <span class="ident">target</span> : <span class="self">self</span>.<span class="ident">target</span>,
-            <span class="ident">degree_shift</span> : <span class="self">self</span>.<span class="ident">degree_shift</span>,
-            <span class="ident">lock</span> : <span class="self">self</span>.<span class="ident">lock</span>,
-            <span class="ident">matrices</span> : <span class="self">self</span>.<span class="ident">matrices</span>,
-            <span class="ident">quasi_inverses</span> : <span class="self">self</span>.<span class="ident">quasi_inverses</span>,
-            <span class="ident">kernels</span> : <span class="self">self</span>.<span class="ident">kernels</span>
+            <span class="ident">target</span>: <span class="self">self</span>.<span class="ident">target</span>,
+            <span class="ident">degree_shift</span>: <span class="self">self</span>.<span class="ident">degree_shift</span>,
+            <span class="ident">lock</span>: <span class="self">self</span>.<span class="ident">lock</span>,
+            <span class="ident">matrices</span>: <span class="self">self</span>.<span class="ident">matrices</span>,
+            <span class="ident">quasi_inverses</span>: <span class="self">self</span>.<span class="ident">quasi_inverses</span>,
+            <span class="ident">kernels</span>: <span class="self">self</span>.<span class="ident">kernels</span>,
         }
     }
 
     <span class="doccomment">/// See `replace_source`</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_target</span><span class="op">&lt;</span><span class="ident">T_</span> : <span class="ident">BoundedModule</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T_</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_target</span><span class="op">&lt;</span><span class="ident">T_</span>: <span class="ident">BoundedModule</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">A</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+        <span class="self">self</span>,
+        <span class="ident">target</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T_</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T_</span><span class="op">&gt;</span> {
         <span class="ident">BoundedModuleHomomorphism</span> {
-            <span class="ident">source</span> : <span class="self">self</span>.<span class="ident">source</span>,
+            <span class="ident">source</span>: <span class="self">self</span>.<span class="ident">source</span>,
             <span class="ident">target</span>,
-            <span class="ident">degree_shift</span> : <span class="self">self</span>.<span class="ident">degree_shift</span>,
-            <span class="ident">lock</span> : <span class="self">self</span>.<span class="ident">lock</span>,
-            <span class="ident">matrices</span> : <span class="self">self</span>.<span class="ident">matrices</span>,
-            <span class="ident">quasi_inverses</span> : <span class="self">self</span>.<span class="ident">quasi_inverses</span>,
-            <span class="ident">kernels</span> : <span class="self">self</span>.<span class="ident">kernels</span>
+            <span class="ident">degree_shift</span>: <span class="self">self</span>.<span class="ident">degree_shift</span>,
+            <span class="ident">lock</span>: <span class="self">self</span>.<span class="ident">lock</span>,
+            <span class="ident">matrices</span>: <span class="self">self</span>.<span class="ident">matrices</span>,
+            <span class="ident">quasi_inverses</span>: <span class="self">self</span>.<span class="ident">quasi_inverses</span>,
+            <span class="ident">kernels</span>: <span class="self">self</span>.<span class="ident">kernels</span>,
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">BoundedModule</span>, <span class="ident">T</span> : <span class="ident">Module</span><span class="op">&gt;</span> <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">zero_homomorphism</span>(<span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">target</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">degree_shift</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">BoundedModule</span>, <span class="ident">T</span>: <span class="ident">Module</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">S</span>::<span class="ident">Algebra</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
+    <span class="kw">for</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
+{
+    <span class="kw">fn</span> <span class="ident">zero_homomorphism</span>(<span class="ident">source</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">target</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">degree_shift</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">BoundedModuleHomomorphism</span> {
-            <span class="ident">source</span>, <span class="ident">target</span>, <span class="ident">degree_shift</span>,
-            <span class="ident">lock</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
-            <span class="ident">matrices</span> : <span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="number">0</span>),
-            <span class="ident">quasi_inverses</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="number">0</span>),
-            <span class="ident">kernels</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="number">0</span>)
+            <span class="ident">source</span>,
+            <span class="ident">target</span>,
+            <span class="ident">degree_shift</span>,
+            <span class="ident">lock</span>: <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
+            <span class="ident">matrices</span>: <span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="number">0</span>),
+            <span class="ident">quasi_inverses</span>: <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="number">0</span>),
+            <span class="ident">kernels</span>: <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="number">0</span>),
         }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">BoundedModule</span><span class="op">&gt;</span> <span class="ident">IdentityHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BoundedModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">S</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">identity_homomorphism</span>(<span class="ident">source</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">identity_homomorphism</span>(<span class="ident">source</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">min_degree</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">min_degree</span>();
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">max_degree</span>();
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrices</span> <span class="op">=</span> <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">min_degree</span>, <span class="ident">max_degree</span> <span class="op">+</span> <span class="number">1</span>);
 
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">min_degree</span> ..<span class="op">=</span> <span class="ident">max_degree</span> {
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">min_degree</span>..<span class="op">=</span><span class="ident">max_degree</span> {
             <span class="kw">let</span> <span class="ident">dim</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">dimension</span>(<span class="ident">i</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">matrix</span> <span class="op">=</span> <span class="ident">Matrix</span>::<span class="ident">new</span>(<span class="ident">p</span>, <span class="ident">dim</span>, <span class="ident">dim</span>);
-            <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span> .. <span class="ident">dim</span> {
+            <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">dim</span> {
                 <span class="ident">matrix</span>[<span class="ident">k</span>].<span class="ident">set_entry</span>(<span class="ident">k</span>, <span class="number">1</span>);
             }
             <span class="ident">matrices</span>.<span class="ident">push</span>(<span class="ident">matrix</span>);
@@ -376,10 +434,10 @@
             <span class="ident">source</span>: <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>),
             <span class="ident">target</span>: <span class="ident">source</span>,
             <span class="ident">degree_shift</span>: <span class="number">0</span>,
-            <span class="ident">lock</span> : <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
+            <span class="ident">lock</span>: <span class="ident">Mutex</span>::<span class="ident">new</span>(()),
             <span class="ident">matrices</span>,
-            <span class="ident">quasi_inverses</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
-            <span class="ident">kernels</span> : <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>)
+            <span class="ident">quasi_inverses</span>: <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
+            <span class="ident">kernels</span>: <span class="ident">OnceBiVec</span>::<span class="ident">new</span>(<span class="ident">min_degree</span>),
         }
     }
 }

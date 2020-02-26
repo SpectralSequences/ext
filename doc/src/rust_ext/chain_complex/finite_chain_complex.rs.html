@@ -215,25 +215,86 @@
 <span id="197">197</span>
 <span id="198">198</span>
 <span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">AlgebraAny</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">ZeroModule</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">AugmentedChainComplex</span>, <span class="ident">BoundedChainComplex</span>, <span class="ident">ChainComplex</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::<span class="ident">homomorphism</span>::{<span class="ident">ModuleHomomorphism</span>, <span class="ident">ZeroHomomorphism</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chain_complex</span>::{<span class="ident">AugmentedChainComplex</span>, <span class="ident">ChainComplex</span>, <span class="ident">BoundedChainComplex</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">Module</span>, <span class="ident">ZeroModule</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
-      <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">modules</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">zero_module</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">differentials</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span>,
+    <span class="ident">F</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span>,
+{
+    <span class="kw">pub</span> <span class="ident">modules</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">zero_module</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">differentials</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span> <span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
-      <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">M</span><span class="op">&gt;</span> {
-
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span>,
+    <span class="ident">F</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">M</span><span class="op">&gt;</span>,
+{
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
         <span class="macro">unimplemented</span><span class="macro">!</span>()
     }
@@ -248,34 +309,58 @@
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">differentials</span>.<span class="ident">len</span>();
             <span class="self">self</span>.<span class="ident">differentials</span>.<span class="ident">remove</span>(<span class="ident">len</span> <span class="op">-</span> <span class="number">2</span>);
-            <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">len</span> <span class="op">-</span> <span class="number">3</span>] <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">F</span>::<span class="ident">zero_homomorphism</span>(<span class="self">self</span>.<span class="ident">zero_module</span>(), <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">modules</span>[<span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>]), <span class="number">0</span>));
+            <span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">len</span> <span class="op">-</span> <span class="number">3</span>] <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">F</span>::<span class="ident">zero_homomorphism</span>(
+                <span class="self">self</span>.<span class="ident">zero_module</span>(),
+                <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">modules</span>[<span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>]),
+                <span class="number">0</span>,
+            ));
         }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span> <span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span> <span class="op">+</span> <span class="ident">ZeroModule</span>,
-      <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">M</span><span class="op">&gt;</span> {
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ccdz</span>(<span class="ident">module</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span> <span class="op">+</span> <span class="ident">ZeroModule</span>,
+    <span class="ident">F</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">M</span><span class="op">&gt;</span>,
+{
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ccdz</span>(<span class="ident">module</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">zero_module</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">M</span>::<span class="ident">zero_module</span>(<span class="ident">module</span>.<span class="ident">algebra</span>(), <span class="ident">module</span>.<span class="ident">min_degree</span>()));
         <span class="kw">let</span> <span class="ident">differentials</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
-            <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">F</span>::<span class="ident">zero_homomorphism</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>), <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">zero_module</span>), <span class="number">0</span>)),
-            <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">F</span>::<span class="ident">zero_homomorphism</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">zero_module</span>), <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>), <span class="number">0</span>)),
-            <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">F</span>::<span class="ident">zero_homomorphism</span>(<span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">zero_module</span>), <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">zero_module</span>), <span class="number">0</span>))
+            <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">F</span>::<span class="ident">zero_homomorphism</span>(
+                <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>),
+                <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">zero_module</span>),
+                <span class="number">0</span>,
+            )),
+            <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">F</span>::<span class="ident">zero_homomorphism</span>(
+                <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">zero_module</span>),
+                <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>),
+                <span class="number">0</span>,
+            )),
+            <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">F</span>::<span class="ident">zero_homomorphism</span>(
+                <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">zero_module</span>),
+                <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">zero_module</span>),
+                <span class="number">0</span>,
+            )),
         ];
         <span class="kw">let</span> <span class="ident">modules</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">module</span>];
-        <span class="self">Self</span> { <span class="ident">modules</span>, <span class="ident">zero_module</span>, <span class="ident">differentials</span> }
+        <span class="self">Self</span> {
+            <span class="ident">modules</span>,
+            <span class="ident">zero_module</span>,
+            <span class="ident">differentials</span>,
+        }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span> <span class="ident">ChainComplex</span> <span class="kw">for</span> <span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
-      <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span>,
+    <span class="ident">F</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span>,
+{
+    <span class="kw">type</span> <span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">M</span>::<span class="ident">Algebra</span>;
     <span class="kw">type</span> <span class="ident">Module</span> <span class="op">=</span> <span class="ident">M</span>;
     <span class="kw">type</span> <span class="ident">Homomorphism</span> <span class="op">=</span> <span class="ident">F</span>;
 
-    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Algebra</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">zero_module</span>.<span class="ident">algebra</span>()
     }
     <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
@@ -286,7 +371,7 @@
         <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">zero_module</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Module</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Module</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">if</span> <span class="ident">s</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">len</span>() {
             <span class="self">self</span>.<span class="ident">zero_module</span>()
@@ -295,52 +380,70 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">differential</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Homomorphism</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">differential</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Homomorphism</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">min</span>(<span class="ident">s</span>, <span class="self">self</span>.<span class="ident">differentials</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>); <span class="comment">// The last entry is the zero homomorphism</span>
         <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">s</span>])
     }
 
-    <span class="kw">fn</span> <span class="ident">compute_through_bidegree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>, <span class="ident">t</span> : <span class="ident">i32</span>) {
+    <span class="kw">fn</span> <span class="ident">compute_through_bidegree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">u32</span>, <span class="ident">t</span>: <span class="ident">i32</span>) {
         <span class="kw">for</span> <span class="ident">module</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">iter</span>().<span class="ident">take</span>(<span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>) {
             <span class="ident">module</span>.<span class="ident">compute_basis</span>(<span class="ident">t</span>);
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">set_homology_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span> : <span class="ident">u32</span>, <span class="ident">_internal_degree</span> : <span class="ident">i32</span>, <span class="ident">_homology_basis</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) { <span class="macro">unimplemented</span><span class="macro">!</span>() }
-    <span class="kw">fn</span> <span class="ident">homology_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span> : <span class="ident">u32</span>, <span class="ident">_internal_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
-    <span class="kw">fn</span> <span class="ident">max_homology_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> { <span class="ident">std</span>::<span class="ident">i32</span>::<span class="ident">MAX</span> }
+    <span class="kw">fn</span> <span class="ident">set_homology_basis</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">_homological_degree</span>: <span class="ident">u32</span>,
+        <span class="ident">_internal_degree</span>: <span class="ident">i32</span>,
+        <span class="ident">_homology_basis</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    ) {
+        <span class="macro">unimplemented</span><span class="macro">!</span>()
+    }
+    <span class="kw">fn</span> <span class="ident">homology_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span>: <span class="ident">u32</span>, <span class="ident">_internal_degree</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="macro">unimplemented</span><span class="macro">!</span>()
+    }
+    <span class="kw">fn</span> <span class="ident">max_homology_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+        <span class="ident">std</span>::<span class="ident">i32</span>::<span class="ident">MAX</span>
+    }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span> <span class="ident">BoundedChainComplex</span> <span class="kw">for</span> <span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
-      <span class="ident">F</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span>,
+    <span class="ident">F</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span>,
+{
     <span class="kw">fn</span> <span class="ident">max_s</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>
     }
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FiniteAugmentedChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
-      <span class="ident">CC</span> : <span class="ident">ChainComplex</span>,
-      <span class="ident">F1</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span>,
-      <span class="ident">F2</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">modules</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">zero_module</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">differentials</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">F1</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">target_cc</span> : <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">chain_maps</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">F2</span><span class="op">&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span>,
+    <span class="ident">CC</span>: <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">M</span>::<span class="ident">Algebra</span><span class="op">&gt;</span>,
+    <span class="ident">F1</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="ident">F2</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span>,
+{
+    <span class="kw">pub</span> <span class="ident">modules</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">zero_module</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">differentials</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">F1</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">target_cc</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CC</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">chain_maps</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">F2</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span> <span class="ident">ChainComplex</span> <span class="kw">for</span> <span class="ident">FiniteAugmentedChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
-      <span class="ident">CC</span> : <span class="ident">ChainComplex</span>,
-      <span class="ident">F1</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span>,
-      <span class="ident">F2</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span> {
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span>,
+    <span class="ident">CC</span>: <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">M</span>::<span class="ident">Algebra</span><span class="op">&gt;</span>,
+    <span class="ident">F1</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="ident">F2</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span>,
+{
+    <span class="kw">type</span> <span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">M</span>::<span class="ident">Algebra</span>;
     <span class="kw">type</span> <span class="ident">Module</span> <span class="op">=</span> <span class="ident">M</span>;
     <span class="kw">type</span> <span class="ident">Homomorphism</span> <span class="op">=</span> <span class="ident">F1</span>;
 
-    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AlgebraAny</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">algebra</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span>::<span class="ident">Algebra</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">zero_module</span>.<span class="ident">algebra</span>()
     }
     <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
@@ -351,7 +454,7 @@
         <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">zero_module</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Module</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Module</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">if</span> <span class="ident">s</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">len</span>() {
             <span class="self">self</span>.<span class="ident">zero_module</span>()
@@ -360,24 +463,37 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">differential</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Homomorphism</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">differential</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Homomorphism</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span> <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">min</span>(<span class="ident">s</span>, <span class="self">self</span>.<span class="ident">differentials</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>); <span class="comment">// The last entry is the zero homomorphism</span>
         <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">differentials</span>[<span class="ident">s</span>])
     }
 
-    <span class="kw">fn</span> <span class="ident">compute_through_bidegree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span> : <span class="ident">u32</span>, <span class="ident">_internal_degree</span> : <span class="ident">i32</span>) {}
+    <span class="kw">fn</span> <span class="ident">compute_through_bidegree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span>: <span class="ident">u32</span>, <span class="ident">_internal_degree</span>: <span class="ident">i32</span>) {}
 
-    <span class="kw">fn</span> <span class="ident">set_homology_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span> : <span class="ident">u32</span>, <span class="ident">_internal_degree</span> : <span class="ident">i32</span>, <span class="ident">_homology_basis</span> : <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) { <span class="macro">unimplemented</span><span class="macro">!</span>() }
-    <span class="kw">fn</span> <span class="ident">homology_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span> : <span class="ident">u32</span>, <span class="ident">_internal_degree</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> { <span class="macro">unimplemented</span><span class="macro">!</span>() }
-    <span class="kw">fn</span> <span class="ident">max_homology_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> { <span class="ident">std</span>::<span class="ident">i32</span>::<span class="ident">MAX</span> }
+    <span class="kw">fn</span> <span class="ident">set_homology_basis</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">_homological_degree</span>: <span class="ident">u32</span>,
+        <span class="ident">_internal_degree</span>: <span class="ident">i32</span>,
+        <span class="ident">_homology_basis</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    ) {
+        <span class="macro">unimplemented</span><span class="macro">!</span>()
+    }
+    <span class="kw">fn</span> <span class="ident">homology_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span>: <span class="ident">u32</span>, <span class="ident">_internal_degree</span>: <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="macro">unimplemented</span><span class="macro">!</span>()
+    }
+    <span class="kw">fn</span> <span class="ident">max_homology_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_homological_degree</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
+        <span class="ident">std</span>::<span class="ident">i32</span>::<span class="ident">MAX</span>
+    }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span> <span class="ident">AugmentedChainComplex</span> <span class="kw">for</span> <span class="ident">FiniteAugmentedChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
-      <span class="ident">CC</span> : <span class="ident">ChainComplex</span>,
-      <span class="ident">F1</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span>,
-      <span class="ident">F2</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span> {
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span>,
+    <span class="ident">CC</span>: <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">M</span>::<span class="ident">Algebra</span><span class="op">&gt;</span>,
+    <span class="ident">F1</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="ident">F2</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span>,
+{
     <span class="kw">type</span> <span class="ident">TargetComplex</span> <span class="op">=</span> <span class="ident">CC</span>;
     <span class="kw">type</span> <span class="ident">ChainMap</span> <span class="op">=</span> <span class="ident">F2</span>;
 
@@ -392,25 +508,27 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">FiniteAugmentedChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
-      <span class="ident">CC</span> : <span class="ident">ChainComplex</span>,
-      <span class="ident">F1</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span>,
-      <span class="ident">F2</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span> {
-
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">c</span> : <span class="ident">FiniteAugmentedChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span><span class="op">&gt;</span> {
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span>,
+    <span class="ident">CC</span>: <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">M</span>::<span class="ident">Algebra</span><span class="op">&gt;</span>,
+    <span class="ident">F1</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="ident">F2</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span>,
+{
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">c</span>: <span class="ident">FiniteAugmentedChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FiniteChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span><span class="op">&gt;</span> {
         <span class="ident">FiniteChainComplex</span> {
-            <span class="ident">modules</span> : <span class="ident">c</span>.<span class="ident">modules</span>.<span class="ident">clone</span>(),
-            <span class="ident">zero_module</span> : <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">zero_module</span>),
-            <span class="ident">differentials</span> : <span class="ident">c</span>.<span class="ident">differentials</span>.<span class="ident">clone</span>()
+            <span class="ident">modules</span>: <span class="ident">c</span>.<span class="ident">modules</span>.<span class="ident">clone</span>(),
+            <span class="ident">zero_module</span>: <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">zero_module</span>),
+            <span class="ident">differentials</span>: <span class="ident">c</span>.<span class="ident">differentials</span>.<span class="ident">clone</span>(),
         }
     }
 }
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span> <span class="ident">BoundedChainComplex</span> <span class="kw">for</span> <span class="ident">FiniteAugmentedChainComplex</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">F1</span>, <span class="ident">F2</span>, <span class="ident">CC</span><span class="op">&gt;</span>
-<span class="kw">where</span> <span class="ident">M</span> : <span class="ident">Module</span>,
-      <span class="ident">CC</span> : <span class="ident">ChainComplex</span>,
-      <span class="ident">F1</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">M</span><span class="op">&gt;</span>,
-      <span class="ident">F2</span> : <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span><span class="op">=</span><span class="ident">M</span>, <span class="ident">Target</span><span class="op">=</span><span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span> {
-
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Module</span>,
+    <span class="ident">CC</span>: <span class="ident">ChainComplex</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">M</span>::<span class="ident">Algebra</span><span class="op">&gt;</span>,
+    <span class="ident">F1</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="ident">F2</span>: <span class="ident">ModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">Source</span> <span class="op">=</span> <span class="ident">M</span>, <span class="ident">Target</span> <span class="op">=</span> <span class="ident">CC</span>::<span class="ident">Module</span><span class="op">&gt;</span>,
+{
     <span class="kw">fn</span> <span class="ident">max_s</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">modules</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>
     }
