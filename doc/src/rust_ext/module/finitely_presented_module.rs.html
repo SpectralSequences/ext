@@ -319,6 +319,19 @@
 <span id="301">301</span>
 <span id="302">302</span>
 <span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
@@ -513,6 +526,19 @@
             <span class="ident">result</span>.<span class="ident">add_relations</span>(<span class="ident">i</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">relations_matrix</span>);
         }
         <span class="ident">result</span>
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">json</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Value</span>) {
+        <span class="ident">json</span>[<span class="string">&quot;name&quot;</span>] <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">String</span>(<span class="self">self</span>.<span class="ident">name</span>().<span class="ident">to_string</span>());
+        <span class="ident">json</span>[<span class="string">&quot;type&quot;</span>] <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from</span>(<span class="string">&quot;finitely presented module&quot;</span>);
+        <span class="comment">// Because we only have one algebra, we must specify this.</span>
+        <span class="ident">json</span>[<span class="string">&quot;algebra&quot;</span>] <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">algebra_type</span>()]);
+        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">deg_i_gens</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">generators</span>.<span class="ident">gen_names</span>.<span class="ident">iter_enum</span>() {
+            <span class="kw">for</span> <span class="ident">gen</span> <span class="kw">in</span> <span class="ident">deg_i_gens</span> {
+                <span class="ident">json</span>[<span class="string">&quot;gens&quot;</span>][<span class="ident">gen</span>] <span class="op">=</span> <span class="ident">Value</span>::<span class="ident">from</span>(<span class="ident">i</span>);
+            }
+        }
+        <span class="ident">json</span>[<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}_relations&quot;</span>, <span class="self">self</span>.<span class="ident">algebra</span>().<span class="ident">algebra_type</span>())] <span class="op">=</span> <span class="self">self</span>.<span class="ident">relations_to_json</span>();
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">relations_to_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Value</span> {
