@@ -688,19 +688,6 @@
 <span id="670">670</span>
 <span id="671">671</span>
 <span id="672">672</span>
-<span id="673">673</span>
-<span id="674">674</span>
-<span id="675">675</span>
-<span id="676">676</span>
-<span id="677">677</span>
-<span id="678">678</span>
-<span id="679">679</span>
-<span id="680">680</span>
-<span id="681">681</span>
-<span id="682">682</span>
-<span id="683">683</span>
-<span id="684">684</span>
-<span id="685">685</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
 
@@ -974,17 +961,7 @@
         <span class="kw">let</span> <span class="ident">max_degree</span> <span class="op">=</span> <span class="ident">graded_dimension</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span>: <span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">BiVec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
             <span class="ident">BiVec</span>::<span class="ident">with_capacity</span>(<span class="ident">min_degree</span>, <span class="ident">max_degree</span>);
-        <span class="comment">// Count number of triples (x, y, op) with |x| + |op| = |y|.</span>
-        <span class="comment">// The amount of memory we need to allocate is:</span>
-        <span class="comment">// # of input_degrees  * sizeof(***Vector)</span>
-        <span class="comment">// + # of nonempty input degrees * # of output degrees * sizeof(**Vector)</span>
-        <span class="comment">// + Sum over (nonempty in_deg &lt; nonempty out_deg) of (</span>
-        <span class="comment">//              # of operations in (out_deg - in_deg) * sizeof(*Vector)</span>
-        <span class="comment">//              # of operations in (out_deg - in_deg) * # of gens in degree in_degree * sizeof(Vector)</span>
-        <span class="comment">//              # of operations in (out_deg - in_deg) * # of gens in degree in_degree * # of gens in degree out_degree * sizeof(uint)</span>
-        <span class="comment">// )</span>
-        <span class="comment">// (in_deg) -&gt; (out_deg) -&gt; (op_index) -&gt; (in_index) -&gt; (out_index) -&gt; value</span>
-        <span class="comment">//  ****    -&gt; ***       -&gt; **Vector   -&gt; *Vector    -&gt; Vector -&gt; uint</span>
+
         <span class="kw">for</span> <span class="ident">input_degree</span> <span class="kw">in</span> <span class="ident">min_degree</span>..<span class="ident">max_degree</span> {
             <span class="kw">if</span> <span class="ident">graded_dimension</span>[<span class="ident">input_degree</span>] <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">BiVec</span>::<span class="ident">new</span>(<span class="ident">input_degree</span>));
@@ -1003,25 +980,22 @@
             <span class="ident">outputs_vec</span>.<span class="ident">push</span>(<span class="ident">ops_vec</span>);
 
             <span class="kw">for</span> <span class="ident">output_degree</span> <span class="kw">in</span> <span class="ident">input_degree</span> <span class="op">+</span> <span class="number">1</span>..<span class="ident">max_degree</span> {
-                <span class="kw">if</span> <span class="ident">graded_dimension</span>[<span class="ident">output_degree</span>] <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-                    <span class="ident">outputs_vec</span>.<span class="ident">push</span>(<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">0</span>));
-                    <span class="kw">continue</span>;
-                }
                 <span class="kw">let</span> <span class="ident">op_deg</span> <span class="op">=</span> <span class="ident">output_degree</span> <span class="op">-</span> <span class="ident">input_degree</span>;
                 <span class="kw">let</span> <span class="ident">number_of_operations</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">dimension</span>(<span class="ident">op_deg</span>, <span class="ident">min_degree</span> <span class="op">+</span> <span class="ident">input_degree</span>);
                 <span class="kw">let</span> <span class="ident">number_of_inputs</span> <span class="op">=</span> <span class="ident">graded_dimension</span>[<span class="ident">input_degree</span>];
                 <span class="kw">let</span> <span class="ident">number_of_outputs</span> <span class="op">=</span> <span class="ident">graded_dimension</span>[<span class="ident">output_degree</span>];
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ops_vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">number_of_operations</span>);
-                <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">number_of_operations</span> {
-                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">in_idx_vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FpVector</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">number_of_inputs</span>);
-                    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">number_of_inputs</span> {
-                        <span class="ident">in_idx_vec</span>.<span class="ident">push</span>(<span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">algebra</span>.<span class="ident">prime</span>(), <span class="ident">number_of_outputs</span>));
-                    }
-                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">in_idx_vec</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">number_of_inputs</span>);
-                    <span class="ident">ops_vec</span>.<span class="ident">push</span>(<span class="ident">in_idx_vec</span>);
+
+                <span class="kw">if</span> <span class="ident">number_of_outputs</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+                    <span class="ident">outputs_vec</span>.<span class="ident">push</span>(<span class="ident">Vec</span>::<span class="ident">new</span>());
+                } <span class="kw">else</span> {
+                    <span class="ident">outputs_vec</span>.<span class="ident">push</span>(<span class="macro">vec</span><span class="macro">!</span>[
+                        <span class="macro">vec</span><span class="macro">!</span>[
+                            <span class="ident">FpVector</span>::<span class="ident">new</span>(<span class="ident">algebra</span>.<span class="ident">prime</span>(), <span class="ident">number_of_outputs</span>);
+                            <span class="ident">number_of_inputs</span>
+                        ];
+                        <span class="ident">number_of_operations</span>
+                    ]);
                 }
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">ops_vec</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">number_of_operations</span>);
-                <span class="ident">outputs_vec</span>.<span class="ident">push</span>(<span class="ident">ops_vec</span>);
             }
             <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">outputs_vec</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">max_degree</span>);
             <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">outputs_vec</span>);
