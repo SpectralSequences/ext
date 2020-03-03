@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["construct",""],["construct_from_json",""],["load_module_from_file",""]],"struct":[["AlgebraicObjectsBundle",""],["Config",""],["ModuleFileNotFoundError",""]]});
+initSidebarItems({"fn":[["construct",""],["construct_from_json",""],["load_module_from_file",""]],"struct":[["AlgebraicObjectsBundle",""],["Config",""],["GenericError",""],["ModuleFileNotFoundError",""]]});

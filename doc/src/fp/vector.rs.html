@@ -1732,6 +1732,10 @@
 <span id="1714">1714</span>
 <span id="1715">1715</span>
 <span id="1716">1716</span>
+<span id="1717">1717</span>
+<span id="1718">1718</span>
+<span id="1719">1719</span>
+<span id="1720">1720</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -2355,6 +2359,10 @@
 
         <span class="kw">if</span> <span class="ident">other_max_limb</span> <span class="op">-</span> <span class="ident">other_min_limb</span> <span class="op">!</span><span class="op">=</span> <span class="ident">number_of_limbs</span> {
             <span class="kw">return</span> <span class="bool-val">false</span>;
+        }
+
+        <span class="kw">if</span> <span class="ident">number_of_limbs</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+            <span class="kw">return</span> <span class="bool-val">true</span>;
         }
 
         <span class="kw">let</span> <span class="ident">self_limbs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">limbs</span>();
