@@ -606,8 +606,8 @@
         <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">algebra</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="string">&quot;&quot;</span> <span class="comment">// Concatenating &amp;str&#39;s is hard</span>
+    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{} (x) {}&quot;</span>, <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">name</span>(), <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">name</span>())
     }
 
     <span class="kw">fn</span> <span class="ident">min_degree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">i32</span> {
