@@ -1970,7 +1970,7 @@
 <span class="doccomment">///  everything (with the standard basis).</span>
 <span class="doccomment">///  * `preimage` - The actual quasi-inverse, where the basis of the image is that given by</span>
 <span class="doccomment">///  `image`.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">QuasiInverse</span> {
     <span class="kw">pub</span> <span class="ident">image</span> : <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Subspace</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">preimage</span> : <span class="ident">Matrix</span>

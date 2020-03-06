@@ -220,6 +220,12 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -229,7 +235,7 @@
     <span class="ident">BoundedModuleHomomorphism</span>, <span class="ident">FPModuleHomomorphism</span>, <span class="ident">GenericZeroHomomorphism</span>, <span class="ident">IdentityHomomorphism</span>,
     <span class="ident">ModuleHomomorphism</span>, <span class="ident">ZeroHomomorphism</span>,
 };
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">BoundedModule</span>, <span class="ident">FiniteModule</span>, <span class="ident">FreeModule</span>, <span class="ident">Module</span>, <span class="ident">SteenrodModule</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">BoundedModule</span>, <span class="ident">FiniteModule</span>, <span class="ident">FreeModule</span>, <span class="ident">SteenrodModule</span>};
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">matrix</span>::{<span class="ident">QuasiInverse</span>, <span class="ident">Subspace</span>};
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">vector</span>::<span class="ident">FpVector</span>;
 
@@ -238,7 +244,13 @@
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">FiniteModule</span>::<span class="ident">FDModule</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">m</span>.<span class="ident">max_degree</span>(),
             <span class="ident">FiniteModule</span>::<span class="ident">FPModule</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Finitely Presented Module is not bounded&quot;</span>),
-            <span class="ident">FiniteModule</span>::<span class="ident">RealProjectiveSpace</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Real Projective Space is not bounded&quot;</span>),
+            <span class="ident">FiniteModule</span>::<span class="ident">RealProjectiveSpace</span>(<span class="ident">m</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) <span class="op">=</span> <span class="ident">m</span>.<span class="ident">max_degree</span>() {
+                    <span class="ident">x</span>
+                } <span class="kw">else</span> {
+                    <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Real Projective Space is not bounded&quot;</span>)
+                }
+            }
         }
     }
 }
@@ -311,7 +323,7 @@
     <span class="ident">RP</span>(<span class="ident">GenericZeroHomomorphism</span><span class="op">&lt;</span><span class="ident">FiniteModule</span>, <span class="ident">M</span><span class="op">&gt;</span>),
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FiniteModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Module</span><span class="op">&lt;</span><span class="ident">Algebra</span> <span class="op">=</span> <span class="ident">SteenrodAlgebra</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FiniteModuleHomomorphism</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">SteenrodModule</span><span class="op">&gt;</span> {
     <span class="ident">source</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FiniteModule</span><span class="op">&gt;</span>,
     <span class="ident">target</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
     <span class="ident">map</span>: <span class="ident">FMHI</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,

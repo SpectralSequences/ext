@@ -662,7 +662,7 @@
     <span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">INVERSE_TABLE</span>[<span class="ident">PRIME_TO_INDEX_MAP</span>[<span class="kw-2">*</span><span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>]].<span class="ident">get_unchecked</span>(<span class="ident">k</span> <span class="kw">as</span> <span class="ident">usize</span>) }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minus_one_to_the_n</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">i</span> : <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minus_one_to_the_n</span>(<span class="ident">p</span> : <span class="ident">u32</span>, <span class="ident">i</span> : <span class="ident">i32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
     <span class="kw">if</span> <span class="ident">i</span> <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="number">1</span> } <span class="kw">else</span> { <span class="ident">p</span> <span class="op">-</span> <span class="number">1</span> }
 }
 
