@@ -1,9 +1,3 @@
 (function() {var implementors = {};
-implementors["rust_ext"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"rust_ext/algebra/adem_algebra/struct.AdemBasisElement.html\" title=\"struct rust_ext::algebra::adem_algebra::AdemBasisElement\">AdemBasisElement</a>","synthetic":false,"types":["rust_ext::algebra::adem_algebra::AdemBasisElement"]},{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"rust_ext/algebra/milnor_algebra/struct.MilnorBasisElement.html\" title=\"struct rust_ext::algebra::milnor_algebra::MilnorBasisElement\">MilnorBasisElement</a>","synthetic":false,"types":["rust_ext::algebra::milnor_algebra::MilnorBasisElement"]}];
-
-            if (window.register_implementors) {
-                window.register_implementors(implementors);
-            } else {
-                window.pending_implementors = implementors;
-            }
-        })()
+implementors["algebra"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"algebra/algebra/adem_algebra/struct.AdemBasisElement.html\" title=\"struct algebra::algebra::adem_algebra::AdemBasisElement\">AdemBasisElement</a>","synthetic":false,"types":["algebra::algebra::adem_algebra::AdemBasisElement"]},{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"algebra/algebra/milnor_algebra/struct.MilnorBasisElement.html\" title=\"struct algebra::algebra::milnor_algebra::MilnorBasisElement\">MilnorBasisElement</a>","synthetic":false,"types":["algebra::algebra::milnor_algebra::MilnorBasisElement"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1740,6 +1740,10 @@
 <span id="1722">1722</span>
 <span id="1723">1723</span>
 <span id="1724">1724</span>
+<span id="1725">1725</span>
+<span id="1726">1726</span>
+<span id="1727">1727</span>
+<span id="1728">1728</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">//</span>
 <span class="comment">// Created by Hood on 5/22/2019.</span>
@@ -2144,6 +2148,9 @@
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">dimension</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">target</span>.<span class="ident">len</span>());
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">dimension</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dimension</span>();
+        <span class="kw">if</span> <span class="ident">dimension</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+            <span class="kw">return</span>;
+        }
         <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">offset</span>();
         <span class="kw">let</span> <span class="ident">limbs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">limbs</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target_idx</span> <span class="op">=</span> <span class="number">0</span>;
@@ -2618,6 +2625,7 @@
         <span class="ident">idx</span>
     }
 
+    <span class="comment">// Panics on arithmetic overflow from &quot;bits_needed_for_entire_vector - 1&quot; if dimension == 0.</span>
     <span class="kw">fn</span> <span class="ident">unpack_limb</span>(<span class="ident">p</span> : <span class="ident">ValidPrime</span>, <span class="ident">dimension</span> : <span class="ident">usize</span>, <span class="ident">offset</span> : <span class="ident">usize</span>, <span class="ident">limb_array</span> : <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u32</span>], <span class="ident">limbs</span> : <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">limb_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">let</span> <span class="ident">bit_length</span> <span class="op">=</span> <span class="ident">bit_length</span>(<span class="ident">p</span>);
         <span class="kw">let</span> <span class="ident">entries_per_64_bits</span> <span class="op">=</span> <span class="ident">entries_per_64_bits</span>(<span class="ident">p</span>);

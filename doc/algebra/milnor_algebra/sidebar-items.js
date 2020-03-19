@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MilnorAlgebra",""],["MilnorBasisElement",""],["MilnorProfile",""],["QPart",""]]});

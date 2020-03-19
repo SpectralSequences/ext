@@ -1,8 +1,9 @@
 var ALIASES = {};
+ALIASES["algebra"] = {};
 ALIASES["bivec"] = {};
+ALIASES["ext"] = {};
 ALIASES["fp"] = {};
 ALIASES["once"] = {};
 ALIASES["query"] = {};
-ALIASES["rust_ext"] = {};
 ALIASES["saveload"] = {};
 ALIASES["thread_token"] = {};
