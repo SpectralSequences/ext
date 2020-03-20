@@ -167,8 +167,8 @@
     <span class="doccomment">/// Converts a JSON object into a basis element. The way basis elements are represented by JSON</span>
     <span class="doccomment">/// objects is to be specified by the algebra itself, and will be used by module</span>
     <span class="doccomment">/// specifications.</span>
-    <span class="kw">fn</span> <span class="ident">json_to_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_json</span> : <span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">i32</span>, <span class="ident">usize</span>) {
-        (<span class="number">0</span>, <span class="number">0</span>)
+    <span class="kw">fn</span> <span class="ident">json_to_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_json</span> : <span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Ok</span>((<span class="number">0</span>, <span class="number">0</span>))
     }
 
     <span class="kw">fn</span> <span class="ident">json_from_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_degree</span> : <span class="ident">i32</span>, <span class="ident">_idx</span> : <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Value</span> {

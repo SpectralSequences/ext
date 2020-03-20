@@ -453,7 +453,7 @@
         (<span class="ident">graded_dimension</span>, <span class="ident">gen_names</span>, <span class="ident">gen_to_idx</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>, <span class="ident">json</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_json</span>(<span class="ident">algebra</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>, <span class="ident">json</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">prime</span>();
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;name&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap_or</span>(<span class="string">&quot;&quot;</span>).<span class="ident">to_string</span>();
         <span class="kw">let</span> <span class="ident">gens</span> <span class="op">=</span> <span class="ident">json</span>[<span class="string">&quot;gens&quot;</span>].<span class="ident">take</span>();
@@ -472,7 +472,7 @@
                     .<span class="ident">iter_mut</span>()
                     .<span class="ident">map</span>(<span class="op">|</span><span class="ident">term</span><span class="op">|</span> {
                         <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">term</span>[<span class="string">&quot;op&quot;</span>].<span class="ident">take</span>();
-                        <span class="kw">let</span> (<span class="ident">op_deg</span>, <span class="ident">op_idx</span>) <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">json_to_basis</span>(<span class="ident">op</span>);
+                        <span class="kw">let</span> (<span class="ident">op_deg</span>, <span class="ident">op_idx</span>) <span class="op">=</span> <span class="ident">algebra</span>.<span class="ident">json_to_basis</span>(<span class="ident">op</span>).<span class="ident">unwrap</span>();
                         <span class="kw">let</span> <span class="ident">gen_name</span> <span class="op">=</span> <span class="ident">term</span>[<span class="string">&quot;gen&quot;</span>].<span class="ident">as_str</span>().<span class="ident">unwrap</span>();
                         <span class="kw">let</span> (<span class="ident">gen_deg</span>, <span class="ident">gen_idx</span>) <span class="op">=</span> <span class="ident">gen_to_deg_idx</span>[<span class="ident">gen_name</span>];
                         <span class="kw">let</span> <span class="ident">coeff</span> <span class="op">=</span> <span class="ident">term</span>[<span class="string">&quot;coeff&quot;</span>].<span class="ident">as_u64</span>().<span class="ident">unwrap</span>() <span class="kw">as</span> <span class="ident">u32</span>;
@@ -525,7 +525,7 @@
             }
             <span class="ident">result</span>.<span class="ident">add_relations</span>(<span class="ident">i</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">relations_matrix</span>);
         }
-        <span class="ident">result</span>
+        <span class="prelude-val">Ok</span>(<span class="ident">result</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_json</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">json</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Value</span>) {
