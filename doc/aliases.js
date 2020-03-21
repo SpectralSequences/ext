@@ -1,8 +1,10 @@
 var ALIASES = {};
 ALIASES["algebra"] = {};
 ALIASES["bivec"] = {};
+ALIASES["compressor"] = {};
 ALIASES["error"] = {};
 ALIASES["ext"] = {};
+ALIASES["ext_webserver"] = {};
 ALIASES["fp"] = {};
 ALIASES["once"] = {};
 ALIASES["query"] = {};
