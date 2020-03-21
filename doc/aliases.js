@@ -1,6 +1,7 @@
 var ALIASES = {};
 ALIASES["algebra"] = {};
 ALIASES["bivec"] = {};
+ALIASES["error"] = {};
 ALIASES["ext"] = {};
 ALIASES["fp"] = {};
 ALIASES["once"] = {};

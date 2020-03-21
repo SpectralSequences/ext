@@ -1166,11 +1166,9 @@
 <span id="1148">1148</span>
 <span id="1149">1149</span>
 <span id="1150">1150</span>
-<span id="1151">1151</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">value</span>::<span class="ident">Value</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">HashMap</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
 <span class="kw">use</span> <span class="ident">parking_lot</span>::<span class="ident">Mutex</span>;
 
 <span class="kw">use</span> <span class="ident">once</span>::<span class="ident">OnceVec</span>;
@@ -1457,7 +1455,7 @@
         <span class="ident">result</span>.<span class="ident">shift_add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multiplication_table</span>[<span class="ident">r_degree</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">s_degree</span> <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">r_idx</span>][<span class="ident">s_idx</span>], <span class="ident">coef</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">json_to_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">json</span> : <span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">json_to_basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">json</span> : <span class="ident">Value</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">error</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">i32</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">xi_degrees</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">xi_degrees</span>(<span class="self">self</span>.<span class="ident">prime</span>());
         <span class="kw">let</span> <span class="ident">tau_degrees</span> <span class="op">=</span> <span class="ident">combinatorics</span>::<span class="ident">tau_degrees</span>(<span class="self">self</span>.<span class="ident">prime</span>());
 

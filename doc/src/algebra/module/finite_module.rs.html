@@ -318,14 +318,12 @@
 <span id="300">300</span>
 <span id="301">301</span>
 <span id="302">302</span>
-<span id="303">303</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Algebra</span>, <span class="ident">SteenrodAlgebra</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">FDModule</span>, <span class="ident">FPModule</span>, <span class="ident">Module</span>, <span class="ident">RealProjectiveSpace</span>};
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">prime</span>::<span class="ident">ValidPrime</span>;
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">vector</span>::<span class="ident">FpVector</span>;
 <span class="kw">use</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
@@ -510,7 +508,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_json</span>(
         <span class="ident">algebra</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SteenrodAlgebra</span><span class="op">&gt;</span>,
         <span class="ident">json</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">serde_json</span>::<span class="ident">Value</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">error</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">json</span>[<span class="string">&quot;type&quot;</span>].<span class="ident">as_str</span>() {
             <span class="prelude-val">Some</span>(<span class="string">&quot;real projective space&quot;</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">FiniteModule</span>::<span class="ident">from</span>(<span class="ident">RealProjectiveSpace</span>::<span class="ident">from_json</span>(
                 <span class="ident">algebra</span>, <span class="ident">json</span>,
@@ -521,9 +519,9 @@
             <span class="prelude-val">Some</span>(<span class="string">&quot;finitely presented module&quot;</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Ok</span>(<span class="ident">FiniteModule</span>::<span class="ident">from</span>(<span class="ident">FPModule</span>::<span class="ident">from_json</span>(<span class="ident">algebra</span>, <span class="ident">json</span>)<span class="question-mark">?</span>))
             }
-            <span class="ident">x</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">UnknownModuleTypeError</span> {
+            <span class="ident">x</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">UnknownModuleTypeError</span> {
                 <span class="ident">module_type</span>: <span class="ident">x</span>.<span class="ident">map</span>(<span class="ident">str</span>::<span class="ident">to_string</span>),
-            })),
+            }.<span class="ident">into</span>()),
         }
     }
 
@@ -622,6 +620,6 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Error</span> <span class="kw">for</span> <span class="ident">UnknownModuleTypeError</span> {}
+<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span> <span class="kw">for</span> <span class="ident">UnknownModuleTypeError</span> {}
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "algebra";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
