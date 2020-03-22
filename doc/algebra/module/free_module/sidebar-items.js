@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["FreeModule",""],["FreeModuleTableEntry",""],["OperationGeneratorPair",""]]});
