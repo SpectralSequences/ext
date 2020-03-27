@@ -280,7 +280,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">module</span>::{<span class="ident">FDModule</span>, <span class="ident">FiniteModule</span>, <span class="ident">FreeModule</span>, <span class="ident">Module</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">CCC</span>;
 <span class="kw">use</span> <span class="ident">bivec</span>::<span class="ident">BiVec</span>;
-<span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">matrix</span>::<span class="ident">Subspace</span>;
+<span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">matrix</span>::<span class="ident">Subquotient</span>;
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">prime</span>::<span class="ident">ValidPrime</span>;
 <span class="kw">use</span> <span class="ident">fp</span>::<span class="ident">vector</span>::{<span class="ident">FpVector</span>, <span class="ident">FpVectorT</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -405,7 +405,7 @@
         <span class="ident">d_cur</span>.<span class="ident">compute_kernels_and_quasi_inverses_through_degree</span>(<span class="ident">internal_degree</span>);
         <span class="kw">let</span> <span class="ident">kernel</span> <span class="op">=</span> <span class="ident">d_prev</span>.<span class="ident">kernel</span>(<span class="ident">internal_degree</span>);
         <span class="kw">let</span> <span class="ident">image</span> <span class="op">=</span> <span class="ident">d_cur</span>.<span class="ident">image</span>(<span class="ident">internal_degree</span>);
-        <span class="kw">let</span> <span class="ident">homology_basis</span> <span class="op">=</span> <span class="ident">Subspace</span>::<span class="ident">subquotient</span>(
+        <span class="kw">let</span> <span class="ident">homology_basis</span> <span class="op">=</span> <span class="ident">Subquotient</span>::<span class="ident">subquotient</span>(
             <span class="prelude-val">Some</span>(<span class="ident">kernel</span>),
             <span class="ident">image</span>.<span class="ident">as_ref</span>(),
             <span class="ident">d_prev</span>.<span class="ident">source</span>().<span class="ident">dimension</span>(<span class="ident">internal_degree</span>),
@@ -478,7 +478,7 @@
         <span class="ident">d_cur</span>.<span class="ident">compute_kernels_and_quasi_inverses_through_degree</span>(<span class="ident">internal_degree</span>);
         <span class="kw">let</span> <span class="ident">kernel</span> <span class="op">=</span> <span class="ident">d_prev</span>.<span class="ident">kernel</span>(<span class="ident">internal_degree</span>);
         <span class="kw">let</span> <span class="ident">image</span> <span class="op">=</span> <span class="ident">d_cur</span>.<span class="ident">image</span>(<span class="ident">internal_degree</span>);
-        <span class="kw">let</span> <span class="ident">cohomology_basis</span> <span class="op">=</span> <span class="ident">Subspace</span>::<span class="ident">subquotient</span>(
+        <span class="kw">let</span> <span class="ident">cohomology_basis</span> <span class="op">=</span> <span class="ident">Subquotient</span>::<span class="ident">subquotient</span>(
             <span class="prelude-val">Some</span>(<span class="ident">kernel</span>),
             <span class="ident">image</span>.<span class="ident">as_ref</span>(),
             <span class="ident">d_prev</span>.<span class="ident">source</span>().<span class="ident">dimension</span>(<span class="ident">internal_degree</span>),
