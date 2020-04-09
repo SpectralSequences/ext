@@ -295,11 +295,12 @@ impl Algebra for MilnorAlgebra {
         let mut degree = 0;
 
         if self.generic {
-            let (q_list, p_list): (Vec<u8>, Vec<u32>) = serde_json::from_value(json)?;
+            let (q_list, mut p_list): (Vec<u8>, Vec<u32>) = serde_json::from_value(json)?;
+            std::mem::swap(&mut p_part, &mut p_list);
+
             let q = (2 * (*self.prime()) - 2) as i32;
 
-            for (i, val) in p_list.into_iter().enumerate() {
-                p_part.push(val);
+            for (i, &val) in p_part.iter().enumerate() {
                 degree += (val as i32) * xi_degrees[i] * q;
             }
 
@@ -315,6 +316,7 @@ impl Algebra for MilnorAlgebra {
             }
         }
         let m = MilnorBasisElement { p_part, q_part, degree };
+        println!("{:?}", m);
         Ok((degree, self.basis_element_to_index(&m)))
     }
 
