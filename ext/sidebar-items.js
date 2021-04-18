@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["block_structure",""],["chain_complex",""],["change_of_basis",""],["cli_module_loaders",""],["combinatorics",""],["module",""],["resolution",""],["resolution_homomorphism",""],["steenrod_evaluator",""],["steenrod_parser",""],["utils",""],["yoneda",""]],"type":[["CCC",""]]});
